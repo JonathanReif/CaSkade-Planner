@@ -120,6 +120,8 @@ def cask_to_smt():
     
 
     # ---------------- Constraints Capability --------------------------------------------------------
+
+    # ----------------- Capability Precondition ------------------------------------------------------
     # Precondition 1. Fall Requirement ganz normal an Produkt 
 
     # Precondition 2. Fall Requirement an Information, muss mit Produkt verknüpft werden... 
@@ -140,6 +142,8 @@ def cask_to_smt():
     # solver.add(Implies(driveTo19_0, Rover7_velocity74_0_0 < 5.0))
     # solver.add(Implies(driveTo19_0, Rover7_longitude70_0_0 != RequiredLongitude_longitude74_0_0))
     # solver.add(Implies(driveTo19_0, Rover7_lattitude71_0_0 != RequiredLattitude_lattitude74_0_0))
+
+    # ---------------------------- Capability Effect -------------------------------------------------
 
     # Effect 1. Fall Assurance mit Value ganz normal an Produkt 
     
@@ -168,7 +172,7 @@ def cask_to_smt():
     # ---------------- Constraints Capability mutexes (H14) --------------------------------------------------------
 
 
-    # ---------------- Init & Goal  --------------------------------------------------------
+    # ---------------- Init  --------------------------------------------------------
 
     # Resource Inits (aus domain)
     results = g.query(sparql_queries.get_sparql_res_init())
@@ -179,6 +183,8 @@ def cask_to_smt():
     
     # Product Inits (aus Req Cap); gibt es auch Informationen??
 
+    # ---------------------- Goal -------------------------------------------------
+
     # Resource Goal (aus Req Cap); wenn Information  
     results = g.query(sparql_queries.get_sparql_res_goal())
     for row in results:
@@ -187,6 +193,11 @@ def cask_to_smt():
                 solver.add(prop == str(row.val))
 
     # Product Goal (aus Req Cap)
+
+    # ------------------- Proposition support (P5 + P6) ----------------------------
+
+
+    # ----------------- Continuous change on real variables (P11) ------------------
 
     # smtlib code  
     print(solver.to_smt2())
