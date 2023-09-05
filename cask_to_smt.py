@@ -20,7 +20,7 @@ def cask_to_smt():
     # TODO: Happenings müssen je nach Lösung angepasst werden (for schleife) 
     happenings = 1
 
-    # ------------------------------Variable Declaration----------------------------------------- 
+    # ------------------------------Variable Declaration------------------------------------------ Aljosha 
 
     '''
     Get all resource properties (e.g. longitude of rover)
@@ -63,10 +63,10 @@ def cask_to_smt():
                 cap_prop = Real(cap_prop_name)
                 cap_props.append(cap_prop)
 
-    # ----------------Constraint Proposition (H1 + H2) --> bool properties--------------------- 
+    # ----------------Constraint Proposition (H1 + H2) --> bool properties--------------------- Miguel
 
 
-    # ----------------Constraint Real Variable (H5) --> real properties-------------------------
+    # ----------------Constraint Real Variable (H5) --> real properties------------------------- Miguel
 
     # Capability properties influenced by effect of capability = all outputs that are no Information  
     cap_props_eff = []
@@ -121,7 +121,7 @@ def cask_to_smt():
 
     # ---------------- Constraints Capability --------------------------------------------------------
 
-    # ----------------- Capability Precondition ------------------------------------------------------
+    # ----------------- Capability Precondition ------------------------------------------------------ Aljosha
     # Precondition 1. Fall Requirement ganz normal an Produkt 
 
     # Precondition 2. Fall Requirement an Information, muss mit Produkt verknüpft werden... 
@@ -143,7 +143,7 @@ def cask_to_smt():
     # solver.add(Implies(driveTo19_0, Rover7_longitude70_0_0 != RequiredLongitude_longitude74_0_0))
     # solver.add(Implies(driveTo19_0, Rover7_lattitude71_0_0 != RequiredLattitude_lattitude74_0_0))
 
-    # ---------------------------- Capability Effect -------------------------------------------------
+    # ---------------------------- Capability Effect ------------------------------------------------- Aljosha
 
     # Effect 1. Fall Assurance mit Value ganz normal an Produkt 
     
@@ -172,7 +172,7 @@ def cask_to_smt():
     # ---------------- Constraints Capability mutexes (H14) --------------------------------------------------------
 
 
-    # ---------------- Init  --------------------------------------------------------
+    # ---------------- Init  -------------------------------------------------------- Miguel
 
     # Resource Inits (aus domain)
     results = g.query(sparql_queries.get_sparql_res_init())
@@ -183,7 +183,7 @@ def cask_to_smt():
     
     # Product Inits (aus Req Cap); gibt es auch Informationen??
 
-    # ---------------------- Goal -------------------------------------------------
+    # ---------------------- Goal ------------------------------------------------- Miguel
 
     # Resource Goal (aus Req Cap); wenn Information  
     results = g.query(sparql_queries.get_sparql_res_goal())
@@ -194,10 +194,10 @@ def cask_to_smt():
 
     # Product Goal (aus Req Cap)
 
-    # ------------------- Proposition support (P5 + P6) ----------------------------
+    # ------------------- Proposition support (P5 + P6) ---------------------------- Aljosha
 
 
-    # ----------------- Continuous change on real variables (P11) ------------------
+    # ----------------- Continuous change on real variables (P11) ------------------ Miguel
 
     # smtlib code  
     print(solver.to_smt2())
