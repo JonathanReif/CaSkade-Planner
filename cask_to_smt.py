@@ -11,13 +11,6 @@ def cask_to_smt():
     # SMT Solver
     solver = Solver()
 
-    # Namspaces
-    riva_logistics = Namespace("http://www.hsu-hh.de/aut/RIVA/Logistic#")
-    css = Namespace("http://www.w3id.org/hsu-aut/css#")
-    cask = Namespace("http://www.w3id.org/hsu-aut/cask#")
-    vdi3682 = Namespace("http://www.hsu-ifa.de/ontologies/VDI3682#")
-    dinen61360 = Namespace("http://www.hsu-ifa.de/ontologies/DINEN61360#")
-    
     # Create a Graph
     g = Graph()
 
