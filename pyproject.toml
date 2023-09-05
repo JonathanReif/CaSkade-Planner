@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "smt-planning"
+version = "0.0.1"
+description = "An automated process planning approach based on a capability ontology and Satisfiability Modulo Theories"
+authors = ["Luis Miguel Vieira da Silva <miguel.vieira@hsu-hh.de>", "Aljosha Koecher <aljosha.koecher@hsu-hh.de>"]
+readme = "README.md"
+packages = [{include = "smt-planning"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+rdflib = "^7.0.0"
+z3-solver = "^4.12.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

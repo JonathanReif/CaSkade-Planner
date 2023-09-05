@@ -1,0 +1,22 @@
+{
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Assurance_latitude71_ID_1_0": "0",
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Required_longitude70_ID_1_0": "0",
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Assurance_longitude70_ID_1_0": "0",
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Required_latitude71_ID_1_0": "0",
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_longitude_ID_1_0": "5056200027465821/500000000000000",
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_latitude_ID_1_0": "2142680816217173/40000000000000",
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Req_transport_longitude_ID_0_0": "0",
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Required_longitude70_ID_0_0": "0",
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Required_velocity_ID_1_0": "0",
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Req_transport_latitude_0_0": "0",
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_longitude_ID_0_0": "5056200027465821/500000000000000",
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Required_latitude71_ID_0_0": "0",
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_velocity_ID_1_0": "5",
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_velocity_ID_0_0": "5",
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Req_transport_latitude_1_0": "0",
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Assurance_longitude70_ID_0_0": "0",
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Required_velocity_ID_0_0": "0",
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_latitude_ID_0_0": "2142680816217173/40000000000000",
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Req_transport_longitude_ID_1_0": "0",
+    "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Assurance_latitude71_ID_0_0": "0"
+}
