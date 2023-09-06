@@ -2,45 +2,6 @@ class SparqlQueries:
     
     def __init__(self) -> None:
         
-        # Get all properties of resources 
-        self.sparql_resource_props = """
-            PREFIX css: <http://www.w3id.org/hsu-aut/css#>
-
-            select ?prop where { 
-                ?res a css:Resource ; 
-                    DINEN61360:has_Data_Element ?de. 
-                ?de DINEN61360:has_Instance_Description ?prop.  
-            } """
-
-        # Get all capabilities 
-        self.sparql_caps = """
-            PREFIX cask: <http://www.w3id.org/hsu-aut/cask#>
-
-            select ?cap where { 
-                ?cap a cask:ProvidedCapability. 
-            } """
-        
-        # Get all capability properties 
-        self.sparql_cap_props = """
-            PREFIX cask: <http://www.w3id.org/hsu-aut/cask#>
-            PREFIX VDI3682: <http://www.hsu-ifa.de/ontologies/VDI3682#>
-            PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
-
-            select ?prop where { 
-                ?cap a cask:ProvidedCapability;
-                    VDI3682:hasInput | VDI3682:hasOutput ?io. 
-                ?io DINEN61360:has_Data_Element ?de.
-                ?de DINEN61360:has_Instance_Description ?prop.
-    			?prop DINEN61360:Expression_Goal ?expr. 
-
-  				FILTER NOT EXISTS {
-    				?io a VDI3682:Information.
-    				FILTER (
-      					?expr = "Assurance" || ?expr = "Requirement"
- 					)
-  				}
-            } """
-
         # Get all capability properties of outputs (when output is product)
         self.sparql_cap_out_props = """
             PREFIX cask: <http://www.w3id.org/hsu-aut/cask#>
@@ -237,13 +198,6 @@ class SparqlQueries:
                     DINEN61360:Logic_Interpretation "="; 
                     DINEN61360:Value ?val. 
             }  """
-
-
-    def get_sparql_resource_props(self):
-        return self.sparql_resource_props
-    
-    def get_sparql_caps(self):
-        return self.sparql_caps
     
     def get_sparql_cap_props(self):
         return self.sparql_cap_props
