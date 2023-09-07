@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "smt-planning"}]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 rdflib = "^7.0.0"
 z3-solver = "^4.12.2.0"
 
