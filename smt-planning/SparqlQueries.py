@@ -88,33 +88,6 @@ class SparqlQueries:
                     ?op a VDI3682:Product. }
             } """
         
-        # Get all resource properties for capability precondition that has to be compared with input information property (Requirement). 
-        self.sparql_cap_pre_res_prop = """
-            PREFIX cask: <http://www.w3id.org/hsu-aut/cask#>
-            PREFIX VDI3682: <http://www.hsu-ifa.de/ontologies/VDI3682#>
-            PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
-            PREFIX css: <http://www.w3id.org/hsu-aut/css#>
-
-            select ?cap ?log ?val ?res_id where {  
-                ?cap a cask:ProvidedCapability;
-                    VDI3682:hasInput ?i. 
-                ?i a VDI3682:Information; 
-                DINEN61360:has_Data_Element ?de.
-                ?de DINEN61360:has_Instance_Description ?id;
-                    DINEN61360:has_Type_Description ?type.
-                ?id DINEN61360:Expression_Goal "Requirement";
-                    DINEN61360:Logic_Interpretation ?log;
-                    DINEN61360:Value ?val.
-                FILTER NOT EXISTS {?cap VDI3682:hasInput ?ip. 
-                    ?ip a VDI3682:Product.} 
-                ?res a css:Resource; 
-                    css:providesCapability ?cap; 
-                    DINEN61360:has_Data_Element ?res_de. 
-                ?res_de DINEN61360:has_Instance_Description ?res_id;
-                        DINEN61360:has_Type_Description ?type. 
-                ?res_id DINEN61360:Expression_Goal "Actual_Value";
-                        DINEN61360:Logic_Interpretation "=". 
-            } """
         
         # Get all resource properties for capability effect that has to be updated by output information (Assurance) which is equal (Cap Constraint) to input information (Actual Value) 
         self.sparql_cap_eff_res_prop = """
@@ -198,18 +171,12 @@ class SparqlQueries:
                     DINEN61360:Logic_Interpretation "="; 
                     DINEN61360:Value ?val. 
             }  """
-    
-    def get_sparql_cap_props(self):
-        return self.sparql_cap_props
-    
+
     def get_sparql_cap_out_props(self):
         return self.sparql_cap_out_props
     
     def get_sparql_res_prop_cap_eff(self):
         return self.sparql_res_prop_cap_eff
-    
-    def get_sparql_cap_pre_res_prop(self):
-        return self.sparql_cap_pre_res_prop
     
     def get_sparql_cap_eff_res_prop(self):
         return self.sparql_cap_eff_res_prop
