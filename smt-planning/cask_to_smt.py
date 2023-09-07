@@ -4,7 +4,9 @@ from rdflib import *
 from z3 import *
 
 import SparqlQueries as sq
+
 from variable_declaration import getProvidedCapabilities, getAllProperties
+from capability_preconditions import getCapabilityPreconditions
 
 def cask_to_smt():
 
@@ -26,27 +28,27 @@ def cask_to_smt():
 
 	# ------------------------------Variable Declaration------------------------------------------ Aljosha 	
 	# Get all properties connected to provided capabilities as inputs or outputs
-	propertyNames = getAllProperties(g, happenings, eventBound)
-	properties = []
-	print(propertyNames.realProperties)
-	for propertyName in propertyNames.realProperties:
-		smtProperty = Real(propertyName)
-		properties.append(smtProperty)
+	propertyDictionary = getAllProperties(g, happenings, eventBound)
+	# properties = []
+	# realProperties = propertyDictionary.getAllRealVariableStates()
+	# boolProperties = propertyDictionary.getAllBoolVariableStates()
+	# integerProperties = propertyDictionary.getAllIntVariableStates()
+	# print(realProperties)
+	# for propertyName in realProperties:
+	# 	smtProperty = Real(propertyName)
+	# 	properties.append(smtProperty)
 	
-	for propertyName in propertyNames.integerProperties:
-		smtProperty = Int(propertyName)
-		properties.append(smtProperty)
+	# for propertyName in propertyNames.integerProperties:
+	# 	smtProperty = Int(propertyName)
+	# 	properties.append(smtProperty)
 
-	for propertyName in propertyNames.boolProperties:
-		smtProperty = Bool(propertyName)
-		properties.append(smtProperty)
+	# for propertyName in propertyNames.boolProperties:
+	# 	smtProperty = Bool(propertyName)
+	# 	properties.append(smtProperty)
+
 
 	# Get provided capabilities and transform to boolean SMT variables
-	capNames = getProvidedCapabilities(g, happenings, eventBound)
-	caps = []
-	for capName in capNames: 
-		cap = Bool(capName)
-		caps.append(cap)
+	capabilityDictionary = getProvidedCapabilities(g, happenings, eventBound)
 
 	# ----------------Constraint Proposition (H1 + H2) --> bool properties--------------------- Miguel
 
@@ -107,21 +109,9 @@ def cask_to_smt():
 	# ---------------- Constraints Capability --------------------------------------------------------
 
 	# ----------------- Capability Precondition ------------------------------------------------------ Aljosha
-	# Precondition 1. Fall Requirement ganz normal an Produkt 
-
-	# Precondition 2. Fall Requirement an Information, muss mit Produkt verknüpft werden... 
-
-	# Precondition 3. Fall Requirement an Information, muss mit Ressource verknüpft werden.. 
-	results = g.query(sparql_queries.get_sparql_cap_pre_res_prop())
-	for happening in range(happenings):
-		for row in results:
-			for cap in caps:
-				if cap.decl().name() == str(row.cap) + "_" + str(happening):
-					for prop in properties:
-						if prop.decl().name() == str(row.res_id) + "_0_" + str(happening):
-							if str(row.log) == "<=":
-								solver.add(Implies(cap, prop <= str(row.val)))
-
+	preconditions = getCapabilityPreconditions(g, capabilityDictionary, propertyDictionary, happenings, eventBound)
+	for precondition in preconditions:
+		solver.add(precondition)
 
 
 	# solver.add(Implies(driveTo19_0, Rover7_velocity74_0_0 < 5.0))

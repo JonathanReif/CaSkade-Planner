@@ -1,12 +1,9 @@
 from rdflib import Graph
-from typing import List
-		
-class PropertyResult: 
-	realProperties= []
-	boolProperties = []
-	integerProperties = []
+from dicts.CapabilityDictionary import CapabilityDictionary
+from dicts.PropertyDictionary import PropertyDictionary
 
-def getAllProperties(graph: Graph, happenings:int, eventBound:int) -> PropertyResult :
+
+def getAllProperties(graph: Graph, happenings:int, eventBound:int) -> PropertyDictionary :
 	'''Create names for all properties related to the provided capabilities'''
 	
 	# Names need to be a combination of the thing that has a property (ID) with the corresponding type description. 
@@ -28,21 +25,17 @@ def getAllProperties(graph: Graph, happenings:int, eventBound:int) -> PropertyRe
 	}"""
 	
 	results = graph.query(queryString)
-	properties = PropertyResult()
+	properties = PropertyDictionary()
 	for row in results:
 		for happening in range(happenings):
 			for event in range(eventBound):
-				propName = str(row.prop) + "_" + str(event) + "_" + str(happening)
-				if(row.dataType == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real"):
-					properties.realProperties.append(propName)
-				if(row.dataType == "http://www.hsu-ifa.de/ontologies/DINEN61360#Boolean"):
-					properties.boolProperties.append(propName)
-				if(row.dataType == "http://www.hsu-ifa.de/ontologies/DINEN61360#Integer"):
-					properties.integerProperties.append(propName)
+				properties.addEntry(str(row.de), str(row.dataType), event, happening)
 	return properties
 
 
-def getProvidedCapabilities(graph:Graph, happenings:int, eventBound:int) -> List :
+
+
+def getProvidedCapabilities(graph:Graph, happenings:int, eventBound:int) -> CapabilityDictionary :
 	'''Get all provided capabilities'''
 
 	queryString = """
@@ -52,25 +45,9 @@ def getProvidedCapabilities(graph:Graph, happenings:int, eventBound:int) -> List
 	} """
 
 	results = graph.query(queryString)
-	capabilities = []
+	capDict = CapabilityDictionary()
 	for row in results: 
 		for happening in range(happenings): 
-			capName = str(row.cap) + "_" + str(happening)
-			capabilities.append(capName)
+			capDict.addEntry(str(row.cap), happening)
 
-	return capabilities
-
-	# '''
-	# Get all properties of capability (e.g. longitude) besides information outputs with assurance and information inputs requirements
-	# Transform capability properties to smt variables for every event(2) and every happening
-	# TODO: check if property is a boolean or a real (über TypeDescription --> Unit of Measure??)
-	# '''
-	# results = g.query(sparql_queries.get_sparql_cap_props())
-	# cap_props = []
-
-	# for row in results: 
-	# 	for happening in range(happenings): 
-	# 		for event in range(2):
-	# 			cap_prop_name = str(row.prop) + "_" + str(event) + "_" + str(happening)
-	# 			cap_prop = Real(cap_prop_name)
-	# 			cap_props.append(cap_prop)
+	return capDict
