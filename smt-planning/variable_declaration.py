@@ -9,28 +9,27 @@ class PropertyResult:
 def getAllProperties(graph: Graph, happenings:int, eventBound:int) -> PropertyResult :
 	'''Create names for all properties related to the provided capabilities'''
 	
+	# Names need to be a combination of the thing that has a property (ID) with the corresponding type description. 
+	# Thing and type description together define a certain property in a context.
 	queryString = """
 	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
 	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
 	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
 	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-	SELECT ?prop ?dataType WHERE { 
+	SELECT DISTINCT ?de ?dataType WHERE { 
 		?cap a CaSk:ProvidedCapability;
-			^CSS:requiresCapability ?process.
+		^CSS:requiresCapability ?process.
 		?process VDI3682:hasInput|VDI3682:hasOutput ?inout.
-		?inout VDI3682:isCharacterizedBy ?prop.
-		?prop a ?dataType.
+		?inout VDI3682:isCharacterizedBy ?id.
+		?de DINEN61360:has_Instance_Description ?id.
+		?id a ?dataType.
 		?dataType rdfs:subClassOf DINEN61360:Simple_Data_Type.
-	} """
+	}"""
 	
 	results = graph.query(queryString)
 	properties = PropertyResult()
-	print("results")
-	print(len(results))
 	for row in results:
-		print("row")
-		print(row)
 		for happening in range(happenings):
 			for event in range(eventBound):
 				propName = str(row.prop) + "_" + str(event) + "_" + str(happening)
@@ -43,7 +42,6 @@ def getAllProperties(graph: Graph, happenings:int, eventBound:int) -> PropertyRe
 	return properties
 
 
-#
 def getProvidedCapabilities(graph:Graph, happenings:int, eventBound:int) -> List :
 	'''Get all provided capabilities'''
 
