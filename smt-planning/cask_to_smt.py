@@ -29,23 +29,6 @@ def cask_to_smt():
 	# ------------------------------Variable Declaration------------------------------------------ Aljosha 	
 	# Get all properties connected to provided capabilities as inputs or outputs
 	propertyDictionary = getAllProperties(g, happenings, eventBound)
-	# properties = []
-	# realProperties = propertyDictionary.getAllRealVariableStates()
-	# boolProperties = propertyDictionary.getAllBoolVariableStates()
-	# integerProperties = propertyDictionary.getAllIntVariableStates()
-	# print(realProperties)
-	# for propertyName in realProperties:
-	# 	smtProperty = Real(propertyName)
-	# 	properties.append(smtProperty)
-	
-	# for propertyName in propertyNames.integerProperties:
-	# 	smtProperty = Int(propertyName)
-	# 	properties.append(smtProperty)
-
-	# for propertyName in propertyNames.boolProperties:
-	# 	smtProperty = Bool(propertyName)
-	# 	properties.append(smtProperty)
-
 
 	# Get provided capabilities and transform to boolean SMT variables
 	capabilityDictionary = getProvidedCapabilities(g, happenings, eventBound)
