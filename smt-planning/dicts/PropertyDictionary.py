@@ -7,7 +7,6 @@ class PropertyEntry:
 		self.type = type
 		self.states = states
 
-
 class PropertyDictionary:
 	def __init__(self):
 		self.properties: Dict[str, PropertyEntry] = dict()
@@ -15,23 +14,26 @@ class PropertyDictionary:
 	def addProperty(self, iri:URIRef, type:str):
 		self.properties[str(iri)] = PropertyEntry(type, dict())
 
-	def addPropertyStates(self, iri:URIRef, type:str, event:int, happening: int):
+	def addPropertyHappening(self, iri:URIRef, happening:int):
+		self.properties[str(iri)].states[happening] = {}
+
+	def addPropertyEvent(self, iri:URIRef, type:str, happening: int, event: int):
 		# self.properties[iri] = PropertyEntry(type, dict())
 		iriString = str(iri)
 		variableName = iriString + "_" + str(event) + "_" + str(happening)
-		self.properties[iriString].states[event] = {}
+		# self.properties[iriString].states[event] = {}
 		if type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
-			self.properties[iriString].states[event][happening] = Real(variableName)
+			self.properties[iriString].states[happening][event] = Real(variableName)
 		if type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Boolean":
-			self.properties[iriString].states[event][happening] = Bool(variableName)
+			self.properties[iriString].states[happening][event] = Bool(variableName)
 		if type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Integer":
-			self.properties[iriString].states[event][happening] = Int(variableName)
+			self.properties[iriString].states[happening][event] = Int(variableName)
 
-	def getPropertyVariable(self, iri: URIRef, event:int, happening:int):
+	def getPropertyVariable(self, iri: URIRef, happening:int, event:int):
 		iriString = str(iri)
 		if (not iriString in self.properties):
 			raise KeyError(f"There is no property with key {iriString}.")
-		return self.properties[iriString].states[event][happening]
+		return self.properties[iriString].states[happening][event]
 	
 	def getPropertyType(self, iri: URIRef):
 		return self.properties[str(iri)].type
