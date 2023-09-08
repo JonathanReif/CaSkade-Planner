@@ -33,6 +33,9 @@ class PropertyDictionary:
 			raise KeyError(f"There is no property with key {iriString}.")
 		return self.properties[iriString].states[event][happening]
 	
+	def getPropertyType(self, iri: URIRef):
+		return self.properties[str(iri)].type
+	
 	# def getAllRealVariableStates(self) -> List:
 	# 	filteredEntries =  list(filter(self.isRealVariable, self.properties.values()))
 	# 	flatList = []

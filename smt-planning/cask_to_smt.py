@@ -7,9 +7,9 @@ import SparqlQueries as sq
 
 from variable_declaration import getProvidedCapabilities, getAllProperties
 from capability_preconditions import getCapabilityPreconditions
-from real_variable_constraints import get_real_variable_constraints
 from capability_effects import getCapabilityEffects
 from bool_variable_support import getPropositionSupports
+from variable_constraints import get_variable_constraints
 
 def cask_to_smt():
 
@@ -36,16 +36,11 @@ def cask_to_smt():
 	# Get provided capabilities and transform to boolean SMT variables
 	capability_dictionary = getProvidedCapabilities(g, happenings, event_bound)
 
-	# ----------------Constraint Proposition (H1 + H2) --> bool properties--------------------- Miguel
+	# ------Constraint Proposition (H1 + H2) and Cosntraint Real Variable (H5) --> bool and real properties------- Miguel
 
-
-	# ----------------Constraint Real Variable (H5) --> real properties------------------------- Miguel
-
-	real_variable_constraints = get_real_variable_constraints(g, capability_dictionary, property_dictionary, happenings, event_bound)
+	real_variable_constraints = get_variable_constraints(g, capability_dictionary, property_dictionary, happenings, event_bound)
 	for constraint in real_variable_constraints:
 		solver.add(constraint)	
-
-	print(solver.to_smt2())
 
 	# ---------------- Constraints Capability --------------------------------------------------------
 
@@ -54,6 +49,7 @@ def cask_to_smt():
 	for precondition in preconditions:
 		solver.add(precondition)
 
+	print(solver.to_smt2())
 
 	# ---------------------------- Capability Effect ------------------------------------------------- Aljosha
 	effects = getCapabilityEffects(g, capability_dictionary, property_dictionary, happenings, event_bound)
