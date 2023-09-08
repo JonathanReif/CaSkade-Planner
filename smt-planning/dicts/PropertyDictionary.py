@@ -30,7 +30,7 @@ class PropertyDictionary:
 	def getPropertyVariable(self, iri: URIRef, event:int, happening:int):
 		iriString = str(iri)
 		if (not iriString in self.properties):
-			raise KeyError(f"These is no property with key {iriString}.")
+			raise KeyError(f"There is no property with key {iriString}.")
 		return self.properties[iriString].states[event][happening]
 	
 	# def getAllRealVariableStates(self) -> List:
