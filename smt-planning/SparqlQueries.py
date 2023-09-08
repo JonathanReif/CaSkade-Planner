@@ -2,93 +2,6 @@ class SparqlQueries:
     
     def __init__(self) -> None:
         
-        # Get all capability properties of outputs (when output is product)
-        self.sparql_cap_out_props = """
-            PREFIX cask: <http://www.w3id.org/hsu-aut/cask#>
-            PREFIX VDI3682: <http://www.hsu-ifa.de/ontologies/VDI3682#>
-            PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
-
-            select ?cap ?prop where { 
-                ?cap a cask:ProvidedCapability;
-                    VDI3682:hasOutput ?out. 
-                ?out a VDI3682:Product;
-                    DINEN61360:has_Data_Element ?de.
-                ?de DINEN61360:has_Instance_Description ?prop. 
-            } """  
-
-        # Get all resource properties that are influenced by capability effect. Check for Capability Constraints 
-        # self.sparql_res_prop_cap_eff_old = """
-        #     PREFIX cask: <http://www.w3id.org/hsu-aut/cask#>
-        #     PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
-        #     PREFIX css: <http://www.w3id.org/hsu-aut/css#>
-        #     PREFIX m: <http://openmath.org/vocab/math#>
-
-        #     select ?cap ?prop where { 
-        #         ?res a css:Resource ; 
-        #             DINEN61360:has_Data_Element ?de.
-        #         ?de DINEN61360:has_Instance_Description ?prop.
-        #         ?prop ^css:references ?cap_const. 
-        #         ?cap_const a m:Application; 
-        #             ^css:isRestrictedBy ?cap. 
-        #         ?cap a cask:ProvidedCapability.                 
-        #     } """
-
-        '''
-        Get all resource properties that are influenced by capability effect
-        capability has information output with assurance = (no value) 
-        capability has information input with actual_value = (no value)
-        input and output information connected with cap constraint 
-        capability has no product output, then it has to reference to resoruce 
-        '''
-        self.sparql_res_prop_cap_eff = """
-            PREFIX cask: <http://www.w3id.org/hsu-aut/cask#>
-            PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
-            PREFIX css: <http://www.w3id.org/hsu-aut/css#>
-            PREFIX m: <http://openmath.org/vocab/math#>
-            PREFIX VDI3682: <http://www.hsu-ifa.de/ontologies/VDI3682#>
-            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-
-            select ?cap ?prop where { 
-                ?res a css:Resource ; 
-                    DINEN61360:has_Data_Element ?de;
-                    css:providesCapability ?cap. 
-                ?de a DINEN61360:Data_Element;
-                    DINEN61360:has_Instance_Description ?prop;
-                    DINEN61360:has_Type_Description ?type. 
-                ?prop a DINEN61360:Instance_Description. 
-                ?cap a cask:ProvidedCapability;  
-                    VDI3682:hasOutput ?out_inf;
-                    VDI3682:hasInput ?in_inf; 
-                    css:isRestrictedBy ?constr. 
-                ?out_inf a VDI3682:Information; 
-                    DINEN61360:has_Data_Element ?out_inf_de. 
-                ?out_inf_de a DINEN61360:Data_Element; 
-                    DINEN61360:has_Instance_Description ?out_inf_id;
-                    DINEN61360:has_Type_Description ?type. 
-                ?out_inf_id a DINEN61360:Instance_Description; 
-                    DINEN61360:Expression_Goal "Assurance"; 
-                    DINEN61360:Logic_Interpretation	"=".
-                ?in_inf a VDI3682:Information; 
-                    DINEN61360:has_Data_Element ?in_inf_de. 
-                ?in_inf_de a DINEN61360:Data_Element;  
-                    DINEN61360:has_Instance_Description ?in_inf_id;
-                    DINEN61360:has_Type_Description ?type.
-                ?in_inf_id a DINEN61360:Instance_Description;            
-                    DINEN61360:Expression_Goal "Actual_Value"; 
-                    DINEN61360:Logic_Interpretation	"=".
-                ?constr a m:Application; 
-                    m:operator m:eq; 
-                    css:references ?in_inf_id; 
-                    css:references ?out_inf_id. 
-                    
-                FILTER NOT EXISTS {?out_inf_id DINEN61360:Value ?out_val.
-                    ?in_inf_id DINEN61360:Value ?in_val. 
-                    ?cap VDI3682:hasOutput ?op. 
-                    ?op a VDI3682:Product. }
-            } """
-        
-        
         # Get all resource properties for capability effect that has to be updated by output information (Assurance) which is equal (Cap Constraint) to input information (Actual Value) 
         self.sparql_cap_eff_res_prop = """
             PREFIX cask: <http://www.w3id.org/hsu-aut/cask#>
@@ -171,12 +84,6 @@ class SparqlQueries:
                     DINEN61360:Logic_Interpretation "="; 
                     DINEN61360:Value ?val. 
             }  """
-
-    def get_sparql_cap_out_props(self):
-        return self.sparql_cap_out_props
-    
-    def get_sparql_res_prop_cap_eff(self):
-        return self.sparql_res_prop_cap_eff
     
     def get_sparql_cap_eff_res_prop(self):
         return self.sparql_cap_eff_res_prop

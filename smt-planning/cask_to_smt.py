@@ -7,6 +7,7 @@ import SparqlQueries as sq
 
 from variable_declaration import getProvidedCapabilities, getAllProperties
 from capability_preconditions import getCapabilityPreconditions
+from real_variable_constraints import get_real_variable_constraints
 
 def cask_to_smt():
 
@@ -24,75 +25,30 @@ def cask_to_smt():
 	# TODO: Happenings müssen je nach Lösung angepasst werden (for schleife) 
 	happenings = 1
 	# Fixed upper bound for number of events in one happening. Currently no events, so we just have the start and end of a happening
-	eventBound = 2
+	event_bound = 2
 
 	# ------------------------------Variable Declaration------------------------------------------ Aljosha 	
 	# Get all properties connected to provided capabilities as inputs or outputs
-	propertyDictionary = getAllProperties(g, happenings, eventBound)
+	property_dictionary = getAllProperties(g, happenings, event_bound)
 
 	# Get provided capabilities and transform to boolean SMT variables
-	capabilityDictionary = getProvidedCapabilities(g, happenings, eventBound)
+	capability_dictionary = getProvidedCapabilities(g, happenings, event_bound)
 
 	# ----------------Constraint Proposition (H1 + H2) --> bool properties--------------------- Miguel
 
 
 	# ----------------Constraint Real Variable (H5) --> real properties------------------------- Miguel
 
-	# Capability properties influenced by effect of capability = all outputs that are no Information  
-	cap_props_eff = []
-	results = g.query(sparql_queries.get_sparql_cap_out_props())
-	for happening in range(happenings):
-		for row in results: 
-			for cap in caps:
-				if cap.decl().name() == str(row.cap) + "_" + str(happening):
-					for cap_prop_1 in properties:
-						if cap_prop_1.decl().name() == str(row.prop) + "_1_" + str(happening):
-							cap_props_eff.append(cap_prop_1)
-							for cap_prop_0 in properties:
-								if cap_prop_0.decl().name() == str(row.prop) + "_0_" + str(happening): 
-									cap_props_eff.append(cap_prop_0)
-									solver.add(Implies(Not(cap), cap_prop_1 == cap_prop_0))
-	# Capability properties not influenced by effect of capability 
-	cap_props_not_eff = properties
-	cap_props_not_eff = [prop for prop in cap_props_not_eff if prop not in cap_props_eff]
-	for happening in range(happenings):
-		for prop_0 in cap_props_not_eff:
-			prop_0_name = prop_0.decl().name().rsplit('_', 2)
-			for prop_1 in cap_props_not_eff:
-				prop_1_name = prop_1.decl().name().rsplit('_', 2)
-				if prop_0_name[0] == prop_1_name[0] and prop_1_name[1] > prop_0_name[1] and prop_0_name[2] == prop_1_name[2]:
-					solver.add(prop_1 == prop_0)
+	real_variable_constraints = get_real_variable_constraints(g, capability_dictionary, property_dictionary, happenings, event_bound)
+	for constraint in real_variable_constraints:
+		solver.add(constraint)	
 
-	# Resource properties influenced by effect of capability
-	res_props_eff = []  
-	results = g.query(sparql_queries.get_sparql_res_prop_cap_eff())
-	for happening in range(happenings):
-		for row in results: 
-			for cap in caps:
-				if cap.decl().name() == str(row.cap) + "_" + str(happening):
-					for res_prop_1 in properties:
-						if res_prop_1.decl().name() == str(row.prop) + "_1_" + str(happening):
-							res_props_eff.append(res_prop_1)
-							for res_prop_0 in properties:
-								if res_prop_0.decl().name() == str(row.prop) + "_0_" + str(happening): 
-									res_props_eff.append(res_prop_0)
-									solver.add(Implies(Not(cap), res_prop_1 == res_prop_0)) 
-	# Resource properties not influenced by effect of capability 
-	res_props_not_eff = properties
-	res_props_not_eff = [prop for prop in res_props_not_eff if prop not in res_props_eff]
-	for happening in range(happenings):
-		for prop_0 in res_props_not_eff:
-			prop_0_name = prop_0.decl().name().rsplit('_', 2)
-			for prop_1 in res_props_not_eff:
-				prop_1_name = prop_1.decl().name().rsplit('_', 2)
-				if prop_0_name[0] == prop_1_name[0] and prop_1_name[1] > prop_0_name[1] and prop_0_name[2] == prop_1_name[2]:
-					solver.add(prop_1 == prop_0)
-	
+	print(solver.to_smt2())
 
 	# ---------------- Constraints Capability --------------------------------------------------------
 
 	# ----------------- Capability Precondition ------------------------------------------------------ Aljosha
-	preconditions = getCapabilityPreconditions(g, capabilityDictionary, propertyDictionary, happenings, eventBound)
+	preconditions = getCapabilityPreconditions(g, capability_dictionary, property_dictionary, happenings, event_bound)
 	for precondition in preconditions:
 		solver.add(precondition)
 
