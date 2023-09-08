@@ -10,6 +10,7 @@ from bool_variable_support import getPropositionSupports
 from variable_constraints import get_variable_constraints
 from init import get_init
 from goal import get_goal
+from real_variable_contin_change import get_real_variable_continuous_changes
 
 def cask_to_smt():
 
@@ -23,7 +24,7 @@ def cask_to_smt():
 	g.parse("ex_merged.ttl", format="turtle")
 
 	# TODO: Happenings müssen je nach Lösung angepasst werden (for schleife) 
-	happenings = 1
+	happenings = 2
 	# Fixed upper bound for number of events in one happening. Currently no events, so we just have the start and end of a happening
 	event_bound = 2
 
@@ -52,7 +53,7 @@ def cask_to_smt():
 	for effect in effects:
 		solver.add(effect)
 
-	# ---------------- Constraints Capability mutexes (H14) --------------------------------------------------------
+	# ---------------- Constraints Capability mutexes (H14) -----------------------------------------
 
 
 	# ---------------- Init  --------------------------------------------------------
@@ -74,7 +75,11 @@ def cask_to_smt():
 	for support in proposition_supports:
 		solver.add(support)
 
-	# ----------------- Continuous change on real variables (P11) ------------------ Miguel
+	# ----------------- Continuous change on real variables (P11) ------------------
+
+	real_variable_cont_changes = get_real_variable_continuous_changes(property_dictionary, happenings, event_bound)
+	for real_variable_cont_change in real_variable_cont_changes:
+		solver.add(real_variable_cont_change)
 
 	# smtlib code  
 	print(solver.to_smt2())
