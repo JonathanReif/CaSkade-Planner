@@ -11,8 +11,11 @@ class PropertyDictionary:
 	def __init__(self):
 		self.properties: Dict[str, PropertyEntry] = dict()
 
-	def addEntry(self, iri:str, type:str, event:int, happening: int):
+	def addProperty(self, iri:str, type:str):
 		self.properties[iri] = PropertyEntry(type, dict())
+
+	def addPropertyStates(self, iri:str, type:str, event:int, happening: int):
+		# self.properties[iri] = PropertyEntry(type, dict())
 		variableName = str(iri) + "_" + str(event) + "_" + str(happening)
 		self.properties[iri].states[event] = {}
 		if type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
