@@ -3083,7 +3083,8 @@ math:eq rdf:type owl:NamedIndividual .
 :Req_transport rdf:type owl:NamedIndividual ,
                         CaSk:RequiredCapability ;
                VDI3682:hasOutput :Req_transport_latitude ,
-                                 :Req_transport_longitude .
+                                 :Req_transport_longitude ;
+               CSS:requiresCapability :Req_transport .
 
 
 ###  http://www.hsu-hh.de/aut/RIVA/Logistic#Req_transport_latitude
@@ -3235,7 +3236,7 @@ math:eq rdf:type owl:NamedIndividual .
 ###  http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_latitude_DE
 :Rover7_latitude_DE rdf:type owl:NamedIndividual ,
                              DINEN61360:Data_Element ;
-                    DINEN61360:has_Instance_Description :Req_transport_latitude ,
+                    DINEN61360:has_Instance_Description :Req_transport_latitude_ID ,
                                                         :Rover7_cap_driveTo19_Assurance_latitude71_ID ,
                                                         :Rover7_cap_driveTo19_Required_latitude71_ID ,
                                                         :Rover7_latitude_ID ;
