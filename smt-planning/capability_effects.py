@@ -31,7 +31,7 @@ def getCapabilityEffects(graph: Graph, capability_dictionary: CapabilityDictiona
 	for happening in range(happenings):
 		for row in results:
 			current_capability = capability_dictionary.getCapabilityVariableByIriAndHappening(row.cap, happening)	# type: ignore
-			effect_property = property_dictionary.getPropertyVariable(row.de, 1, happening)							# type: ignore
+			effect_property = property_dictionary.getPropertyVariable(row.de, happening, 1)							# type: ignore
 			relation = str(row.log)																					# type: ignore
 			value = str(row.val)																					# type: ignore		
 			match relation:

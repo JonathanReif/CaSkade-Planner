@@ -45,8 +45,8 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
     for happening in range(happenings):
         for row in results:
             currentCap = capability_dict.getCapabilityVariableByIriAndHappening(row.cap, happening) # type: ignore
-            prop_start = property_dictionary.getPropertyVariable(row.de, 0, happening) # type: ignore
-            prop_end = property_dictionary.getPropertyVariable(row.de, 1, happening) # type: ignore
+            prop_start = property_dictionary.getPropertyVariable(row.de, happening, 0) # type: ignore
+            prop_end = property_dictionary.getPropertyVariable(row.de, happening, 1) # type: ignore
             prop_type = property_dictionary.getPropertyType(row.de) # type: ignore
             if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
                 constraint = Implies(Not(currentCap), prop_end == prop_start)
@@ -60,8 +60,8 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
     results = graph.query(query_props_not_effected) 
     for happening in range(happenings):
         for row in results:
-            prop_start = property_dictionary.getPropertyVariable(row.de, 0, happening) # type: ignore
-            prop_end = property_dictionary.getPropertyVariable(row.de, 1, happening) # type: ignore
+            prop_start = property_dictionary.getPropertyVariable(row.de, happening, 0) # type: ignore
+            prop_end = property_dictionary.getPropertyVariable(row.de, happening, 1) # type: ignore
             prop_type = property_dictionary.getPropertyType(row.de) # type: ignore
             if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
                 constraint = prop_end == prop_start

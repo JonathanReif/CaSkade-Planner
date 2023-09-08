@@ -31,7 +31,7 @@ def getCapabilityPreconditions(graph: Graph, capabilityDictionary: CapabilityDic
 	for happening in range(happenings):
 		for row in results:
 			currentCap = capabilityDictionary.getCapabilityVariableByIriAndHappening(row.cap, happening)	# type: ignore
-			currentProp = propertyDictionary.getPropertyVariable(row.de, 0, happening)						# type: ignore
+			currentProp = propertyDictionary.getPropertyVariable(row.de, happening, 0)						# type: ignore
 			relation = str(row.log)																			# type: ignore
 			value = str(row.val)																			# type: ignore
 			match relation:

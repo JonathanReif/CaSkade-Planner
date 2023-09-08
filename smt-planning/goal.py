@@ -23,7 +23,7 @@ def get_goal(graph:Graph, property_dictionary: PropertyDictionary, happenings):
     results = graph.query(query_string)
     goals = []
     for row in results:
-        property = property_dictionary.getPropertyVariable(row.de, 1, happenings-1)		# type: ignore
+        property = property_dictionary.getPropertyVariable(row.de, happenings-1, 1)		# type: ignore
         relation = str(row.log)															# type: ignore
         value = str(row.val)                                                            # type: ignore
         match relation:														    
