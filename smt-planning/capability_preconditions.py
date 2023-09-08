@@ -51,6 +51,6 @@ def getCapabilityPreconditions(graph: Graph, capabilityDictionary: CapabilityDic
 					raise RuntimeError("Incorrent logical relation")
 			
 			preconditions.append(precondition)
-	return []
+	return preconditions
 
 
