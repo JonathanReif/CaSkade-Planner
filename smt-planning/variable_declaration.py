@@ -27,10 +27,11 @@ def getAllProperties(graph: Graph, happenings:int, eventBound:int) -> PropertyDi
 	results = graph.query(queryString)
 	properties = PropertyDictionary()
 	for row in results:
-		properties.addProperty(str(row.de), str(row.dataType)) # type: ignore 
+		properties.addProperty(row.de, str(row.dataType)) # type: ignore 
 		for happening in range(happenings):
+			properties.addPropertyHappening(row.de, happening) # type: ignore
 			for event in range(eventBound):
-				properties.addPropertyStates(str(row.de), str(row.dataType), event, happening) # type: ignore
+				properties.addPropertyEvent(row.de, str(row.dataType), happening, event) # type: ignore
 	return properties
 
 
@@ -48,7 +49,8 @@ def getProvidedCapabilities(graph:Graph, happenings:int, eventBound:int) -> Capa
 	results = graph.query(queryString)
 	capDict = CapabilityDictionary()
 	for row in results: 
+		capDict.addCapability(row.cap)					#type: ignore
 		for happening in range(happenings): 
-			capDict.addEntry(str(row.cap), happening) # type: ignore
+			capDict.addCapabilityHappening(row.cap, happening) # type: ignore
 
 	return capDict
