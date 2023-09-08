@@ -8,6 +8,8 @@ import SparqlQueries as sq
 from variable_declaration import getProvidedCapabilities, getAllProperties
 from capability_preconditions import getCapabilityPreconditions
 from real_variable_constraints import get_real_variable_constraints
+from capability_effects import getCapabilityEffects
+from bool_variable_support import getPropositionSupports
 
 def cask_to_smt():
 
@@ -53,22 +55,11 @@ def cask_to_smt():
 		solver.add(precondition)
 
 
-	# solver.add(Implies(driveTo19_0, Rover7_velocity74_0_0 < 5.0))
-	# solver.add(Implies(driveTo19_0, Rover7_longitude70_0_0 != RequiredLongitude_longitude74_0_0))
-	# solver.add(Implies(driveTo19_0, Rover7_lattitude71_0_0 != RequiredLattitude_lattitude74_0_0))
-
 	# ---------------------------- Capability Effect ------------------------------------------------- Aljosha
+	effects = getCapabilityEffects(g, capability_dictionary, property_dictionary, happenings, event_bound)
+	for effect in effects:
+		solver.add(effect)
 
-	# Effect 1. Fall Assurance mit statischem Value
-	
-	# Effect 2. Fall Assurance ohne statischen Value mit Constraint
-
-	results = g.query(sparql_queries.get_sparql_cap_eff_res_prop())
-	for happening in range(happenings):
-		for row in results:
-			current_capability = capability_dictionary.getCapabilityVariableByIriAndHappening(row.cap, happening)	# type: ignore
-			effect_property = property_dictionary.getPropertyVariable(row.prop, 1, happening)						# type: ignore
-			solver.add(Implies(current_capability, effect_property == row.value))									# type: ignore
 
 	# ---------------- Constraints Capability mutexes (H14) --------------------------------------------------------
 
@@ -94,7 +85,9 @@ def cask_to_smt():
 	# Product Goal (aus Req Cap)
 
 	# ------------------- Proposition support (P5 + P6) ---------------------------- Aljosha
-
+	proposition_supports = getPropositionSupports(g, property_dictionary, happenings)
+	for support in proposition_supports:
+		solver.add(support)
 
 	# ----------------- Continuous change on real variables (P11) ------------------ Miguel
 
