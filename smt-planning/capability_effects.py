@@ -7,12 +7,9 @@ from z3 import Implies
 def getCapabilityEffects(graph: Graph, capability_dictionary: CapabilityDictionary, property_dictionary: PropertyDictionary, happenings: int, event_bound: int) -> List:
 	
 	# Effect 1. Fall Assurance mit statischem Value
-	
-	# Effect 2. Fall Assurance ohne statischen Value mit Constraint
 
-
-	# Get all resource properties for capability effect that has to be updated by output information (Assurance) which is equal (Cap Constraint) to input information (Actual Value) 
-	queryString = """
+	# Get all capability outputs  
+	query_string = """
 	PREFIX cask: <http://www.w3id.org/hsu-aut/cask#>
 	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
 	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
@@ -29,14 +26,33 @@ def getCapabilityEffects(graph: Graph, capability_dictionary: CapabilityDictiona
 		?de DINEN61360:has_Instance_Description ?id.
 	} """
 
-	# TODO: In the query, we get log, but in the constraint, we only create an equal-to relation. Could theoretically be also "<"", "<="", etc.
-	results = graph.query(queryString)
+	results = graph.query(query_string)
 	effects = []
 	for happening in range(happenings):
 		for row in results:
 			current_capability = capability_dictionary.getCapabilityVariableByIriAndHappening(row.cap, happening)	# type: ignore
-			effect_property = property_dictionary.getPropertyVariable(row.de, 1, happening)						# type: ignore
-			effect = Implies(current_capability, effect_property == row.value)										# type: ignore						
+			effect_property = property_dictionary.getPropertyVariable(row.de, 1, happening)							# type: ignore
+			relation = str(row.log)																					# type: ignore
+			value = str(row.val)																					# type: ignore		
+			match relation:
+				case "<":
+					effect = Implies(current_capability, effect_property < value)									# type: ignore
+				case "<=":
+					effect = Implies(current_capability, effect_property <= value)									# type: ignore
+				case "=":
+					effect = Implies(current_capability, effect_property == value)									# type: ignore
+				case "!=":
+					effect = Implies(current_capability, effect_property != value)									# type: ignore
+				case ">=":
+					effect = Implies(current_capability, effect_property >= value)									# type: ignore
+				case ">":
+					effect = Implies(current_capability, effect_property > value)									# type: ignore
+				case _:
+					raise RuntimeError("Incorrent logical relation")
 			effects.append(effect)
 	
+
+	# Effect 2. Fall Assurance ohne statischen Value mit Constraint
+
+
 	return effects
