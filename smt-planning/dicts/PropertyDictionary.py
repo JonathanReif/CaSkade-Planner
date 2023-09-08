@@ -1,5 +1,6 @@
 from typing import Dict, Union
 from z3 import *
+from rdflib import URIRef
 
 class PropertyEntry:
 	def __init__(self, type: str, states: Dict[int, Dict]):
@@ -11,22 +12,26 @@ class PropertyDictionary:
 	def __init__(self):
 		self.properties: Dict[str, PropertyEntry] = dict()
 
-	def addProperty(self, iri:str, type:str):
-		self.properties[iri] = PropertyEntry(type, dict())
+	def addProperty(self, iri:URIRef, type:str):
+		self.properties[str(iri)] = PropertyEntry(type, dict())
 
-	def addPropertyStates(self, iri:str, type:str, event:int, happening: int):
+	def addPropertyStates(self, iri:URIRef, type:str, event:int, happening: int):
 		# self.properties[iri] = PropertyEntry(type, dict())
-		variableName = str(iri) + "_" + str(event) + "_" + str(happening)
-		self.properties[iri].states[event] = {}
+		iriString = str(iri)
+		variableName = iriString + "_" + str(event) + "_" + str(happening)
+		self.properties[iriString].states[event] = {}
 		if type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
-			self.properties[iri].states[event][happening] = Real(variableName)
+			self.properties[iriString].states[event][happening] = Real(variableName)
 		if type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Boolean":
-			self.properties[iri].states[event][happening] = Bool(variableName)
+			self.properties[iriString].states[event][happening] = Bool(variableName)
 		if type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Integer":
-			self.properties[iri].states[event][happening] = Int(variableName)
+			self.properties[iriString].states[event][happening] = Int(variableName)
 
-	def getPropertyVariable(self, iri: str, event:int, happening:int):
-		return self.properties[iri].states[event][happening]
+	def getPropertyVariable(self, iri: URIRef, event:int, happening:int):
+		iriString = str(iri)
+		if (not iriString in self.properties):
+			raise KeyError(f"These is no property with key {iriString}.")
+		return self.properties[iriString].states[event][happening]
 	
 	# def getAllRealVariableStates(self) -> List:
 	# 	filteredEntries =  list(filter(self.isRealVariable, self.properties.values()))

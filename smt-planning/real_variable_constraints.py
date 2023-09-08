@@ -45,17 +45,17 @@ def get_real_variable_constraints(graph: Graph, capability_dict: CapabilityDicti
     constraints = []
     for happening in range(happenings):
         for row in results:
-            currentCap = capability_dict.getCapabilityVariableByIriAndHappening(str(row.cap), happening) # type: ignore
-            prop_start = property_dictionary.getPropertyVariable(str(row.de), 0, happening) # type: ignore
-            prop_end = property_dictionary.getPropertyVariable(str(row.de), 1, happening) # type: ignore
+            currentCap = capability_dict.getCapabilityVariableByIriAndHappening(row.cap, happening) # type: ignore
+            prop_start = property_dictionary.getPropertyVariable(row.de, 0, happening) # type: ignore
+            prop_end = property_dictionary.getPropertyVariable(row.de, 1, happening) # type: ignore
             constraint = Implies(Not(currentCap), prop_end == prop_start)
             constraints.append(constraint)
             
     results = graph.query(query_props_not_effected) 
     for happening in range(happenings):
         for row in results:
-            prop_start = property_dictionary.getPropertyVariable(str(row.de), 0, happening) # type: ignore
-            prop_end = property_dictionary.getPropertyVariable(str(row.de), 1, happening) # type: ignore
+            prop_start = property_dictionary.getPropertyVariable(row.de, 0, happening) # type: ignore
+            prop_end = property_dictionary.getPropertyVariable(row.de, 1, happening) # type: ignore
             constraint = prop_end == prop_start
             constraints.append(constraint)
 

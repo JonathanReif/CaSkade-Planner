@@ -1,7 +1,6 @@
 from rdflib import Graph
 from rdflib.query import ResultRow
 from typing import List
-import operator
 from dicts.CapabilityDictionary import CapabilityDictionary
 from dicts.PropertyDictionary import PropertyDictionary
 from z3 import Implies, BoolRef
@@ -15,7 +14,7 @@ def getCapabilityPreconditions(graph: Graph, capabilityDictionary: CapabilityDic
 	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
 
-	SELECT ?cap ?log ?val ?res_id WHERE {  
+	SELECT ?cap ?de ?log ?val WHERE {  
 		?cap a CaSk:ProvidedCapability;
 			^CSS:requiresCapability ?process.
 		?process VDI3682:hasInput ?input.
@@ -23,6 +22,7 @@ def getCapabilityPreconditions(graph: Graph, capabilityDictionary: CapabilityDic
 		?id DINEN61360:Expression_Goal "Requirement";
 			DINEN61360:Logic_Interpretation ?log;
 			DINEN61360:Value ?val.
+		?de DINEN61360:has_Instance_Description ?id.
 	} 
 	"""
 	
@@ -30,27 +30,27 @@ def getCapabilityPreconditions(graph: Graph, capabilityDictionary: CapabilityDic
 	preconditions = []
 	for happening in range(happenings):
 		for row in results:
-			if(isinstance(row, ResultRow)):
-				currentCap = capabilityDictionary.getCapabilityVariableByIriAndHappening(row.cap, happening)
-				currentProp = propertyDictionary.getPropertyVariable(row.prop, 0, happening)
-				relation = str(row.log)
-				match relation:
-					case "<":
-						precondition = Implies(currentCap, currentProp < relation)
-					case "<=":
-						precondition = Implies(currentCap, currentProp <= relation)
-					case "=":
-						precondition = Implies(currentCap, currentProp == relation)
-					case "=":
-						precondition = Implies(currentCap, currentProp != relation)
-					case ">=":
-						precondition = Implies(currentCap, currentProp >= relation)
-					case ">":
-						precondition = Implies(currentCap, currentProp > relation)
-					case _:
-						raise RuntimeError("Incorrent logical relation")
-				
-				preconditions.append(precondition)
+			currentCap = capabilityDictionary.getCapabilityVariableByIriAndHappening(row.cap, happening)	# type: ignore
+			currentProp = propertyDictionary.getPropertyVariable(row.de, 0, happening)						# type: ignore
+			relation = str(row.log)																			# type: ignore
+			value = str(row.val)																			# type: ignore
+			match relation:
+				case "<":
+					precondition = Implies(currentCap, currentProp < value)
+				case "<=":
+					precondition = Implies(currentCap, currentProp <= value)
+				case "=":
+					precondition = Implies(currentCap, currentProp == value)
+				case "!=":
+					precondition = Implies(currentCap, currentProp != value)
+				case ">=":
+					precondition = Implies(currentCap, currentProp >= value)
+				case ">":
+					precondition = Implies(currentCap, currentProp > value)
+				case _:
+					raise RuntimeError("Incorrent logical relation")
+			
+			preconditions.append(precondition)
 	return []
 
 

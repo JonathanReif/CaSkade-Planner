@@ -1,5 +1,6 @@
 from typing import Dict
 from z3 import Bool, BoolRef
+from rdflib import URIRef
 
 class CapabilityDictionary:
 	def __init__(self):
@@ -10,5 +11,5 @@ class CapabilityDictionary:
 		self.capabilities[iri] = {}
 		self.capabilities[iri][happening] = Bool(variableName)
 
-	def getCapabilityVariableByIriAndHappening(self, iri: str, happening:int) -> BoolRef:
-		return self.capabilities[iri][happening]
+	def getCapabilityVariableByIriAndHappening(self, iri: URIRef, happening:int) -> BoolRef:
+		return self.capabilities[str(iri)][happening]
