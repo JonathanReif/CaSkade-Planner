@@ -59,29 +59,16 @@ def cask_to_smt():
 
 	# ---------------------------- Capability Effect ------------------------------------------------- Aljosha
 
-	# Effect 1. Fall Assurance mit Value ganz normal an Produkt 
+	# Effect 1. Fall Assurance mit statischem Value
 	
-	# Effect 2. Fall Assurance mit Value an Information, musst mit Produkt verknüpft werden.. 
-	
-	# Effect 3. Fall Assurance mit Value an Information, muss mit Ressource verknüpft werden... 
-	
-	# Effect 4. Fall Assurance ohne Value an Produkt, muss durch Cap-Constraint mit Parameter verknüpft werden
-	
-	# Effect 5. Fall Assurance ohne Value an Information, muss durch Cap-Constraint mit Parameter verknüpft werden UND mit Produkt verknüpft werden
-	
-	# Effect 6. Fall Assurance ohne Value an Information, muss durch Cap-Constraint mit Parameter verknüpft werden UND mit Ressource verknüpft werden         
-	# wenn Output - assurance + information ist, dann ist damit Variable von Ressource gemeint!! 
+	# Effect 2. Fall Assurance ohne statischen Value mit Constraint
 
 	results = g.query(sparql_queries.get_sparql_cap_eff_res_prop())
 	for happening in range(happenings):
 		for row in results:
-			for cap in caps:
-				if cap.decl().name() == str(row.cap) + "_" + str(happening):
-					for prop in res_props_eff:
-						if prop.decl().name() == str(row.prop) + "_1_" + str(happening):
-							for cap_prop in cap_props_not_eff:
-								if cap_prop.decl().name() == str(row.id_i) + "_1_" + str(happening):
-									solver.add(Implies(cap, prop == cap_prop))
+			current_capability = capability_dictionary.getCapabilityVariableByIriAndHappening(row.cap, happening)	# type: ignore
+			effect_property = property_dictionary.getPropertyVariable(row.prop, 1, happening)						# type: ignore
+			solver.add(Implies(current_capability, effect_property == row.value))									# type: ignore
 
 	# ---------------- Constraints Capability mutexes (H14) --------------------------------------------------------
 
@@ -91,9 +78,8 @@ def cask_to_smt():
 	# Resource Inits (aus domain)
 	results = g.query(sparql_queries.get_sparql_res_init())
 	for row in results:
-		for prop in properties:
-						if prop.decl().name() == str(row.id) + "_0_0":
-							solver.add(prop == str(row.val))
+		property = property_dictionary.getPropertyVariable(row.id, 0, 0)				# type: ignore
+		solver.add(prop == str(row.val))												# type: ignore
 	
 	# Product Inits (aus Req Cap); gibt es auch Informationen??
 
@@ -102,9 +88,8 @@ def cask_to_smt():
 	# Resource Goal (aus Req Cap); wenn Information  
 	results = g.query(sparql_queries.get_sparql_res_goal())
 	for row in results:
-		for prop in properties:
-			if prop.decl().name() == str(row.res_id) + "_1_" + str(happenings-1):
-				solver.add(prop == str(row.val))
+		property = property_dictionary.getPropertyVariable(row.id, 1, happenings-1)		# type: ignore
+		solver.add(property == str(row.val))											# type: ignore
 
 	# Product Goal (aus Req Cap)
 
