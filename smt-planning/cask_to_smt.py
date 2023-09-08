@@ -81,7 +81,7 @@ def cask_to_smt():
 	# Product Goal (aus Req Cap)
 
 	# ------------------- Proposition support (P5 + P6) ---------------------------- Aljosha
-	proposition_supports = getPropositionSupports(g, property_dictionary, happenings)
+	proposition_supports = getPropositionSupports(property_dictionary, happenings, event_bound)
 	for support in proposition_supports:
 		solver.add(support)
 
