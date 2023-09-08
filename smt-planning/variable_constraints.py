@@ -1,10 +1,11 @@
 from rdflib import Graph
 from z3 import Implies, Not
+from typing import List
 
 from dicts.CapabilityDictionary import CapabilityDictionary
 from dicts.PropertyDictionary import PropertyDictionary
 
-def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary, property_dictionary: PropertyDictionary, happenings: int, event_bound: int):
+def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary, property_dictionary: PropertyDictionary, happenings: int, event_bound: int) -> List:
     
     # get all properties influenced by capability effect
     query_props_effected = """
