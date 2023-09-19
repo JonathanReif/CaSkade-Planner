@@ -3149,7 +3149,8 @@ math:eq rdf:type owl:NamedIndividual .
                                                        DINEN61360:Instance_Description ,
                                                        DINEN61360:Real ;
                                               DINEN61360:Expression_Goal "Assurance" ;
-                                              DINEN61360:Logic_Interpretation "=" .
+                                              DINEN61360:Logic_Interpretation "=" ;
+											  math:name "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Assurance_latitude71_ID".
 
 
 ###  http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Assurance_longitude70
@@ -3163,7 +3164,8 @@ math:eq rdf:type owl:NamedIndividual .
                                                         DINEN61360:Instance_Description ,
                                                         DINEN61360:Real ;
                                                DINEN61360:Expression_Goal "Assurance" ;
-                                               DINEN61360:Logic_Interpretation "=" .
+                                               DINEN61360:Logic_Interpretation "=" ;
+											   math:name "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Assurance_longitude70_ID" .
 
 
 ###  http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Required_latitude71
@@ -3176,7 +3178,8 @@ math:eq rdf:type owl:NamedIndividual .
 :Rover7_cap_driveTo19_Required_latitude71_ID rdf:type owl:NamedIndividual ,
                                                       DINEN61360:Instance_Description ,
                                                       DINEN61360:Real ;
-                                             DINEN61360:Logic_Interpretation "=" .
+                                             DINEN61360:Logic_Interpretation "=";
+											 math:name "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Required_latitude71_ID".
 
 
 ###  http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Required_longitude70
@@ -3189,7 +3192,8 @@ math:eq rdf:type owl:NamedIndividual .
 :Rover7_cap_driveTo19_Required_longitude70_ID rdf:type owl:NamedIndividual ,
                                                        DINEN61360:Instance_Description ,
                                                        DINEN61360:Real ;
-                                              DINEN61360:Logic_Interpretation "=" .
+                                              DINEN61360:Logic_Interpretation "=" ;
+											  math:name "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Required_longitude70_ID".
 
 
 ###  http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Required_velocity
@@ -3208,29 +3212,25 @@ math:eq rdf:type owl:NamedIndividual .
 
 
 ###  http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_constraint_latitude
-:Rover7_cap_driveTo19_constraint_latitude rdf:type owl:NamedIndividual ,
-                                                   math:Application ;
-                                          math:arguments :Rover7_cap_driveTo19_constraint_latitude_arglist ;
-                                          math:operator math:eq ;
-                                          CSS:references :Rover7_cap_driveTo19_Assurance_latitude71_ID ,
-                                                         :Rover7_cap_driveTo19_Required_latitude71_ID .
-
-
-###  http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_constraint_latitude_arglist
-:Rover7_cap_driveTo19_constraint_latitude_arglist rdf:type owl:NamedIndividual .
+:Rover7_cap_driveTo19_constraint_latitude rdf:type owl:NamedIndividual,	math:Application, CSS:CapabilityConstraint ;
+	math:arguments ( 
+		:Rover7_cap_driveTo19_Assurance_latitude71_ID
+		:Rover7_cap_driveTo19_Required_latitude71_ID
+	);
+	math:operator math:eq ;
+	CSS:references :Rover7_cap_driveTo19_Assurance_latitude71_ID ,
+					:Rover7_cap_driveTo19_Required_latitude71_ID .
 
 
 ###  http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_constraint_longitude
-:Rover7_cap_driveTo19_constraint_longitude rdf:type owl:NamedIndividual ,
-                                                    math:Application ;
-                                           math:arguments :Rover7_cap_driveTo19_constraint_longitude_arglist ;
-                                           math:operator math:eq ;
-                                           CSS:references :Rover7_cap_driveTo19_Assurance_longitude70_ID ,
-                                                          :Rover7_cap_driveTo19_Required_longitude70_ID .
-
-
-###  http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_constraint_longitude_arglist
-:Rover7_cap_driveTo19_constraint_longitude_arglist rdf:type owl:NamedIndividual .
+:Rover7_cap_driveTo19_constraint_longitude rdf:type owl:NamedIndividual , math:Application, math:CapabilityConstraint ;
+	math:arguments (
+		:Rover7_cap_driveTo19_Assurance_longitude70_ID
+		:Rover7_cap_driveTo19_Required_longitude70_ID
+	);
+	math:operator math:eq ;
+	CSS:references :Rover7_cap_driveTo19_Assurance_longitude70_ID ,
+					:Rover7_cap_driveTo19_Required_longitude70_ID .
 
 
 ###  http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_latitude_DE
