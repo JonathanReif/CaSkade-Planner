@@ -159,18 +159,18 @@ math:eq rdf:type owl:NamedIndividual .
 		:Rover7_cap_driveTo19_Assurance_latitude71_ID
 		:Rover7_cap_driveTo19_Required_latitude71_ID
 	);
-	math:operator math:eq ;
+	math:operator <http://www.openmath.org/cd/relation1#eq> ;
 	CSS:references :Rover7_cap_driveTo19_Assurance_latitude71_ID ,
 					:Rover7_cap_driveTo19_Required_latitude71_ID .
 
 
 ###  http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_constraint_longitude
-:Rover7_cap_driveTo19_constraint_longitude rdf:type owl:NamedIndividual , math:Application, math:CapabilityConstraint ;
+:Rover7_cap_driveTo19_constraint_longitude rdf:type owl:NamedIndividual , math:Application, CSS:CapabilityConstraint ;
 	math:arguments (
 		:Rover7_cap_driveTo19_Assurance_longitude70_ID
 		:Rover7_cap_driveTo19_Required_longitude70_ID
 	);
-	math:operator math:eq ;
+	math:operator <http://www.openmath.org/cd/relation1#eq>;
 	CSS:references :Rover7_cap_driveTo19_Assurance_longitude70_ID ,
 					:Rover7_cap_driveTo19_Required_longitude70_ID .
 
