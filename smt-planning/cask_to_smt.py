@@ -9,6 +9,7 @@ from capability_effects import getCapabilityEffects
 from capability_constraints import getCapabilityConstraints
 from bool_variable_support import getPropositionSupports
 from variable_constraints import get_variable_constraints
+from property_links import get_related_properties
 from init import get_init
 from goal import get_goal
 from real_variable_contin_change import get_real_variable_continuous_changes
@@ -88,6 +89,11 @@ def cask_to_smt():
 	real_variable_cont_changes = get_real_variable_continuous_changes(property_dictionary, happenings, event_bound)
 	for real_variable_cont_change in real_variable_cont_changes:
 		solver.add(real_variable_cont_change)
+
+	# ----------------- Cross-connection of related properties (new) -----------------
+	property_cross_relations = get_related_properties(g, property_dictionary, happenings, event_bound)
+	for cross_relation in property_cross_relations:
+		solver.add(cross_relation)
 
 	# smtlib code  
 	print(solver.to_smt2())
