@@ -3126,12 +3126,14 @@ CSS:StateMachine rdf:type owl:Class .
 ###  http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19
 :Rover7_cap_driveTo19 rdf:type owl:NamedIndividual ,
                                CaSk:ProvidedCapability ;
-                      VDI3682:hasInput :Rover7_cap_driveTo19_Required_latitude71 ,
+					CSS:isRestrictedBy :Rover7_cap_driveTo19_constraint_latitude,
+									:Rover7_cap_driveTo19_constraint_longitude;
+					VDI3682:hasInput :Rover7_cap_driveTo19_Required_latitude71 ,
                                        :Rover7_cap_driveTo19_Required_longitude70 ,
                                        :Rover7_cap_driveTo19_Required_velocity ;
-                      VDI3682:hasOutput :Rover7_cap_driveTo19_Assurance_latitude71 ,
+					VDI3682:hasOutput :Rover7_cap_driveTo19_Assurance_latitude71 ,
                                         :Rover7_cap_driveTo19_Assurance_longitude70 ;
-                      CSS:requiresCapability :Rover7_cap_driveTo19 .
+					CSS:requiresCapability :Rover7_cap_driveTo19 .
 
 
 ###  http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Assurance_latitude71
