@@ -1,4 +1,4 @@
-class MathJsSymbolInformation:
+class MathSymbolInformation:
 	symbol: str
 	arity = 1 | 2
 

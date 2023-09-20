@@ -1,4 +1,4 @@
-from MathJsSymbolInformation import MathJsSymbolInformation
+from openmath.math_symbol_information import MathSymbolInformation
 
 class OperatorDictionary:
 	mathJsToOpenMathMapping = {
@@ -25,24 +25,24 @@ class OperatorDictionary:
 
 	openMathToMathJsMapping = {
 		# Relations
-		"http://www.openmath.org/cd/relation1#eq": MathJsSymbolInformation("=", 2),
-		"http://www.openmath.org/cd/relation1#lt": MathJsSymbolInformation("<",2),
-		"http://www.openmath.org/cd/relation1#gt": MathJsSymbolInformation(">",2),
-		"http://www.openmath.org/cd/relation1#neq": MathJsSymbolInformation("!=", 2),
-		"http://www.openmath.org/cd/relation1#leq": MathJsSymbolInformation("<=",2),
-		"http://www.openmath.org/cd/relation1#geq": MathJsSymbolInformation(">=", 2),
+		"http://www.openmath.org/cd/relation1#eq": MathSymbolInformation("=", 2),
+		"http://www.openmath.org/cd/relation1#lt": MathSymbolInformation("<",2),
+		"http://www.openmath.org/cd/relation1#gt": MathSymbolInformation(">",2),
+		"http://www.openmath.org/cd/relation1#neq": MathSymbolInformation("!=", 2),
+		"http://www.openmath.org/cd/relation1#leq": MathSymbolInformation("<=",2),
+		"http://www.openmath.org/cd/relation1#geq": MathSymbolInformation(">=", 2),
 		# Arithmetic operators
-		"http://www.openmath.org/cd/arith1#plus": MathJsSymbolInformation("+", 2),
-		"http://www.openmath.org/cd/arith1#minus": MathJsSymbolInformation("-", 2),
-		"http://www.openmath.org/cd/arith1#times": MathJsSymbolInformation("*", 2),
-		"http://www.openmath.org/cd/arith1#divide": MathJsSymbolInformation("/", 2),
-		"http://www.openmath.org/cd/arith1#root": MathJsSymbolInformation("sqrt", 1),
-		"http://www.openmath.org/cd/arith1#power": MathJsSymbolInformation("pow", 1),
-		"http://www.openmath.org/cd/arith1#abs": MathJsSymbolInformation("abs", 1),
+		"http://www.openmath.org/cd/arith1#plus": MathSymbolInformation("+", 2),
+		"http://www.openmath.org/cd/arith1#minus": MathSymbolInformation("-", 2),
+		"http://www.openmath.org/cd/arith1#times": MathSymbolInformation("*", 2),
+		"http://www.openmath.org/cd/arith1#divide": MathSymbolInformation("/", 2),
+		"http://www.openmath.org/cd/arith1#root": MathSymbolInformation("sqrt", 1),
+		"http://www.openmath.org/cd/arith1#power": MathSymbolInformation("pow", 1),
+		"http://www.openmath.org/cd/arith1#abs": MathSymbolInformation("abs", 1),
 		# Transcendental functions
-		"http://www.openmath.org/cd/transc1#sin": MathJsSymbolInformation("sin", 1),
-		"http://www.openmath.org/cd/transc1#cos": MathJsSymbolInformation("cos", 1),
-		"http://www.openmath.org/cd/transc1#tan": MathJsSymbolInformation("tan", 1),
+		"http://www.openmath.org/cd/transc1#sin": MathSymbolInformation("sin", 1),
+		"http://www.openmath.org/cd/transc1#cos": MathSymbolInformation("cos", 1),
+		"http://www.openmath.org/cd/transc1#tan": MathSymbolInformation("tan", 1),
 	}
 
 	@staticmethod
@@ -53,7 +53,7 @@ class OperatorDictionary:
 			return "http://www.openmath.org/cd/error#unhandled_symbol"
 
 	@staticmethod
-	def getMathJsSymbol(openMathSymbol: str)-> MathJsSymbolInformation:
+	def getMathJsSymbol(openMathSymbol: str)-> MathSymbolInformation:
 		try:
 			return OperatorDictionary.openMathToMathJsMapping[openMathSymbol]
 		except:
