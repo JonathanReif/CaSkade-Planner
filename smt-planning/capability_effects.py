@@ -2,7 +2,9 @@ from rdflib import Graph
 from dicts.CapabilityDictionary import CapabilityDictionary
 from dicts.PropertyDictionary import PropertyDictionary
 from typing import List
+from openmath.parse_openmath import from_open_math_in_graph
 from z3 import Implies
+
 
 def getCapabilityEffects(graph: Graph, capability_dictionary: CapabilityDictionary, property_dictionary: PropertyDictionary, happenings: int, event_bound: int) -> List:
 	
@@ -48,11 +50,7 @@ def getCapabilityEffects(graph: Graph, capability_dictionary: CapabilityDictiona
 				case ">":
 					effect = Implies(current_capability, effect_property > value)									# type: ignore
 				case _:
-					raise RuntimeError("Incorrent logical relation")
+					raise RuntimeError("Incorrect logical relation")
 			effects.append(effect)
 	
-
-	# Effect 2. Fall Assurance ohne statischen Value mit Constraint
-
-
 	return effects

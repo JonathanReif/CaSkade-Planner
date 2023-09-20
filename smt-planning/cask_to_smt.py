@@ -6,6 +6,7 @@ from z3 import Solver, sat
 from variable_declaration import getProvidedCapabilities, getAllProperties
 from capability_preconditions import getCapabilityPreconditions
 from capability_effects import getCapabilityEffects
+from capability_constraints import getCapabilityConstraints
 from bool_variable_support import getPropositionSupports
 from variable_constraints import get_variable_constraints
 from init import get_init
@@ -41,17 +42,24 @@ def cask_to_smt():
 	for constraint in variable_constraints:
 		solver.add(constraint)	
 
-	# ---------------- Constraints Capability --------------------------------------------------------
 
 	# ----------------- Capability Precondition ------------------------------------------------------
 	preconditions = getCapabilityPreconditions(g, capability_dictionary, property_dictionary, happenings, event_bound)
 	for precondition in preconditions:
 		solver.add(precondition)
 
-	# ---------------------------- Capability Effect -------------------------------------------------
+	# --------------------------------------- Capability Effect ---------------------------------------
 	effects = getCapabilityEffects(g, capability_dictionary, property_dictionary, happenings, event_bound)
 	for effect in effects:
 		solver.add(effect)
+
+	
+	current_solver_string = solver.to_smt2()
+	constraints = getCapabilityConstraints(g, capability_dictionary, property_dictionary, happenings, event_bound)
+	for constraint in constraints:
+		current_solver_string += f"\n{constraint}" 
+
+	solver.from_string(current_solver_string)
 
 	# ---------------- Constraints Capability mutexes (H14) -----------------------------------------
 
