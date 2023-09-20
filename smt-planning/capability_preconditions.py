@@ -48,7 +48,7 @@ def getCapabilityPreconditions(graph: Graph, capabilityDictionary: CapabilityDic
 				case ">":
 					precondition = Implies(currentCap, currentProp > value)
 				case _:
-					raise RuntimeError("Incorrent logical relation")
+					raise RuntimeError("Incorrect logical relation")
 			
 			preconditions.append(precondition)
 	return preconditions
