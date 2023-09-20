@@ -42,13 +42,13 @@ def getCapabilityConstraints(graph: Graph, capability_dictionary: CapabilityDict
 	for happening in range(happenings):
 		for constraint_info in input_constraints:
 			current_capability = capability_dictionary.getCapabilityVariableByIriAndHappening(constraint_info.cap, happening)	# type: ignore
-			infix_constraint = from_open_math_in_graph(graph, constraint_info.constraintIri, happening, 0)									# constraint: sin(x) = y	
+			infix_constraint = from_open_math_in_graph(graph, constraint_info.constraintIri, happening, 0)							
 			prefix_expression = infix_to_prefix(infix_constraint)
 			assertion = f"(assert (=> {(current_capability.sexpr())} ({prefix_expression})))"
 			constraint_assertions.append(assertion)
 		for constraint_info in output_constraints:
 			current_capability = capability_dictionary.getCapabilityVariableByIriAndHappening(constraint_info.cap, happening)	# type: ignore
-			infix_constraint = from_open_math_in_graph(graph, constraint_info.constraintIri, happening, 1)									# constraint: sin(x) = y	
+			infix_constraint = from_open_math_in_graph(graph, constraint_info.constraintIri, happening, 1)							
 			prefix_expression = infix_to_prefix(infix_constraint)
 			assertion = f"(assert (=> {(current_capability.sexpr())} ({prefix_expression})))"
 			constraint_assertions.append(assertion)

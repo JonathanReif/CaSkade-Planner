@@ -16,7 +16,7 @@ def getAllProperties(graph: Graph, happenings:int, eventBound:int) -> PropertyDi
 	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 	SELECT DISTINCT ?de ?dataType WHERE { 
 		?cap a CaSk:ProvidedCapability;
-		^CSS:requiresCapability ?process.
+			^CSS:requiresCapability ?process.
 		?process VDI3682:hasInput|VDI3682:hasOutput ?inout.
 		?inout VDI3682:isCharacterizedBy ?id.
 		?de DINEN61360:has_Instance_Description ?id.
