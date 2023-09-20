@@ -32,11 +32,11 @@ def getCapabilityConstraints(graph: Graph, capability_dictionary: CapabilityDict
 	output_constraints: List[ConstraintInfo] = []
 	for row in results:
 		# As soon as an outputArgument is present, the constraint is considered an output constraint
-		if row.outputArgument:
-			output_constraints.append(ConstraintInfo(str(row.cap), str(row.constraint)))
+		if row.outputArgument:																# type: ignore
+			output_constraints.append(ConstraintInfo(str(row.cap), str(row.constraint)))	# type: ignore
 		# If a row only has an inputArgument, the constraint is considered an input constraint
-		if (row.inputArgument and not row.outputArgument):
-			input_constraints.append(ConstraintInfo(str(row.cap), str(row.constraint)))
+		if (row.inputArgument and not row.outputArgument):									# type: ignore 
+			input_constraints.append(ConstraintInfo(str(row.cap), str(row.constraint)))		# type: ignore
 
 	constraint_assertions = []
 	for happening in range(happenings):

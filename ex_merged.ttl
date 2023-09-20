@@ -3168,8 +3168,13 @@ CSS:StateMachine rdf:type owl:Class .
 ###  http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Required_latitude71
 :Rover7_cap_driveTo19_Required_latitude71 rdf:type owl:NamedIndividual ,
                                                    VDI3682:Information ;
+                                          DINEN61360:has_Data_Element :Rover7_cap_driveTo19_Required_latitude71_DE ;  
                                           VDI3682:isCharacterizedBy :Rover7_cap_driveTo19_Required_latitude71_ID .
 
+### http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Required_latitude71_DE
+:Rover7_cap_driveTo19_Required_latitude71_DE rdf:type owl:NamedIndividual , DINEN61360:Data_Element ; 
+                                        DINEN61360:has_Instance_Description :Rover7_cap_driveTo19_Required_latitude71_ID ; 
+                                        DINEN61360:has_Type_Description :latitude_TD . 
 
 ###  http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Required_latitude71_ID
 :Rover7_cap_driveTo19_Required_latitude71_ID rdf:type owl:NamedIndividual , DINEN61360:Instance_Description , DINEN61360:Real , math:Variable ;
@@ -3180,8 +3185,13 @@ CSS:StateMachine rdf:type owl:Class .
 ###  http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Required_longitude70
 :Rover7_cap_driveTo19_Required_longitude70 rdf:type owl:NamedIndividual ,
                                                     VDI3682:Information ;
+                                           DINEN61360:has_Data_Element :Rover7_cap_driveTo19_Required_longitude70_DE ;  
                                            VDI3682:isCharacterizedBy :Rover7_cap_driveTo19_Required_longitude70_ID .
 
+### http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Required_longitude70_DE
+:Rover7_cap_driveTo19_Required_longitude70_DE rdf:type owl:NamedIndividual , DINEN61360:Data_Element ; 
+        DINEN61360:has_Instance_Description :Rover7_cap_driveTo19_Required_longitude70_ID ; 
+        DINEN61360:has_Type_Description :longitude_TD . 
 
 ###  http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7_cap_driveTo19_Required_longitude70_ID
 :Rover7_cap_driveTo19_Required_longitude70_ID rdf:type owl:NamedIndividual ,
@@ -3234,7 +3244,6 @@ CSS:StateMachine rdf:type owl:Class .
                              DINEN61360:Data_Element ;
                     DINEN61360:has_Instance_Description :Req_transport_latitude_ID ,
                                                         :Rover7_cap_driveTo19_Assurance_latitude71_ID ,
-                                                        :Rover7_cap_driveTo19_Required_latitude71_ID ,
                                                         :Rover7_latitude_ID ;
                     DINEN61360:has_Type_Description :latitude_TD .
 
@@ -3253,7 +3262,6 @@ CSS:StateMachine rdf:type owl:Class .
                               DINEN61360:Data_Element ;
                      DINEN61360:has_Instance_Description :Req_transport_longitude_ID ,
                                                          :Rover7_cap_driveTo19_Assurance_longitude70_ID ,
-                                                         :Rover7_cap_driveTo19_Required_longitude70_ID ,
                                                          :Rover7_longitude_ID ;
                      DINEN61360:has_Type_Description :longitude_TD .
 

@@ -20,7 +20,7 @@ class PropertyDictionary:
 	def addPropertyEvent(self, iri:URIRef, type:str, happening: int, event: int):
 		# self.properties[iri] = PropertyEntry(type, dict())
 		iriString = str(iri)
-		variableName = iriString + "_" + str(event) + "_" + str(happening)
+		variableName = iriString + "_" + str(happening) + "_" + str(event)
 		# self.properties[iriString].states[event] = {}
 		if type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
 			self.properties[iriString].states[happening][event] = Real(variableName)
