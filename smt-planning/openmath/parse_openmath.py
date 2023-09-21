@@ -39,7 +39,8 @@ def from_open_math_in_graph(store: Graph, rootApplicationIri: str, happening: in
 	"""
 	
 	# Fire query and get results as an array
-	queryResults = store.query(queryString)
+	queryResults = QueryCache.query(store, queryString)
+	
 	# Get root application to start the whole recursive parsing procedure
 	rootApplication = getRootApplication(queryResults.bindings, rootApplicationIri)
 	string = getArgumentsOfApplication(rootApplication, queryResults.bindings, happening, event)
@@ -141,3 +142,16 @@ def getArgumentsOfApplication(parentApplication: Mapping[Variable, Identifier], 
 		string = createExpression(operator, argumentNames, happening, event)
 	
 	return string
+
+
+
+
+class QueryCache:
+	query_result = None
+
+	@staticmethod
+	def query(store: Graph, query_string: str):
+		if(QueryCache.query_result is None):
+			QueryCache.query_result = store.query(query_string)			
+
+		return QueryCache.query_result
