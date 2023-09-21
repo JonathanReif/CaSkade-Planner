@@ -51,19 +51,28 @@ class PropertyPair:
 		self.property_b = property_b
 
 
+def is_existing(pair: PropertyPair, other_pair: PropertyPair) -> bool:
+	a_same_a = str(pair.property_a) == str(other_pair.property_a)
+	b_same_b = str(pair.property_b) == str(other_pair.property_b)
+	a_same_b = str(pair.property_a) == str(other_pair.property_b)
+	b_same_a = str(pair.property_b) == str(other_pair.property_a)
+	return (a_same_a and b_same_b) or (a_same_b and b_same_a)
+
 def find_related_properties(result_bindings: MutableSequence[Mapping[Variable, Identifier]]) -> List[PropertyPair]: 
 	# Finds a related property, i.e. a property with a different data_element that is still implicitly connected and thus must be linked in SMT
 	# Requirement for a related property:
 	# Must belong to different capability, must have same type description and either both properties dont have a product subtype or both have the same subtype
 	# TODO: This algorithm currently finds every relation twice (A -> B, B -> A). Should be sorted out
-	related_properties: List[PropertyPair] = []
+	related_property_pairs: List[PropertyPair] = []
 	for binding in result_bindings:
 		related_bindings = list(filter(lambda x: is_related(binding, x), result_bindings))
 		for related_binding in related_bindings:
-			pair = PropertyPair(binding.de, related_binding.de)
-			related_properties.append(pair)
+			pair = PropertyPair(binding.get("de"), related_binding.get("de"))
+			existing_pair = next(filter(lambda x: is_existing(pair, x), related_property_pairs), None)
+			if not existing_pair:
+				related_property_pairs.append(pair)
 
-	return related_properties
+	return related_property_pairs
 
 def is_related(b1: Mapping[Variable, Identifier], binding: Mapping[Variable, Identifier]) -> bool:
 	return different_capability(b1.get("cap"), binding) and same_type_description(b1.get("td"), binding) and subtype_matches(b1.get("in_out_type"), binding)
@@ -75,5 +84,5 @@ def same_type_description(type_description: Identifier, binding: Mapping[Variabl
 	return (str(type_description) == str(binding.get("td")))
 
 def subtype_matches(subtype: Identifier, binding: Mapping[Variable, Identifier]) -> bool:
-	return (str(subtype) == binding.get("in_out_type"))
+	return (str(subtype) == str(binding.get("in_out_type")))
 
