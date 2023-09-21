@@ -18,6 +18,9 @@ def from_open_math_in_graph(store: Graph, rootApplicationIri: str, happening: in
 	PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 	PREFIX OM: <http://openmath.org/vocab/math#>
 	PREFIX ont: <http://example.org/ontology#>
+	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
+	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
 	
 	SELECT ?application (count(?argumentList)-1 as ?position) ?operator ?argName ?argType ?arg WHERE {
 		?application a OM:Application, CSS:CapabilityConstraint.

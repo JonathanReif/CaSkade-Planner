@@ -15,8 +15,9 @@ def get_related_properties(graph: Graph, property_dictionary: PropertyDictionary
 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
 	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 	SELECT ?cap ?de ?td ?inOutType WHERE {
-		?cap a CaSk:ProvidedCapability;
+		?cap a ?capType;
 			^CSS:requiresCapability ?process.
+		values ?capType { CaSk:ProvidedCapability CaSk:RequiredCapability }.
 		?process VDI3682:hasInput|VDI3682:hasOutput ?inOut.
 		?de a DINEN61360:Data_Element.
 		?de DINEN61360:has_Type_Description ?td;
