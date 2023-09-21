@@ -21,7 +21,7 @@ def getCapabilityConstraints(graph: Graph, capability_dictionary: CapabilityDict
 			?process VDI3682:hasInput/VDI3682:isCharacterizedBy ?inputArgument.
 		}
 		OPTIONAL {
-		?constraint OM:arguments/rdf:rest*/rdf:first* ?outputArgument.
+			?constraint OM:arguments/rdf:rest*/rdf:first* ?outputArgument.
 			?process VDI3682:hasOutput/VDI3682:isCharacterizedBy ?outputArgument.
 		}
 	}
