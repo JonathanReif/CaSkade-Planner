@@ -1,5 +1,5 @@
 from rdflib import Graph
-from z3 import Implies, Not
+from z3 import Implies, Not, Or
 from typing import List
 
 from dicts.CapabilityDictionary import CapabilityDictionary
@@ -52,8 +52,8 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
                 constraint = Implies(Not(currentCap), prop_end == prop_start)
                 constraints.append(constraint)
             elif prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Boolean":
-                constraint_1 = Implies(currentCap, prop_end == prop_start)
-                constraint_2 = Implies(Not(currentCap), Not(prop_end) == Not(prop_start))
+                constraint_1 = Implies(prop_end, Or(prop_start, currentCap))
+                constraint_2 = Implies(Not(prop_end), Or(Not(prop_start), Not(currentCap)))
                 constraints.append(constraint_1)
                 constraints.append(constraint_2)
             
