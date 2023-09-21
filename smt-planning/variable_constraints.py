@@ -51,7 +51,7 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
             if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
                 constraint = Implies(Not(currentCap), prop_end == prop_start)
                 constraints.append(constraint)
-            if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Boolean":
+            elif prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Boolean":
                 constraint_1 = Implies(currentCap, prop_end == prop_start)
                 constraint_2 = Implies(Not(currentCap), Not(prop_end) == Not(prop_start))
                 constraints.append(constraint_1)
@@ -66,7 +66,7 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
             if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
                 constraint = prop_end == prop_start
                 constraints.append(constraint)
-            if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Boolean":
+            elif prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Boolean":
                 constraint_1 = Implies(prop_end, prop_start)
                 constraint_2 = Implies(Not(prop_end), Not(prop_start))
                 constraints.append(constraint_1)

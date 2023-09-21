@@ -3,7 +3,7 @@ from rdflib.query import ResultRow
 from typing import List
 from dicts.CapabilityDictionary import CapabilityDictionary
 from dicts.PropertyDictionary import PropertyDictionary
-from z3 import Implies, BoolRef
+from z3 import Implies, BoolRef, Not
 
 def getCapabilityPreconditions(graph: Graph, capabilityDictionary: CapabilityDictionary, propertyDictionary: PropertyDictionary, happenings: int, eventBound: int) -> List[BoolRef]:
 
@@ -34,23 +34,37 @@ def getCapabilityPreconditions(graph: Graph, capabilityDictionary: CapabilityDic
 			currentProp = propertyDictionary.getPropertyVariable(row.de, happening, 0)						# type: ignore
 			relation = str(row.log)																			# type: ignore
 			value = str(row.val)																			# type: ignore
-			match relation:
-				case "<":
-					precondition = Implies(currentCap, currentProp < value)
-				case "<=":
-					precondition = Implies(currentCap, currentProp <= value)
-				case "=":
-					precondition = Implies(currentCap, currentProp == value)
-				case "!=":
-					precondition = Implies(currentCap, currentProp != value)
-				case ">=":
-					precondition = Implies(currentCap, currentProp >= value)
-				case ">":
-					precondition = Implies(currentCap, currentProp > value)
-				case _:
-					raise RuntimeError("Incorrect logical relation")
-			
-			preconditions.append(precondition)
+
+			prop_type = propertyDictionary.getPropertyType(row.de) # type: ignore
+			if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
+
+				match relation:
+					case "<":
+						precondition = Implies(currentCap, currentProp < value)
+					case "<=":
+						precondition = Implies(currentCap, currentProp <= value)
+					case "=":
+						precondition = Implies(currentCap, currentProp == value)
+					case "!=":
+						precondition = Implies(currentCap, currentProp != value)
+					case ">=":
+						precondition = Implies(currentCap, currentProp >= value)
+					case ">":
+						precondition = Implies(currentCap, currentProp > value)
+					case _:
+						raise RuntimeError("Incorrect logical relation")
+				
+				preconditions.append(precondition)
+			elif prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Boolean":
+				match value: 
+					case 'true':
+						precondition = Implies(currentCap, currentProp)
+					case 'false':
+						precondition = Implies(currentCap, Not(currentProp))
+					case _:
+						raise RuntimeError("Incorrect value for Boolean")
+					
+				preconditions.append(precondition)
 	return preconditions
 
 
