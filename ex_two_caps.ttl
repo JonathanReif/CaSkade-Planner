@@ -2,8 +2,8 @@
 @prefix ns1: <http://openmath.org/vocab/math#> .
 @prefix ns2: <http://openmath.org/vocab/math/meta#> .
 @prefix ns3: <http://www.hsu-ifa.de/ontologies/DINEN61360#> .
-@prefix ns4: <http://www.w3id.org/hsu-aut/VDI3682#> .
-@prefix ns5: <http://www.w3id.org/hsu-aut/css#> .
+@prefix ns4: <http://www.w3id.org/hsu-aut/css#> .
+@prefix ns5: <http://www.w3id.org/hsu-aut/VDI3682#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -35,10 +35,10 @@ ns2:description a owl:DatatypeProperty .
         "2.5.2",
         "4.0.1" .
 
-:Rover7 a ns5:Resource ;
+:Rover7 a ns4:Resource ;
     ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/latitude_de>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/longitude_de> ;
-    ns5:providesCapability <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19>,
+    ns4:providesCapability <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34> .
 
 ns3:Boolean_Operator a owl:DatatypeProperty,
@@ -5215,7 +5215,7 @@ grad(F) = (\\partial(F)/\\partial(x_1), ... ,\\partial(F)/partial(x_n))""" ;
             ns1:operator <http://www.openmath.org/cd/relation1#eq> ] ;
     rdfs:isDefinedBy <http://www.openmath.org/cd/weylalgebra1> .
 
-ns4:dependency a owl:ObjectProperty ;
+ns5:dependency a owl:ObjectProperty ;
     rdfs:comment """This ObjectProperty is not explicitly contained within the VDI 3682. It is used to describe dependencies of In- and Outputs. Due to open world assumption (OWA) the case that more than one In- or Outputs occur does always mean an alternative Input. For the case, that In- and Outputs are depending on each other, the ObjectProperty Dependency can be used. It can be interpreted as an "AND" constructor between In- and/or Outputs of a process.
 
 E.g.: A process has two Inputs. If they are alternatives, then this fact must not  be explcitly modelled. If both Inputs have to go into the process, then the "Dependency" ObjectProperty is assigned between them.
@@ -5223,60 +5223,60 @@ E.g.: A process has two Inputs. If they are alternatives, then this fact must no
 More complex example: Input A and B have to go into a process, while Input C and D are alternatives for A and B. The Inputs have to go as groups in the process. This equals: A AND B OR C AND D. The Dependency Operator is used between A and B as well as between C and D.
 
 Furthermore, the Operator can be used to express dependencies between In- and Outputs. If A and B are alternative Inputs that result in the Ouputs C for A or D for B then this equals: A AND C or D AND B. The ObjectProperty can be used between both, In- and/or Outputs."""@en ;
-    rdfs:domain ns4:State ;
-    rdfs:range ns4:State .
+    rdfs:domain ns5:State ;
+    rdfs:range ns5:State .
 
-ns4:hasAlternativeInput a owl:ObjectProperty ;
-    rdfs:subPropertyOf ns4:hasInput .
+ns5:hasAlternativeInput a owl:ObjectProperty ;
+    rdfs:subPropertyOf ns5:hasInput .
 
-ns4:hasAlternativeOutput a owl:ObjectProperty ;
-    rdfs:subPropertyOf ns4:hasOutput .
+ns5:hasAlternativeOutput a owl:ObjectProperty ;
+    rdfs:subPropertyOf ns5:hasOutput .
 
-ns4:hasParallelInput a owl:ObjectProperty ;
-    rdfs:subPropertyOf ns4:hasInput .
+ns5:hasParallelInput a owl:ObjectProperty ;
+    rdfs:subPropertyOf ns5:hasInput .
 
-ns4:hasParallelOutput a owl:ObjectProperty ;
-    rdfs:subPropertyOf ns4:hasOutput .
+ns5:hasParallelOutput a owl:ObjectProperty ;
+    rdfs:subPropertyOf ns5:hasOutput .
 
-ns4:hasPredecessor a owl:ObjectProperty,
+ns5:hasPredecessor a owl:ObjectProperty,
         owl:TransitiveProperty ;
     rdfs:comment "an object property that is used to infer a predecessing relationship between entities" ;
-    rdfs:domain ns4:ProcessOperator ;
-    rdfs:range ns4:ProcessOperator ;
-    owl:inverseOf ns4:hasSuccessor ;
-    owl:propertyChainAxiom ( ns4:hasInput [ owl:inverseOf ns4:hasOutput ] ) .
+    rdfs:domain ns5:ProcessOperator ;
+    rdfs:range ns5:ProcessOperator ;
+    owl:inverseOf ns5:hasSuccessor ;
+    owl:propertyChainAxiom ( ns5:hasInput [ owl:inverseOf ns5:hasOutput ] ) .
 
-ns4:hasSubProcess a owl:ObjectProperty,
+ns5:hasSubProcess a owl:ObjectProperty,
         owl:TransitiveProperty ;
     rdfs:comment "Is used to find the complete decomposed process of a process operatore. Note: This is syntactic sugar as a subprocess can be found by following \"isComposedOf\" and the inverse of \"consistsOf\"." ;
     rdfs:domain [ a owl:Class ;
-            owl:unionOf ( ns4:Process ns4:ProcessOperator ) ] ;
-    rdfs:range ns4:Process ;
-    owl:propertyChainAxiom ( ns4:isComposedOf [ owl:inverseOf ns4:consistsOf ] ) .
+            owl:unionOf ( ns5:Process ns5:ProcessOperator ) ] ;
+    rdfs:range ns5:Process ;
+    owl:propertyChainAxiom ( ns5:isComposedOf [ owl:inverseOf ns5:consistsOf ] ) .
 
-ns4:hasUpperProcess a owl:ObjectProperty ;
+ns5:hasUpperProcess a owl:ObjectProperty ;
     rdfs:comment "Is used to find the parent (upper) process of a lower level process operator. Note: This is syntactic sugar as a parent process can be found by following the inverse of \"isComposedOf\" and the inverse of \"consistsOf\"." ;
     rdfs:domain [ a owl:Class ;
-            owl:unionOf ( ns4:Process ns4:ProcessOperator ) ] ;
-    rdfs:range ns4:Process ;
-    owl:propertyChainAxiom ( [ owl:inverseOf ns4:isComposedOf ] [ owl:inverseOf ns4:consistsOf ] ) .
+            owl:unionOf ( ns5:Process ns5:ProcessOperator ) ] ;
+    rdfs:range ns5:Process ;
+    owl:propertyChainAxiom ( [ owl:inverseOf ns5:isComposedOf ] [ owl:inverseOf ns5:consistsOf ] ) .
 
-ns4:isAssignedTo a owl:ObjectProperty ;
+ns5:isAssignedTo a owl:ObjectProperty ;
     rdfs:comment "ObjectProperty that is used to indicate that a process operator is performed by a technical resource." ;
-    rdfs:domain ns4:ProcessOperator ;
-    rdfs:range ns4:TechnicalResource .
+    rdfs:domain ns5:ProcessOperator ;
+    rdfs:range ns5:TechnicalResource .
 
-ns4:isCharacterizedBy a owl:ObjectProperty ;
-    rdfs:range ns4:Characteristic .
+ns5:isCharacterizedBy a owl:ObjectProperty ;
+    rdfs:range ns5:Characteristic .
 
-ns4:isIdentifiedBy a owl:ObjectProperty ;
-    rdfs:range ns4:Identification .
+ns5:isIdentifiedBy a owl:ObjectProperty ;
+    rdfs:range ns5:Identification .
 
-ns4:longName a owl:DatatypeProperty,
+ns5:longName a owl:DatatypeProperty,
         owl:FunctionalProperty ;
     rdfs:comment "A property that is used to give a long name to an individual." .
 
-ns4:shortName a owl:DatatypeProperty,
+ns5:shortName a owl:DatatypeProperty,
         owl:FunctionalProperty ;
     rdfs:comment "A property that is used to give a short name to an individual." .
 
@@ -5303,29 +5303,29 @@ ns4:shortName a owl:DatatypeProperty,
     ns3:Preferred_Name "SkillCommandVariable" .
 
 <http://www.w3id.org/hsu-aut/cask#exposesSkillMethod> a owl:ObjectProperty ;
-    rdfs:domain ns5:SkillInterface ;
+    rdfs:domain ns4:SkillInterface ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#SkillMethod> ;
-    rdfs:subPropertyOf ns5:exposes .
+    rdfs:subPropertyOf ns4:exposes .
 
 <http://www.w3id.org/hsu-aut/cask#exposesSkillOutput> a owl:ObjectProperty ;
-    rdfs:domain ns5:SkillInterface ;
+    rdfs:domain ns4:SkillInterface ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#SkillOutput> ;
     rdfs:subPropertyOf <http://www.w3id.org/hsu-aut/cask#exposesSkillVariable> .
 
 <http://www.w3id.org/hsu-aut/cask#exposesSkillParameter> a owl:ObjectProperty ;
-    rdfs:domain ns5:SkillInterface ;
-    rdfs:range ns5:SkillParameter ;
+    rdfs:domain ns4:SkillInterface ;
+    rdfs:range ns4:SkillParameter ;
     rdfs:subPropertyOf <http://www.w3id.org/hsu-aut/cask#exposesSkillVariable> .
 
 <http://www.w3id.org/hsu-aut/cask#exposesStateMachine> a owl:ObjectProperty ;
-    rdfs:domain ns5:SkillInterface ;
-    rdfs:range ns5:StateMachine ;
-    rdfs:subPropertyOf ns5:exposes .
+    rdfs:domain ns4:SkillInterface ;
+    rdfs:range ns4:StateMachine ;
+    rdfs:subPropertyOf ns4:exposes .
 
 <http://www.w3id.org/hsu-aut/cask#hasCurrentState> a owl:AsymmetricProperty,
         owl:FunctionalProperty,
         owl:ObjectProperty ;
-    rdfs:domain ns5:Skill ;
+    rdfs:domain ns4:Skill ;
     rdfs:range <http://www.hsu-ifa.de/ontologies/ISA-TR88#State> .
 
 <http://www.w3id.org/hsu-aut/cask#hasCurrentStateOutput> a owl:ObjectProperty ;
@@ -5338,12 +5338,12 @@ ns4:shortName a owl:DatatypeProperty,
     rdfs:domain <http://www.w3id.org/hsu-aut/cask#SkillVariable> .
 
 <http://www.w3id.org/hsu-aut/cask#hasSkillCommand> a owl:ObjectProperty ;
-    rdfs:domain ns5:Skill ;
+    rdfs:domain ns4:Skill ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#SkillCommand> ;
-    rdfs:subPropertyOf ns5:hasParameter .
+    rdfs:subPropertyOf ns4:hasParameter .
 
 <http://www.w3id.org/hsu-aut/cask#hasSkillMethod> a owl:ObjectProperty ;
-    rdfs:domain ns5:Skill ;
+    rdfs:domain ns4:Skill ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#SkillMethod> .
 
 <http://www.w3id.org/hsu-aut/cask#hasVariableName> a owl:DatatypeProperty ;
@@ -5360,93 +5360,93 @@ ns4:shortName a owl:DatatypeProperty,
 <http://www.w3id.org/hsu-aut/cask#isRequired> a owl:DatatypeProperty ;
     rdfs:domain <http://www.w3id.org/hsu-aut/cask#SkillVariable> .
 
-ns5:accessibleThrough a owl:ObjectProperty ;
-    rdfs:domain ns5:Skill ;
-    rdfs:range ns5:SkillInterface .
+ns4:accessibleThrough a owl:ObjectProperty ;
+    rdfs:domain ns4:Skill ;
+    rdfs:range ns4:SkillInterface .
 
-ns5:assures a owl:ObjectProperty ;
-    rdfs:domain ns5:Service ;
-    rdfs:range ns5:Product .
+ns4:assures a owl:ObjectProperty ;
+    rdfs:domain ns4:Service ;
+    rdfs:range ns4:Product .
 
-ns5:behaviorConformsTo a owl:ObjectProperty ;
-    rdfs:domain ns5:Resource,
-        ns5:Skill ;
-    rdfs:range ns5:StateMachine .
+ns4:behaviorConformsTo a owl:ObjectProperty ;
+    rdfs:domain ns4:Resource,
+        ns4:Skill ;
+    rdfs:range ns4:StateMachine .
 
-ns5:controls a owl:ObjectProperty ;
-    rdfs:domain ns5:Skill ;
-    rdfs:range ns5:Process .
+ns4:controls a owl:ObjectProperty ;
+    rdfs:domain ns4:Skill ;
+    rdfs:range ns4:Process .
 
-ns5:demands a owl:ObjectProperty ;
-    rdfs:domain ns5:ServiceRequester ;
-    rdfs:range ns5:Service .
+ns4:demands a owl:ObjectProperty ;
+    rdfs:domain ns4:ServiceRequester ;
+    rdfs:range ns4:Service .
 
-ns5:hasInput a owl:ObjectProperty ;
-    rdfs:domain ns5:Process ;
-    rdfs:range ns5:Product .
+ns4:hasInput a owl:ObjectProperty ;
+    rdfs:domain ns4:Process ;
+    rdfs:range ns4:Product .
 
-ns5:hasOutput a owl:ObjectProperty ;
-    rdfs:domain ns5:Process ;
-    rdfs:range ns5:Product .
+ns4:hasOutput a owl:ObjectProperty ;
+    rdfs:domain ns4:Process ;
+    rdfs:range ns4:Product .
 
-ns5:isInputFor a owl:ObjectProperty ;
-    rdfs:domain ns5:Service ;
-    rdfs:range ns5:ServiceOffer .
+ns4:isInputFor a owl:ObjectProperty ;
+    rdfs:domain ns4:Service ;
+    rdfs:range ns4:ServiceOffer .
 
-ns5:isRealizedBySkill a owl:ObjectProperty ;
-    rdfs:domain ns5:Capability ;
-    rdfs:range ns5:Skill ;
-    rdfs:subPropertyOf ns5:isRealizedBy .
+ns4:isRealizedBySkill a owl:ObjectProperty ;
+    rdfs:domain ns4:Capability ;
+    rdfs:range ns4:Skill ;
+    rdfs:subPropertyOf ns4:isRealizedBy .
 
-ns5:isRealizedBySkillParameter a owl:ObjectProperty ;
-    rdfs:domain ns5:Property ;
-    rdfs:range ns5:SkillParameter ;
-    rdfs:subPropertyOf ns5:isRealizedBy .
+ns4:isRealizedBySkillParameter a owl:ObjectProperty ;
+    rdfs:domain ns4:Property ;
+    rdfs:range ns4:SkillParameter ;
+    rdfs:subPropertyOf ns4:isRealizedBy .
 
-ns5:isSpecifiedBy a owl:ObjectProperty ;
-    rdfs:domain ns5:Capability,
-        ns5:Service ;
-    rdfs:range ns5:Property .
+ns4:isSpecifiedBy a owl:ObjectProperty ;
+    rdfs:domain ns4:Capability,
+        ns4:Service ;
+    rdfs:range ns4:Property .
 
-ns5:offers a owl:ObjectProperty ;
-    rdfs:domain ns5:ServiceProvider ;
-    rdfs:range ns5:Service .
+ns4:offers a owl:ObjectProperty ;
+    rdfs:domain ns4:ServiceProvider ;
+    rdfs:range ns4:Service .
 
-ns5:offersUseOf a owl:ObjectProperty ;
-    rdfs:domain ns5:Service ;
-    rdfs:range ns5:Capability .
+ns4:offersUseOf a owl:ObjectProperty ;
+    rdfs:domain ns4:Service ;
+    rdfs:range ns4:Capability .
 
-ns5:proposes a owl:ObjectProperty ;
-    rdfs:domain ns5:ServiceProvider ;
-    rdfs:range ns5:ServiceOffer .
+ns4:proposes a owl:ObjectProperty ;
+    rdfs:domain ns4:ServiceProvider ;
+    rdfs:range ns4:ServiceOffer .
 
-ns5:providesCapability a owl:ObjectProperty ;
-    rdfs:domain ns5:Resource ;
+ns4:providesCapability a owl:ObjectProperty ;
+    rdfs:domain ns4:Resource ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#ProvidedCapability>,
-        ns5:Capability ;
-    rdfs:subPropertyOf ns5:provides .
+        ns4:Capability ;
+    rdfs:subPropertyOf ns4:provides .
 
-ns5:providesSkill a owl:ObjectProperty ;
-    rdfs:domain ns5:Resource ;
-    rdfs:range ns5:Skill ;
-    rdfs:subPropertyOf ns5:provides .
+ns4:providesSkill a owl:ObjectProperty ;
+    rdfs:domain ns4:Resource ;
+    rdfs:range ns4:Skill ;
+    rdfs:subPropertyOf ns4:provides .
 
-ns5:receives a owl:ObjectProperty ;
-    rdfs:domain ns5:ServiceRequester ;
-    rdfs:range ns5:ServiceOffer .
+ns4:receives a owl:ObjectProperty ;
+    rdfs:domain ns4:ServiceRequester ;
+    rdfs:range ns4:ServiceOffer .
 
-ns5:references a owl:ObjectProperty ;
-    rdfs:domain ns5:CapabilityConstraint ;
-    rdfs:range ns5:Property .
+ns4:references a owl:ObjectProperty ;
+    rdfs:domain ns4:CapabilityConstraint ;
+    rdfs:range ns4:Property .
 
-ns5:requiresCapability a owl:ObjectProperty ;
-    rdfs:domain ns5:Process ;
+ns4:requiresCapability a owl:ObjectProperty ;
+    rdfs:domain ns4:Process ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#RequiredCapability>,
-        ns5:Capability .
+        ns4:Capability .
 
-ns5:requiresProduct a owl:ObjectProperty ;
-    rdfs:domain ns5:ServiceRequester ;
-    rdfs:range ns5:Product .
+ns4:requiresProduct a owl:ObjectProperty ;
+    rdfs:domain ns4:ServiceRequester ;
+    rdfs:range ns4:Product .
 
 ns1:VariableList a owl:Class ;
     rdfs:comment "A list of variables." ;
@@ -5469,15 +5469,21 @@ ns2:example a owl:ObjectProperty .
 ns2:formalProperty a owl:ObjectProperty .
 
 :Required-cap-Transport a <http://www.w3id.org/hsu-aut/cask#RequiredCapability> ;
-    ns4:hasInput <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3> ;
-    ns4:hasOutput <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3> ;
-    ns5:requiresCapability :Required-cap-Transport .
+    ns5:hasInput <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3> ;
+    ns5:hasOutput <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3> ;
+    ns4:requiresCapability :Required-cap-Transport .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3> a ns4:Product ;
-    ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/latitude_de>,
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3> a ns5:Product ;
+    ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/grabbed_de>,
+        <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/latitude_de>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/longitude_de> ;
-    ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/latitude_id>,
+    ns5:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/grabbed_id>,
+        <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/latitude_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/longitude_id> .
+
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/grabbed_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/grabbed_id> ;
+    ns3:has_Type_Description :grabbed_TD .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/latitude_de> a ns3:Data_Element ;
     ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/latitude_id> ;
@@ -5487,89 +5493,89 @@ ns2:formalProperty a owl:ObjectProperty .
     ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/longitude_id> ;
     ns3:has_Type_Description :longitude_TD .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3> a ns4:Product ;
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3> a ns5:Product ;
     ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/grabbed_de> ;
-    ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/grabbed_id> .
+    ns5:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/grabbed_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/grabbed_de> a ns3:Data_Element ;
     ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/grabbed_id> ;
     ns3:has_Type_Description :grabbed_TD .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat> a ns4:Information ;
-    ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat/latitude71_id> .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat> a ns5:Information ;
+    ns5:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat/latitude71_id> .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflong> a ns4:Information ;
-    ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflong/longitude70_id> .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflong> a ns5:Information ;
+    ns5:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflong/longitude70_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/latitude71> a ns1:Application,
-        ns5:CapabilityConstraint ;
+        ns4:CapabilityConstraint ;
     ns1:arguments <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/latitude71/ArgList> ;
     ns1:operator <http://www.openmath.org/cd/relation1#eq> ;
-    ns5:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat/latitude71_id>,
+    ns4:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat/latitude71_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/latitude71/ArgList> rdf:first <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat/latitude71_id> ;
     rdf:rest ( <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_id> ) .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/longitude70> a ns1:Application,
-        ns5:CapabilityConstraint ;
+        ns4:CapabilityConstraint ;
     ns1:arguments <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/longitude70/ArgList> ;
     ns1:operator <http://www.openmath.org/cd/relation1#eq> ;
-    ns5:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflong/longitude70_id>,
+    ns4:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflong/longitude70_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong/longitude70_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/longitude70/ArgList> rdf:first <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflong/longitude70_id> ;
     rdf:rest ( <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong/longitude70_id> ) .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat> a ns4:Information ;
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat> a ns5:Information ;
     ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_de> ;
-    ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_id> .
+    ns5:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_de> a ns3:Data_Element ;
     ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_id> ;
     ns3:has_Type_Description :latitude_TD .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong> a ns4:Information ;
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong> a ns5:Information ;
     ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong/longitude70_de> ;
-    ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong/longitude70_id> .
+    ns5:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong/longitude70_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong/longitude70_de> a ns3:Data_Element ;
     ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong/longitude70_id> ;
     ns3:has_Type_Description :longitude_TD .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem> a ns4:Product ;
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem> a ns5:Product ;
     ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_de> ;
-    ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_id> .
+    ns5:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_de> a ns3:Data_Element ;
     ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_id> ;
     ns3:has_Type_Description :grabbed_TD .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/latitude> a ns1:Application,
-        ns5:CapabilityConstraint ;
+        ns4:CapabilityConstraint ;
     ns1:arguments <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/latitude/ArgList> ;
     ns1:operator <http://www.openmath.org/cd/relation1#eq> ;
-    ns5:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/latitude_id>,
+    ns4:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/latitude_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/latitude_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/latitude/ArgList> rdf:first <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/latitude_id> ;
     rdf:rest ( <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/latitude_id> ) .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/longitude> a ns1:Application,
-        ns5:CapabilityConstraint ;
+        ns4:CapabilityConstraint ;
     ns1:arguments <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/longitude/ArgList> ;
     ns1:operator <http://www.openmath.org/cd/relation1#eq> ;
-    ns5:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/longitude_id>,
+    ns4:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/longitude_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/longitude_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/longitude/ArgList> rdf:first <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/longitude_id> ;
     rdf:rest ( <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/longitude_id> ) .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem> a ns4:Product ;
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem> a ns5:Product ;
     ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/grabbed162_de>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/latitude_de>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/longitude_de> ;
-    ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/latitude_id>,
+    ns5:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/latitude_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/longitude_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/grabbed162_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/latitude_id>,
@@ -10219,43 +10225,43 @@ is cross multiplication.""" ;
             ns1:operator <http://www.openmath.org/cd/relation1#eq> ] ;
     rdfs:isDefinedBy <http://www.openmath.org/cd/weylalgebra1> .
 
-ns4:Characteristic a owl:Class ;
-    rdfs:subClassOf ns4:Attribute ;
-    owl:disjointWith ns4:Identification .
+ns5:Characteristic a owl:Class ;
+    rdfs:subClassOf ns5:Attribute ;
+    owl:disjointWith ns5:Identification .
 
-ns4:Energy a owl:Class ;
+ns5:Energy a owl:Class ;
     rdfs:comment "Energy is requiered by the process operator to fullfill the process. Energy is Input and Output of a process. Energy can be any kind of energy, exp.: electricity, heat,..." ;
-    rdfs:subClassOf ns4:State .
+    rdfs:subClassOf ns5:State .
 
-ns4:hasSuccessor a owl:ObjectProperty,
+ns5:hasSuccessor a owl:ObjectProperty,
         owl:TransitiveProperty ;
     rdfs:comment "an object property that is used to infer a successing relationshipt between entities" ;
-    rdfs:domain ns4:ProcessOperator ;
-    rdfs:range ns4:ProcessOperator ;
-    owl:propertyChainAxiom ( ns4:hasOutput [ owl:inverseOf ns4:hasInput ] ) .
+    rdfs:domain ns5:ProcessOperator ;
+    rdfs:range ns5:ProcessOperator ;
+    owl:propertyChainAxiom ( ns5:hasOutput [ owl:inverseOf ns5:hasInput ] ) .
 
 <http://www.w3id.org/hsu-aut/cask#SkillCommand> a owl:Class ;
     rdfs:comment "May be used to invoke a transition with a numerical value" ;
-    rdfs:subClassOf ns5:SkillParameter .
+    rdfs:subClassOf ns4:SkillParameter .
 
 <http://www.w3id.org/hsu-aut/cask#StatefulMethod> a owl:Class ;
     rdfs:subClassOf <http://www.w3id.org/hsu-aut/cask#SkillMethod> .
 
 <http://www.w3id.org/hsu-aut/cask#hasSkillOutput> a owl:ObjectProperty ;
-    rdfs:domain ns5:Skill ;
+    rdfs:domain ns4:Skill ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#SkillOutput> ;
     rdfs:subPropertyOf <http://www.w3id.org/hsu-aut/cask#hasSkillVariable> .
 
 <http://www.w3id.org/hsu-aut/cask#isInvokedBy> a owl:ObjectProperty .
 
-ns5:hasParameter a owl:ObjectProperty ;
-    rdfs:domain ns5:Skill ;
-    rdfs:range ns5:SkillParameter ;
+ns4:hasParameter a owl:ObjectProperty ;
+    rdfs:domain ns4:Skill ;
+    rdfs:range ns4:SkillParameter ;
     rdfs:subPropertyOf <http://www.w3id.org/hsu-aut/cask#hasSkillVariable> .
 
-ns5:isRestrictedBy a owl:ObjectProperty ;
-    rdfs:domain ns5:Capability ;
-    rdfs:range ns5:CapabilityConstraint .
+ns4:isRestrictedBy a owl:ObjectProperty ;
+    rdfs:domain ns4:Capability ;
+    rdfs:range ns4:CapabilityConstraint .
 
 ns1:AttributionList a owl:Class ;
     rdfs:comment "A list of attribute-value pairs." ;
@@ -10300,6 +10306,12 @@ ns1:value a owl:DatatypeProperty ;
 
 ns1:variables a owl:ObjectProperty .
 
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/grabbed_id> a ns3:Boolean,
+        ns3:Instance_Description ;
+    ns3:Expression_Goal "Actual_Value" ;
+    ns3:Logic_Interpretation "=" ;
+    ns3:Value "false" .
+
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/latitude_id> a ns3:Instance_Description,
         ns3:Real ;
     ns3:Expression_Goal "Actual_Value" ;
@@ -10312,27 +10324,27 @@ ns1:variables a owl:ObjectProperty .
     ns3:Logic_Interpretation "=" ;
     ns3:Value 1.011041e+01 .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/grabbed_id> a ns3:Instance_Description,
-        ns3:Real ;
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/grabbed_id> a ns3:Boolean,
+        ns3:Instance_Description ;
     ns3:Expression_Goal "Requirement" ;
     ns3:Logic_Interpretation "=" ;
     ns3:Value "true" .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19> a <http://www.w3id.org/hsu-aut/cask#ProvidedCapability> ;
-    ns4:hasInput <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat>,
+    ns5:hasInput <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong> ;
-    ns4:hasOutput <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat>,
+    ns5:hasOutput <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflong> ;
-    ns5:isRestrictedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/latitude71>,
+    ns4:isRestrictedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/latitude71>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/longitude70> ;
-    ns5:requiresCapability <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19> .
+    ns4:requiresCapability <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34> a <http://www.w3id.org/hsu-aut/cask#ProvidedCapability> ;
-    ns4:hasInput <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem> ;
-    ns4:hasOutput <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem> ;
-    ns5:isRestrictedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/latitude>,
+    ns5:hasInput <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem> ;
+    ns5:hasOutput <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem> ;
+    ns4:isRestrictedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/latitude>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/longitude> ;
-    ns5:requiresCapability <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34> .
+    ns4:requiresCapability <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_id> a ns3:Boolean,
         ns3:Instance_Description ;
@@ -10385,7 +10397,7 @@ ANSl/ISA-TR88.00.02-2015""" ;
 
 <http://www.hsu-ifa.de/ontologies/ISA-TR88#StateMachine> a owl:Class ;
     rdfs:comment "To be used as a container for all states and transitions of a particular state machine." ;
-    rdfs:subClassOf ns5:StateMachine ;
+    rdfs:subClassOf ns4:StateMachine ;
     owl:disjointWith <http://www.hsu-ifa.de/ontologies/ISA-TR88#Transition> .
 
 <http://www.hsu-ifa.de/ontologies/ISA-TR88#Stopped> a owl:Class ;
@@ -12829,47 +12841,47 @@ Functions, section 4.1""" ;
             ns1:operator <http://www.openmath.org/cd/relation1#eq> ] ;
     rdfs:isDefinedBy <http://www.openmath.org/cd/weylalgebra1> .
 
-ns4:Attribute a owl:Class ;
-    owl:disjointWith ns4:Process,
-        ns4:ProcessOperator,
-        ns4:State,
-        ns4:SystemLimit,
-        ns4:TechnicalResource .
+ns5:Attribute a owl:Class ;
+    owl:disjointWith ns5:Process,
+        ns5:ProcessOperator,
+        ns5:State,
+        ns5:SystemLimit,
+        ns5:TechnicalResource .
 
-ns4:Identification a owl:Class ;
-    rdfs:subClassOf ns4:Attribute .
+ns5:Identification a owl:Class ;
+    rdfs:subClassOf ns5:Attribute .
 
-ns4:flow a owl:ObjectProperty ;
+ns5:flow a owl:ObjectProperty ;
     rdfs:comment "most generic concept for flows taken from VDI3682 and refined by semantics that is used in graphical notation" .
 
-ns4:isComposedOf a owl:ObjectProperty ;
+ns5:isComposedOf a owl:ObjectProperty ;
     rdfs:comment "Used for decomposition. A process operator can be composed of multiple more detailed process operators." ;
-    rdfs:domain ns4:ProcessOperator ;
-    rdfs:range ns4:ProcessOperator .
+    rdfs:domain ns5:ProcessOperator ;
+    rdfs:range ns5:ProcessOperator .
 
 <http://www.w3id.org/hsu-aut/cask#RequiredCapability> a owl:Class ;
-    rdfs:subClassOf ns5:Capability .
+    rdfs:subClassOf ns4:Capability .
 
 <http://www.w3id.org/hsu-aut/cask#StatelessMethod> a owl:Class ;
     rdfs:subClassOf <http://www.w3id.org/hsu-aut/cask#SkillMethod> .
 
 <http://www.w3id.org/hsu-aut/cask#exposesSkillVariable> a owl:ObjectProperty ;
-    rdfs:domain ns5:SkillInterface ;
+    rdfs:domain ns4:SkillInterface ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#SkillVariable> ;
-    rdfs:subPropertyOf ns5:exposes .
+    rdfs:subPropertyOf ns4:exposes .
 
 <http://www.w3id.org/hsu-aut/cask#hasSkillVariable> a owl:ObjectProperty ;
-    rdfs:domain ns5:Skill ;
+    rdfs:domain ns4:Skill ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#SkillVariable> .
 
-ns5:isRealizedBy a owl:ObjectProperty ;
-    rdfs:domain ns5:Capability,
-        ns5:Property ;
-    rdfs:range ns5:Skill,
-        ns5:SkillParameter .
+ns4:isRealizedBy a owl:ObjectProperty ;
+    rdfs:domain ns4:Capability,
+        ns4:Property ;
+    rdfs:range ns4:Skill,
+        ns4:SkillParameter .
 
-ns5:provides a owl:ObjectProperty ;
-    rdfs:domain ns5:Resource .
+ns4:provides a owl:ObjectProperty ;
+    rdfs:domain ns4:Resource .
 
 ns1:ObjectList a owl:Class ;
     rdfs:comment "A list of mathematical objects." ;
@@ -12899,14 +12911,6 @@ ns1:ObjectList a owl:Class ;
     ns3:Expression_Goal "Actual_Value" ;
     ns3:Logic_Interpretation "=" ;
     ns3:Value 1.010965e+01 .
-
-:grabbed_TD a ns3:Type_Description .
-
-ns3:Boolean a owl:Class ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom xsd:boolean ;
-            owl:onProperty ns3:Value_List_Member ],
-        ns3:Simple_Data_Type .
 
 ns3:Data_Type a owl:Class .
 
@@ -14219,25 +14223,25 @@ Initial version: O. Caprotti""" ;
 
 rdf:rest a owl:ObjectProperty .
 
-ns4:consistsOf a owl:ObjectProperty ;
+ns5:consistsOf a owl:ObjectProperty ;
     rdfs:comment "Describes containment of process elements (state, process operator, system limit) within a process"@en ;
-    rdfs:domain ns4:Process ;
+    rdfs:domain ns5:Process ;
     rdfs:range [ a owl:Class ;
-            owl:unionOf ( ns4:ProcessOperator ns4:State ns4:SystemLimit ) ] ;
+            owl:unionOf ( ns5:ProcessOperator ns5:State ns5:SystemLimit ) ] ;
     rdfs:subPropertyOf owl:topObjectProperty .
 
 <http://www.w3id.org/hsu-aut/cask#ProvidedCapability> a owl:Class ;
-    rdfs:subClassOf ns5:Capability .
+    rdfs:subClassOf ns4:Capability .
 
 <http://www.w3id.org/hsu-aut/cask#SkillOutput> a owl:Class ;
     rdfs:comment "May be used to retrieve results during or after Skill execution" ;
     rdfs:subClassOf <http://www.w3id.org/hsu-aut/cask#SkillVariable> .
 
-ns5:exposes a owl:ObjectProperty ;
-    rdfs:domain ns5:SkillInterface ;
+ns4:exposes a owl:ObjectProperty ;
+    rdfs:domain ns4:SkillInterface ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#SkillMethod>,
-        ns5:SkillParameter,
-        ns5:StateMachine .
+        ns4:SkillParameter,
+        ns4:StateMachine .
 
 ns1:Compound a owl:Class ;
     rdfs:comment "An object that is composed of some other mathematical objects." ;
@@ -14288,6 +14292,8 @@ ns2:BinderSymbol a owl:Class ;
     ns1:name "Rover7/cap-grab34/RequiredProdItem/Required/longitude_id" ;
     ns3:Expression_Goal "Requirement" ;
     ns3:Logic_Interpretation "=" .
+
+:grabbed_TD a ns3:Type_Description .
 
 :latitude_TD a ns3:Type_Description .
 
@@ -15459,22 +15465,28 @@ with vector calculus.""" ;
 
 ns1:arguments a owl:ObjectProperty .
 
+ns3:Boolean a owl:Class ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom xsd:boolean ;
+            owl:onProperty ns3:Value_List_Member ],
+        ns3:Simple_Data_Type .
+
 <http://www.hsu-ifa.de/ontologies/VDI2206#BasicSystem> a owl:Class ;
     rdfs:label "Basic System" ;
     rdfs:comment "The basic system is generally a mechanical, electromechanical, hydraulic or pneumatic structure or a combination of these." .
 
 <http://www.hsu-ifa.de/ontologies/VDI2206#Energy> a owl:Class ;
     rdfs:comment "Energy is to be understood in this connection as meaning any form of energy, such as for example mechanical, thermal or electrical energy, but also variables such as force or current." ;
-    owl:equivalentClass ns4:Energy .
+    owl:equivalentClass ns5:Energy .
 
 <http://www.hsu-ifa.de/ontologies/VDI2206#Information> a owl:Class ;
     rdfs:comment "Information exchanged between units of mechatronic systems are for example measured variables, control pulses or data" ;
-    owl:equivalentClass ns4:Information .
+    owl:equivalentClass ns5:Information .
 
 <http://www.hsu-ifa.de/ontologies/VDI2206#Product> a owl:Class ;
     rdfs:comment "Examples of materials which flow between units of mechatronic systems are solid bodies, objects under test, objects being treated, gases or liquids." ;
-    owl:equivalentClass ns4:Product,
-        ns5:Product .
+    owl:equivalentClass ns5:Product,
+        ns4:Product .
 
 <http://www.openmath.org/cd/combinat1#binomial> a ns2:ApplicationSymbol,
         owl:NamedIndividual ;
@@ -16175,22 +16187,22 @@ Arccot(z) = (i/2)Ln((1+iz)/(1-iz)),""",
             ns1:operator <http://www.openmath.org/cd/relation1#eq> ] ;
     rdfs:isDefinedBy <http://www.openmath.org/cd/transc3> .
 
-ns4:Information a owl:Class ;
+ns5:Information a owl:Class ;
     rdfs:comment """Information input for a process operator can be any kind of information required to fullfill the process. Information output can be any kind of information created by the process.
 [VDI 3682-1]""" ;
-    rdfs:subClassOf ns4:State .
+    rdfs:subClassOf ns5:State .
 
-ns4:Product a owl:Class ;
+ns5:Product a owl:Class ;
     rdfs:comment """A rather generic concepts to describe all sorts of raw, intermediate or final products. Can also be used to describe flow of materials.
 [VDI 3682-1]""" ;
-    rdfs:subClassOf ns4:State .
+    rdfs:subClassOf ns5:State .
 
-ns4:SystemLimit a owl:Class ;
+ns5:SystemLimit a owl:Class ;
     rdfs:comment """The system limit determines the observation horizon of the process. In a broader sense, this can also be seen as the balance limit for incoming products/energy/information and outgoing products/energy/information.
 [VDI 3682-1]""" ;
-    owl:disjointWith ns4:TechnicalResource .
+    owl:disjointWith ns5:TechnicalResource .
 
-ns5:Process a owl:Class ;
+ns4:Process a owl:Class ;
     rdfs:comment """Production-relevant activity at any level of granularity that might affect materials and is performed by resources.
 
 Notes:
@@ -16198,15 +16210,15 @@ Notes:
 - A process can require capabilities to express that any suitable resource used for
 performing this process needs to provide compatible capabilities.
 - A process step relates to materials that constitute either input or output for the processing in this step""" ;
-    owl:disjointWith ns5:Resource,
-        ns5:Service,
-        ns5:ServiceOffer,
-        ns5:ServiceProvider,
-        ns5:Skill,
-        ns5:SkillInterface,
-        ns5:SkillParameter .
+    owl:disjointWith ns4:Resource,
+        ns4:Service,
+        ns4:ServiceOffer,
+        ns4:ServiceProvider,
+        ns4:Skill,
+        ns4:SkillInterface,
+        ns4:SkillParameter .
 
-ns5:Product a owl:Class ;
+ns4:Product a owl:Class ;
     rdfs:comment """Physical object being used as an input or created as an output of a production process.
 
 Notes:
@@ -16216,27 +16228,27 @@ Notes:
 ▪ specifications
 ▪ BOM
 - A Service Requester may use these additional artifacts to formulate requirements against products.""" ;
-    owl:disjointWith ns5:Service,
-        ns5:ServiceOffer,
-        ns5:ServiceProvider,
-        ns5:ServiceRequester,
-        ns5:Skill,
-        ns5:SkillInterface,
-        ns5:SkillParameter .
+    owl:disjointWith ns4:Service,
+        ns4:ServiceOffer,
+        ns4:ServiceProvider,
+        ns4:ServiceRequester,
+        ns4:Skill,
+        ns4:SkillInterface,
+        ns4:SkillParameter .
 
-ns5:Property a owl:Class ;
+ns4:Property a owl:Class ;
     rdfs:comment """Quality or characteristic inherent in or ascribed to any CSS model element
 
 Notes:
 - Properties may be used to describe and differentiate all kinds of PPR entities (i.e., products, process steps, resources)
 - Capabilities, services and offers are specified by properties in order to detail their description with regard to certain entities (e.g. products, process steps, resources)""" ;
-    owl:disjointWith ns5:Resource,
-        ns5:Service,
-        ns5:ServiceOffer,
-        ns5:ServiceProvider,
-        ns5:ServiceRequester,
-        ns5:Skill,
-        ns5:SkillInterface .
+    owl:disjointWith ns4:Resource,
+        ns4:Service,
+        ns4:ServiceOffer,
+        ns4:ServiceProvider,
+        ns4:ServiceRequester,
+        ns4:Skill,
+        ns4:SkillInterface .
 
 ns3:Complex_Data_Type a owl:Class ;
     rdfs:subClassOf ns3:Data_Type ;
@@ -16958,24 +16970,24 @@ If something is just "optional", it will not occur in the class expression.
 
 If a liability in DIN61360 states "case dependend" (bedingt), then this considered in a SWRL rule, which will give the DataProperties of "x_Consistent" to the Data_Element""" .
 
-ns4:hasInput a owl:ObjectProperty ;
+ns5:hasInput a owl:ObjectProperty ;
     rdfs:comment "ObjectProperty that is used to link a ProcessOperator with an Input, i.e. Energy or Information or Product." ;
     rdfs:domain [ a owl:Class ;
-            owl:unionOf ( ns4:Process ns4:ProcessOperator ) ] ;
-    rdfs:range ns4:State ;
-    rdfs:subPropertyOf ns4:flow .
+            owl:unionOf ( ns5:Process ns5:ProcessOperator ) ] ;
+    rdfs:range ns5:State ;
+    rdfs:subPropertyOf ns5:flow .
 
-ns4:hasOutput a owl:ObjectProperty ;
+ns5:hasOutput a owl:ObjectProperty ;
     rdfs:comment "ObjectProperty that is used to link a ProcessOperator with an Output, i.e. Energy or Information or Product." ;
     rdfs:domain [ a owl:Class ;
-            owl:unionOf ( ns4:Process ns4:ProcessOperator ) ] ;
-    rdfs:range ns4:State ;
-    rdfs:subPropertyOf ns4:flow .
+            owl:unionOf ( ns5:Process ns5:ProcessOperator ) ] ;
+    rdfs:range ns5:State ;
+    rdfs:subPropertyOf ns5:flow .
 
 <http://www.w3id.org/hsu-aut/cask#SkillMethod> a owl:Class ;
     rdfs:comment "Abstract concept of a method to invoke a skill. Needs to be implemented and modeled in detail for a specific technology" .
 
-ns5:CapabilityConstraint a owl:Class ;
+ns4:CapabilityConstraint a owl:Class ;
     rdfs:comment """Condition imposed on a capability that further details its applicability. 
 
 Notes:
@@ -16986,18 +16998,18 @@ Notes:
 function.
 - A capability constraint restricts the values of the properties associated with the respective capability.
 - A capability constraint can involve one or more properties""" ;
-    owl:disjointWith ns5:Resource,
-        ns5:Service,
-        ns5:ServiceOffer,
-        ns5:ServiceProvider,
-        ns5:ServiceRequester,
-        ns5:Skill,
-        ns5:SkillInterface,
-        ns5:SkillParameter ;
+    owl:disjointWith ns4:Resource,
+        ns4:Service,
+        ns4:ServiceOffer,
+        ns4:ServiceProvider,
+        ns4:ServiceRequester,
+        ns4:Skill,
+        ns4:SkillInterface,
+        ns4:SkillParameter ;
     owl:equivalentClass [ a owl:Class ;
             owl:intersectionOf ( ns1:Application [ a owl:Restriction ;
-                        owl:onProperty [ owl:inverseOf ns5:isRestrictedBy ] ;
-                        owl:someValuesFrom ns5:Capability ] ) ] .
+                        owl:onProperty [ owl:inverseOf ns4:isRestrictedBy ] ;
+                        owl:someValuesFrom ns4:Capability ] ) ] .
 
 <http://www.hsu-ifa.de/ontologies/ISA-TR88#Wait> a owl:Class ;
     rdfs:comment """A state used to identify that a machine has achieved a defined set of conditions. In such a state, the machine is maintaining a status until transitioning to an acting state. In ANSl/ISA-88.00.01 this was referred to as a "final" or "quiescent" state.
@@ -17008,7 +17020,7 @@ ANSl/ISA-TR88.00.02-2015""" ;
 <http://www.hsu-ifa.de/ontologies/VDI2206#Module> a owl:Class ;
     rdfs:label "Module" ;
     rdfs:comment "Complex mechatronic systems generally comprise the synergetic integration of various mechatronic modules, i.e. system elements or components which are combined to form a group and together perform a specific function." ;
-    rdfs:subClassOf ns4:TechnicalResource .
+    rdfs:subClassOf ns5:TechnicalResource .
 
 <http://www.openmath.org/cd/calculus1> a ns2:Library,
         owl:NamedIndividual ;
@@ -17648,7 +17660,7 @@ ANSl/ISA-TR88.00.02-2015""" .
 
 <http://www.hsu-ifa.de/ontologies/VDI2206#System> a owl:Class ;
     rdfs:label "Mechatronic System" ;
-    rdfs:subClassOf ns4:TechnicalResource .
+    rdfs:subClassOf ns5:TechnicalResource .
 
 <http://www.openmath.org/cd/3Dgeo1> a ns2:Library,
         owl:NamedIndividual ;
@@ -18154,10 +18166,10 @@ result has absolute value $\\pi/2$.""" ;
             ns1:operator <http://www.openmath.org/cd/logic1#implies> ] ;
     rdfs:isDefinedBy <http://www.openmath.org/cd/transc2> .
 
-ns4:TechnicalResource a owl:Class ;
+ns5:TechnicalResource a owl:Class ;
     rdfs:comment """The technical resource is able to implement certain processes and is an abstract description of a system.
 [VDI 3682-1]""" ;
-    rdfs:subClassOf ns5:Resource .
+    rdfs:subClassOf ns4:Resource .
 
 <http://www.hsu-ifa.de/ontologies/ISA-TR88#Command> a owl:Class ;
     rdfs:comment """State commands are transitions that need to be actively triggered, e.g., by one of the following ways: Operator intervention, Response to the status of one or more procedural elements, Response to machine conditions, Supervisory or remote system intervention.
@@ -18342,15 +18354,15 @@ a prime. It takes one argument, the integer m.""" ;
             ns1:variables [ ] ] ;
     rdfs:isDefinedBy <http://www.openmath.org/cd/setname2> .
 
-ns4:Process a owl:Class ;
+ns5:Process a owl:Class ;
     rdfs:comment """A process describes the desired behavior of a process operator, by means of a solution neutral description of inputs and outputs. Products,energies  and information are converted into new products,energies  and information by a process operator. The process operator implements this conversion with the help of technical resources.
 [VDI3682-1]
 
 Note that a process may have inputs and outputs. These are inputs / outputs that are on the system limit of this process.""" ;
-    owl:disjointWith ns4:State,
-        ns4:SystemLimit,
-        ns4:TechnicalResource ;
-    owl:equivalentClass ns5:Process .
+    owl:disjointWith ns5:State,
+        ns5:SystemLimit,
+        ns5:TechnicalResource ;
+    owl:equivalentClass ns4:Process .
 
 <http://www.w3id.org/hsu-aut/cask#SkillVariable> a owl:Class ;
     rdfs:comment """A super class for various types of Skill variables: 
@@ -18358,20 +18370,20 @@ Note that a process may have inputs and outputs. These are inputs / outputs that
 - SkillParameter: Allows to parameterize a Skill execution
 - SkillOutput: Allows to retrieve results from a Skill""" .
 
-ns5:ServiceProvider a owl:Class ;
+ns4:ServiceProvider a owl:Class ;
     rdfs:comment "Provides Services and can propose ServiceOffers to ServiceRequesters." ;
-    owl:disjointWith ns5:Skill,
-        ns5:SkillInterface,
-        ns5:SkillParameter,
-        ns5:StateMachine .
+    owl:disjointWith ns4:Skill,
+        ns4:SkillInterface,
+        ns4:SkillParameter,
+        ns4:StateMachine .
 
-ns5:ServiceRequester a owl:Class ;
+ns4:ServiceRequester a owl:Class ;
     rdfs:comment """Demands Services under particular commercial aspects by providing either a specification of
 services or a specification of product requirements.""" ;
-    owl:disjointWith ns5:Skill,
-        ns5:SkillInterface,
-        ns5:SkillParameter,
-        ns5:StateMachine .
+    owl:disjointWith ns4:Skill,
+        ns4:SkillInterface,
+        ns4:SkillParameter,
+        ns4:StateMachine .
 
 <http://www.openmath.org/cd/3Dgeo2> a ns2:Library,
         owl:NamedIndividual ;
@@ -18581,48 +18593,48 @@ lines,  etc, but also of other configurations.""" ;
             ns1:operator <http://www.openmath.org/cd/meta#Example> ] ;
     rdfs:isDefinedBy <http://www.openmath.org/cd/plangeo1> .
 
-ns5:Capability a owl:Class ;
+ns4:Capability a owl:Class ;
     rdfs:comment """Implementation-independent specification of a function in industrial production to achieve an effect in the physical or virtual world.
 
 Notes:
 - A capability can be restricted by constraints.
 - A capability can be specified by capability properties.
 - A capability can be realized by skills""" ;
-    owl:disjointWith ns5:Resource,
-        ns5:ServiceOffer,
-        ns5:ServiceProvider,
-        ns5:ServiceRequester,
-        ns5:Skill,
-        ns5:SkillInterface,
-        ns5:SkillParameter .
+    owl:disjointWith ns4:Resource,
+        ns4:ServiceOffer,
+        ns4:ServiceProvider,
+        ns4:ServiceRequester,
+        ns4:Skill,
+        ns4:SkillInterface,
+        ns4:SkillParameter .
 
-ns5:Resource a owl:Class ;
+ns4:Resource a owl:Class ;
     rdfs:comment """Entity capable of performing functions specified as Capabilities and potentially implemented as Skills.
 
 Notes
 - A production resource may consist of hardware, software or both
 - A production resource may only provide capabilities (i.e. when engineering a resource, for planning purposes) and may additionally provide skills for automatic execution of the specified function.
 - A human becomes a Production Resource, if that person is able to perform a function specified as a capability.""" ;
-    owl:disjointWith ns5:Service,
-        ns5:ServiceOffer,
-        ns5:Skill,
-        ns5:SkillInterface,
-        ns5:SkillParameter,
-        ns5:StateMachine .
+    owl:disjointWith ns4:Service,
+        ns4:ServiceOffer,
+        ns4:Skill,
+        ns4:SkillInterface,
+        ns4:SkillParameter,
+        ns4:StateMachine .
 
-ns5:ServiceOffer a owl:Class ;
+ns4:ServiceOffer a owl:Class ;
     rdfs:comment """Proposal for a binding contract from the Service Provider to execute one or more particular services that a ServiceRequester can receive and accept.
 
 Notes:
 - A ServiceOffer should determine the commercial aspects of the service provision
 and may remain valid for a certain period of time.
 - An Offer may consist of partial offers proposed by different service providers""" ;
-    owl:disjointWith ns5:ServiceProvider,
-        ns5:ServiceRequester,
-        ns5:Skill,
-        ns5:SkillInterface,
-        ns5:SkillParameter,
-        ns5:StateMachine .
+    owl:disjointWith ns4:ServiceProvider,
+        ns4:ServiceRequester,
+        ns4:Skill,
+        ns4:SkillInterface,
+        ns4:SkillParameter,
+        ns4:StateMachine .
 
 <http://www.hsu-ifa.de/ontologies/ISA-TR88#Acting> a owl:Class ;
     rdfs:comment """A state which represents some processing activity. It implies the single or repeated execution of processing steps in a logical order, for a finite time or until a specific condition has been reached. In ANSl/lSA-88.00.01 these are referred to transient states, those states ending in "ING".
@@ -18911,13 +18923,13 @@ OpenMath variable (OMV) and value is an OpenMath object.""" ;
         owl:NamedIndividual ;
     ns2:description "This CD defines symbols to represent imperial standard measures." .
 
-ns4:State a owl:Class ;
+ns5:State a owl:Class ;
     rdfs:comment """A State describes the actual state of a Product/Energy/Information. Exp.: status ante operationem and status post operationem.
 [VDI3682-1]""" ;
-    owl:disjointWith ns4:SystemLimit,
-        ns4:TechnicalResource .
+    owl:disjointWith ns5:SystemLimit,
+        ns5:TechnicalResource .
 
-ns5:Service a owl:Class ;
+ns4:Service a owl:Class ;
     rdfs:comment """Description of the commercial aspects and means of provision of offered capabilities.
 
 Notes:
@@ -18925,15 +18937,15 @@ Notes:
 - The capabilities and means of provisions are specified by properties
 - A service is demanded by service requesters and provided by a service provider
 - A service is an input for an offer proposed by""" ;
-    owl:disjointWith ns5:ServiceOffer,
-        ns5:ServiceProvider,
-        ns5:ServiceRequester,
-        ns5:Skill,
-        ns5:SkillInterface,
-        ns5:SkillParameter,
-        ns5:StateMachine .
+    owl:disjointWith ns4:ServiceOffer,
+        ns4:ServiceProvider,
+        ns4:ServiceRequester,
+        ns4:Skill,
+        ns4:SkillInterface,
+        ns4:SkillParameter,
+        ns4:StateMachine .
 
-ns5:StateMachine a owl:Class .
+ns4:StateMachine a owl:Class .
 
 <http://www.hsu-ifa.de/ontologies/ISA-TR88#StopCommand> a owl:Class ;
     rdfs:comment """The STOP command triggers a controlled halt of a machine trough logic triggered in the STOPPING state.
@@ -19147,6 +19159,12 @@ prime.""" ;
             ns1:operator <http://www.openmath.org/cd/relation1#eq> ] ;
     rdfs:isDefinedBy <http://www.openmath.org/cd/setname2> .
 
+ns3:Real a owl:Class ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom xsd:float ;
+            owl:onProperty ns3:Value_List_Member ],
+        ns3:Simple_Data_Type .
+
 <http://www.hsu-ifa.de/ontologies/VDI2206#Component> a owl:Class .
 
 <http://www.openmath.org/cd/calculus1#diff> a ns2:ApplicationSymbol,
@@ -19257,33 +19275,27 @@ OpenMath encoding of the ith sentence (or action) inside the body.""" ;
             ns1:operator <http://www.openmath.org/cd/meta#Example> ] ;
     rdfs:isDefinedBy <http://www.openmath.org/cd/prog1> .
 
-ns4:ProcessOperator a owl:Class ;
+ns5:ProcessOperator a owl:Class ;
     rdfs:comment """One step of a process that transfers a status "before" (i.e., an input) to a status "after" (i.e., an output). 
 Everything that has an input and an output may be a process operator (but could also be a process).
 Everything that has an input and an output AND is contained within a process is a process operator.""" ;
     rdfs:subClassOf [ a owl:Class ;
             owl:intersectionOf ( [ a owl:Restriction ;
-                        owl:onProperty ns4:hasInput ;
+                        owl:onProperty ns5:hasInput ;
                         owl:someValuesFrom owl:Thing ] [ a owl:Restriction ;
-                        owl:onProperty ns4:hasOutput ;
+                        owl:onProperty ns5:hasOutput ;
                         owl:someValuesFrom owl:Thing ] ) ] ;
-    owl:disjointWith ns4:State,
-        ns4:SystemLimit,
-        ns4:TechnicalResource ;
+    owl:disjointWith ns5:State,
+        ns5:SystemLimit,
+        ns5:TechnicalResource ;
     owl:equivalentClass [ a owl:Class ;
             owl:intersectionOf ( [ a owl:Restriction ;
-                        owl:onProperty ns4:hasInput ;
+                        owl:onProperty ns5:hasInput ;
                         owl:someValuesFrom owl:Thing ] [ a owl:Restriction ;
-                        owl:onProperty ns4:hasOutput ;
+                        owl:onProperty ns5:hasOutput ;
                         owl:someValuesFrom owl:Thing ] [ a owl:Restriction ;
-                        owl:onProperty [ owl:inverseOf ns4:consistsOf ] ;
-                        owl:someValuesFrom ns4:Process ] ) ] .
-
-ns3:Real a owl:Class ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom xsd:float ;
-            owl:onProperty ns3:Value_List_Member ],
-        ns3:Simple_Data_Type .
+                        owl:onProperty [ owl:inverseOf ns5:consistsOf ] ;
+                        owl:someValuesFrom ns5:Process ] ) ] .
 
 <http://www.openmath.org/cd/gp1> a ns2:Library,
         owl:NamedIndividual ;
@@ -19786,41 +19798,6 @@ ns2:SemanticAttributionSymbol a owl:Class ;
     rdfs:comment "This is the same as attribution except that it modifies the meaning of the attributed OpenMath object and thus cannot be ignored by an application, without changing the meaning." ;
     rdfs:subClassOf ns1:Symbol .
 
-ns3:Data_Element a owl:Class ;
-    rdfs:comment """Description:
-Contains a the structure of all data element (DIN61360 3.5.2, see also section 4)
-
-Each Data_Element has to have a type description and may have an instance description""" ;
-    rdfs:subClassOf [ a owl:Class ;
-            owl:intersectionOf ( [ a owl:Restriction ;
-                        owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                        owl:onClass [ a owl:Class ;
-                                owl:intersectionOf ( ns3:Instance_Description [ a owl:Restriction ;
-                                            owl:hasValue "Actual_Value" ;
-                                            owl:onProperty ns3:Expression_Goal ] ) ] ;
-                        owl:onProperty ns3:has_Instance_Description ] [ a owl:Restriction ;
-                        owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                        owl:onClass [ a owl:Class ;
-                                owl:intersectionOf ( ns3:Instance_Description [ a owl:Restriction ;
-                                            owl:hasValue "Assurance" ;
-                                            owl:onProperty ns3:Expression_Goal ] ) ] ;
-                        owl:onProperty ns3:has_Instance_Description ] [ a owl:Restriction ;
-                        owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                        owl:onClass [ a owl:Class ;
-                                owl:intersectionOf ( ns3:Instance_Description [ a owl:Restriction ;
-                                            owl:hasValue "Requirement" ;
-                                            owl:onProperty ns3:Expression_Goal ] ) ] ;
-                        owl:onProperty ns3:has_Instance_Description ] ) ],
-        [ a owl:Restriction ;
-            owl:onProperty ns3:has_Type_Description ;
-            owl:someValuesFrom ns3:Type_Description ],
-        [ a owl:Restriction ;
-            owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger ;
-            owl:onClass ns3:Instance_Description ;
-            owl:onProperty ns3:has_Instance_Description ],
-        ns5:Property ;
-    owl:disjointWith ns3:Type_Description .
-
 <http://www.openmath.org/cd/calculus1#defint> a ns2:ApplicationSymbol,
         owl:NamedIndividual ;
     ns2:commentedProperty """for all a < b < c | integral over [a,c] = integral over [a,b] + 
@@ -19871,6 +19848,41 @@ set) of integration, and the second the function.""" ;
     ns2:description """A CD for basic algorithmic concepts. We define the minimal machinery to write 
 small programs in OpenMath encoding.""" .
 
+ns3:Data_Element a owl:Class ;
+    rdfs:comment """Description:
+Contains a the structure of all data element (DIN61360 3.5.2, see also section 4)
+
+Each Data_Element has to have a type description and may have an instance description""" ;
+    rdfs:subClassOf [ a owl:Class ;
+            owl:intersectionOf ( [ a owl:Restriction ;
+                        owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                        owl:onClass [ a owl:Class ;
+                                owl:intersectionOf ( ns3:Instance_Description [ a owl:Restriction ;
+                                            owl:hasValue "Actual_Value" ;
+                                            owl:onProperty ns3:Expression_Goal ] ) ] ;
+                        owl:onProperty ns3:has_Instance_Description ] [ a owl:Restriction ;
+                        owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                        owl:onClass [ a owl:Class ;
+                                owl:intersectionOf ( ns3:Instance_Description [ a owl:Restriction ;
+                                            owl:hasValue "Assurance" ;
+                                            owl:onProperty ns3:Expression_Goal ] ) ] ;
+                        owl:onProperty ns3:has_Instance_Description ] [ a owl:Restriction ;
+                        owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                        owl:onClass [ a owl:Class ;
+                                owl:intersectionOf ( ns3:Instance_Description [ a owl:Restriction ;
+                                            owl:hasValue "Requirement" ;
+                                            owl:onProperty ns3:Expression_Goal ] ) ] ;
+                        owl:onProperty ns3:has_Instance_Description ] ) ],
+        [ a owl:Restriction ;
+            owl:onProperty ns3:has_Type_Description ;
+            owl:someValuesFrom ns3:Type_Description ],
+        [ a owl:Restriction ;
+            owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger ;
+            owl:onClass ns3:Instance_Description ;
+            owl:onProperty ns3:has_Instance_Description ],
+        ns4:Property ;
+    owl:disjointWith ns3:Type_Description .
+
 <http://www.hsu-ifa.de/ontologies/ISA-TR88#hasOutgoingTransition> a owl:ObjectProperty ;
     rdfs:comment "Describes the relationship between a state and it's outgoing transition." ;
     rdfs:domain <http://www.hsu-ifa.de/ontologies/ISA-TR88#State> ;
@@ -19890,7 +19902,7 @@ Abramowitz and Stegun, section 4.2. It takes one argument.""" ;
             ns1:variables [ ] ] ;
     rdfs:isDefinedBy <http://www.openmath.org/cd/transc1> .
 
-ns5:SkillInterface a owl:Class ;
+ns4:SkillInterface a owl:Class ;
     rdfs:comment """Access point to configure, control and monitor a skill.
 
 Notes:
@@ -19899,10 +19911,10 @@ Notes:
 - A skill interface exposes the state machine of a skill so that skill states can be
 monitored and transitions triggered.
 - A skill interface exposes the parameters of a skill so that they can be written and read.""" ;
-    owl:disjointWith ns5:SkillParameter,
-        ns5:StateMachine .
+    owl:disjointWith ns4:SkillParameter,
+        ns4:StateMachine .
 
-ns5:SkillParameter a owl:Class ;
+ns4:SkillParameter a owl:Class ;
     rdfs:comment """Data unit to configure, control and monitor the execution of a skill.
 
 Notes:
@@ -19910,7 +19922,7 @@ Notes:
 - Skill parameters might be used as results
 - Skill parameters might have a relation or be equivalent to capability properties""" ;
     rdfs:subClassOf <http://www.w3id.org/hsu-aut/cask#SkillVariable> ;
-    owl:disjointWith ns5:StateMachine .
+    owl:disjointWith ns4:StateMachine .
 
 <http://www.openmath.org/cd/arith1#abs> a ns2:ApplicationSymbol,
         owl:NamedIndividual ;
@@ -20272,7 +20284,7 @@ part of the complex number x + i y. (Where i is the square root of -1.)""" ;
      If you have questions about this license please contact the OpenMath
      society at http://www.openmath.org.""" .
 
-ns5:Skill a owl:Class ;
+ns4:Skill a owl:Class ;
     rdfs:comment """Executable implementation of an encapsulated (automation) function specified by a Capability.
 
 Notes:
@@ -20281,7 +20293,7 @@ Notes:
 - A skill may have any number of SkillParameters. 
 - A skill’s behavior conforms to a state machine. 
 - A skill controls a process step""" ;
-    owl:disjointWith ns5:SkillParameter .
+    owl:disjointWith ns4:SkillParameter .
 
 <http://www.openmath.org/cd/SI_NamedDerivedUnits1> a ns2:Library,
         owl:NamedIndividual ;
@@ -20689,17 +20701,6 @@ Revision 0.2: added endomap. Help of Henny Wilbrink.""" ;
      If you have questions about this license please contact the OpenMath
      society at http://www.openmath.org.""" .
 
-ns3:Instance_Description a owl:Class ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:string ;
-            owl:onProperty ns3:Expression_Goal ;
-            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
-        [ a owl:Restriction ;
-            owl:onDataRange xsd:string ;
-            owl:onProperty ns3:Logic_Interpretation ;
-            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ] ;
-    owl:disjointWith ns3:Type_Description .
-
 <http://www.openmath.org/cd/plangeo1#point> a ns1:Symbol,
         owl:NamedIndividual ;
     ns2:description """The symbol is used to indicate a point of  planar Euclidean geometry
@@ -20724,6 +20725,17 @@ otherwise.""" ;
             ns1:arguments [ ] ;
             ns1:operator <http://www.openmath.org/cd/logic1#implies> ] ;
     rdfs:isDefinedBy <http://www.openmath.org/cd/relation1> .
+
+ns3:Instance_Description a owl:Class ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onDataRange xsd:string ;
+            owl:onProperty ns3:Expression_Goal ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
+        [ a owl:Restriction ;
+            owl:onDataRange xsd:string ;
+            owl:onProperty ns3:Logic_Interpretation ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ] ;
+    owl:disjointWith ns3:Type_Description .
 
 <http://www.openmath.org/cd/transc1#sin> a ns2:ApplicationSymbol,
         owl:NamedIndividual ;
