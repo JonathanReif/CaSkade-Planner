@@ -15,21 +15,23 @@ def getAllProperties(graph: Graph, happenings:int, eventBound:int) -> PropertyDi
 	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
 	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
 	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-	SELECT DISTINCT ?de ?dataType WHERE { 
+	SELECT DISTINCT ?de ?dataType ?relationType WHERE { 
 		?cap a ?capType;
 			^CSS:requiresCapability ?process.
 		values ?capType { CaSk:ProvidedCapability CaSk:RequiredCapability }. 	
-		?process VDI3682:hasInput|VDI3682:hasOutput ?inout.
+		?process ?relation ?inout.
+		VALUES ?relation {VDI3682:hasInput VDI3682:hasOutput}.
 		?inout VDI3682:isCharacterizedBy ?id.
 		?de DINEN61360:has_Instance_Description ?id.
 		?id a ?dataType.
 		?dataType rdfs:subClassOf DINEN61360:Simple_Data_Type.
+		BIND(STRAFTER(STR(?relation), "has") AS ?relationType)
 	}"""
 	
 	results = graph.query(queryString)
 	properties = PropertyDictionary()
 	for row in results:
-		properties.addProperty(row.de, str(row.dataType)) # type: ignore 
+		properties.addProperty(row.de, str(row.dataType), str(row.relationType)) # type: ignore 
 		for happening in range(happenings):
 			properties.addPropertyHappening(row.de, happening) # type: ignore
 			for event in range(eventBound):
