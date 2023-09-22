@@ -8,7 +8,8 @@ from capability_preconditions import getCapabilityPreconditions
 from capability_effects import getCapabilityEffects
 from capability_constraints import getCapabilityConstraints
 from bool_variable_support import getPropositionSupports
-from variable_constraints import get_variable_constraints
+from constraints_bools import get_bool_constraints
+from constraints_real_variables import get_variable_constraints
 from property_links import get_related_properties
 from init import get_init
 from goal import get_goal
@@ -23,10 +24,10 @@ def cask_to_smt():
 	g = Graph()
 
 	# Parse in an RDF file hosted beside this file
-	g.parse("order_ontology.ttl", format="turtle")
+	g.parse("ex_two_caps.ttl", format="turtle")
 
 	# TODO: Happenings müssen je nach Lösung angepasst werden (for schleife) 
-	happenings = 1
+	happenings = 2
 	# Fixed upper bound for number of events in one happening. Currently no events, so we just have the start and end of a happening
 	event_bound = 2
 
@@ -37,11 +38,15 @@ def cask_to_smt():
 	# Get provided capabilities and transform to boolean SMT variables
 	capability_dictionary = getProvidedCapabilities(g, happenings, event_bound)
 
-	# ------Constraint Proposition (H1 + H2) and Cosntraint Real Variable (H5) --> bool and real properties-------
+	# ------------------------Constraint Proposition (H1 + H2) --> bool properties------------------
+	bool_constraints = get_bool_constraints(g, capability_dictionary, property_dictionary, happenings, event_bound)
+	for bool_constraint in bool_constraints:
+		solver.add(bool_constraint)	
 
+	# ---------------------Constraint Real Variable (H5) --> real properties-----------------------------
 	variable_constraints = get_variable_constraints(g, capability_dictionary, property_dictionary, happenings, event_bound)
-	for constraint in variable_constraints:
-		solver.add(constraint)	
+	for variable_constraint in variable_constraints:
+		solver.add(variable_constraint)	
 
 
 	# ----------------- Capability Precondition ------------------------------------------------------
