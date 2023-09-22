@@ -59,4 +59,4 @@ def get_init(graph: Graph, property_dictionary: PropertyDictionary):
 				
 			inits.append(init)
 	
-	return inits										
+	return inits
