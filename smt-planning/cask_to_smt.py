@@ -2,13 +2,13 @@ import json
 
 from rdflib import Graph
 from z3 import Solver, sat, Bool
-
 from variable_declaration import getProvidedCapabilities, getAllProperties
 from capability_preconditions import getCapabilityPreconditions
 from capability_effects import getCapabilityEffects
 from capability_constraints import getCapabilityConstraints
 from bool_variable_support import getPropositionSupports
-from variable_constraints import get_variable_constraints
+from constraints_bools import get_bool_constraints
+from constraints_real_variables import get_variable_constraints
 from property_links import get_related_properties
 from init import get_init
 from goal import get_goal
@@ -48,9 +48,15 @@ def cask_to_smt():
 
 	# ------Constraint Proposition (H1 + H2) and Cosntraint Real Variable (H5) --> bool and real properties-------
 	add_comment(solver, "## Start of variable constraints ##")
+	# ------------------------Constraint Proposition (H1 + H2) --> bool properties------------------
+	bool_constraints = get_bool_constraints(g, capability_dictionary, property_dictionary, happenings, event_bound)
+	for bool_constraint in bool_constraints:
+		solver.add(bool_constraint)	
+
+	# ---------------------Constraint Real Variable (H5) --> real properties-----------------------------
 	variable_constraints = get_variable_constraints(g, capability_dictionary, property_dictionary, happenings, event_bound)
-	for constraint in variable_constraints:
-		solver.add(constraint)	
+	for variable_constraint in variable_constraints:
+		solver.add(variable_constraint)	
 
 
 	# ----------------- Capability Precondition ------------------------------------------------------
