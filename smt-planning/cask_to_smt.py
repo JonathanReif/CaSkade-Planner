@@ -9,7 +9,7 @@ from capability_constraints import getCapabilityConstraints
 from bool_variable_support import getPropositionSupports
 from constraints_bools import get_bool_constraints
 from constraints_real_variables import get_variable_constraints
-from property_links import get_related_properties
+from property_links import get_property_cross_relations
 from init import get_init
 from goal import get_goal
 from real_variable_contin_change import get_real_variable_continuous_changes
@@ -114,7 +114,7 @@ def cask_to_smt():
 
 	# ----------------- Cross-connection of related properties (new) -----------------
 	add_comment(solver, "## Start of related properties ##")
-	property_cross_relations = get_related_properties(g, property_dictionary, happenings, event_bound)
+	property_cross_relations = get_property_cross_relations(g, property_dictionary, happenings, event_bound)
 	for cross_relation in property_cross_relations:
 		solver.add(cross_relation)
 
