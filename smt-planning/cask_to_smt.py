@@ -1,7 +1,7 @@
 import json 
 
 from rdflib import Graph
-from z3 import Solver, sat 
+from z3 import Solver, sat, Bool
 
 from variable_declaration import getProvidedCapabilities, getAllProperties
 from capability_preconditions import getCapabilityPreconditions
@@ -14,6 +14,15 @@ from init import get_init
 from goal import get_goal
 from real_variable_contin_change import get_real_variable_continuous_changes
 
+
+
+def add_comment(solver: Solver, comment_text: str):
+	# Adds a comment to the smt output in a pretty hackish way: 
+	# Z3 doesn't allow adding comments, so we create a variable with the comment as its name and add it to the solver
+
+	comment = Bool(f"## {comment_text} ##")
+	solver.add(comment)
+
 def cask_to_smt():
 
 	# SMT Solver
@@ -23,10 +32,10 @@ def cask_to_smt():
 	g = Graph()
 
 	# Parse in an RDF file hosted beside this file
-	g.parse("order_ontology.ttl", format="turtle")
+	g.parse("ex_two_caps.ttl", format="turtle")
 
 	# TODO: Happenings müssen je nach Lösung angepasst werden (for schleife) 
-	happenings = 1
+	happenings = 2
 	# Fixed upper bound for number of events in one happening. Currently no events, so we just have the start and end of a happening
 	event_bound = 2
 
@@ -38,24 +47,30 @@ def cask_to_smt():
 	capability_dictionary = getProvidedCapabilities(g, happenings, event_bound)
 
 	# ------Constraint Proposition (H1 + H2) and Cosntraint Real Variable (H5) --> bool and real properties-------
-
+	add_comment(solver, "## Start of variable constraints ##")
 	variable_constraints = get_variable_constraints(g, capability_dictionary, property_dictionary, happenings, event_bound)
 	for constraint in variable_constraints:
 		solver.add(constraint)	
 
 
 	# ----------------- Capability Precondition ------------------------------------------------------
+	add_comment(solver, "## Start of preconditions ##")
 	preconditions = getCapabilityPreconditions(g, capability_dictionary, property_dictionary, happenings, event_bound)
 	for precondition in preconditions:
 		solver.add(precondition)
 
 	# --------------------------------------- Capability Effect ---------------------------------------
+	add_comment(solver, "## Start of effects ##")
 	effects = getCapabilityEffects(g, capability_dictionary, property_dictionary, happenings, event_bound)
 	for effect in effects:
 		solver.add(effect)
 
-	
+	# Capability constraints are expressions in smt2 form that cannot be added programmatically. Thus, we take the current solver in string form
+	# We create a new solver object. Then we take the current solver string and add the constraint strings. We then re-import everything back into the fresh solver object
+	# It has to be a fresh object because just re-importing doesn't clear everything
+	add_comment(solver, "## Start of capability constraints ##")
 	current_solver_string = solver.to_smt2()
+	solver = Solver()
 	constraints = getCapabilityConstraints(g, capability_dictionary, property_dictionary, happenings, event_bound)
 	for constraint in constraints:
 		current_solver_string += f"\n{constraint}" 
@@ -66,13 +81,13 @@ def cask_to_smt():
 
 
 	# ---------------- Init  --------------------------------------------------------
-
+	add_comment(solver, "## Start of init ##")
 	inits = get_init(g, property_dictionary)
 	for init in inits:
 		solver.add(init)												
 
 	# ---------------------- Goal ------------------------------------------------- 
-
+	add_comment(solver, "## Start of goal ##")
 	goals = get_goal(g, property_dictionary, happenings)
 	for goal in goals:
 		solver.add(goal)
@@ -80,17 +95,19 @@ def cask_to_smt():
 	# Product Goal (aus Req Cap)
 
 	# ------------------- Proposition support (P5 + P6) ----------------------------
+	add_comment(solver, "## Start of proposition support ##")
 	proposition_supports = getPropositionSupports(property_dictionary, happenings, event_bound)
 	for support in proposition_supports:
 		solver.add(support)
 
 	# ----------------- Continuous change on real variables (P11) ------------------
-
+	add_comment(solver, "## Start of real variable continuous change ##")
 	real_variable_cont_changes = get_real_variable_continuous_changes(property_dictionary, happenings, event_bound)
 	for real_variable_cont_change in real_variable_cont_changes:
 		solver.add(real_variable_cont_change)
 
 	# ----------------- Cross-connection of related properties (new) -----------------
+	add_comment(solver, "## Start of related properties ##")
 	property_cross_relations = get_related_properties(g, property_dictionary, happenings, event_bound)
 	for cross_relation in property_cross_relations:
 		solver.add(cross_relation)
