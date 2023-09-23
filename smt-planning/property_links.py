@@ -9,7 +9,7 @@ from z3 import BoolRef, ArithRef
 
 def get_property_cross_relations(graph: Graph, property_dictionary: PropertyDictionary, happenings: int, event_bound: int) -> List[BoolRef]:
 	
-	related_property_pairs = find_property_pairs(graph)
+	related_property_pairs = PropertyPairCache.get_property_pairs(graph)
 	
 	relation_constraints = []
 
@@ -90,7 +90,7 @@ def get_outputs_of_required_cap(graph: Graph):
 
 def get_related_properties_at_same_time(graph: Graph, property_dictionary: PropertyDictionary, property_iri:str ,happening: int, event: int) -> List[ArithRef | BoolRef]:
 
-	property_pairs = find_property_pairs(graph)
+	property_pairs = PropertyPairCache.get_property_pairs(graph)
 	result_related_properties: List[ArithRef | BoolRef] = []
 
 	# Find all related partners of the given property
@@ -100,8 +100,11 @@ def get_related_properties_at_same_time(graph: Graph, property_dictionary: Prope
 		# Get related at same happening and event, but only if Output
 		if property_dictionary.get_relation_type_of_property(related_property) != "Output": continue
 		
-		related_property_same_time = property_dictionary.get_property(related_property, happening, event)
-		result_related_properties.append(related_property_same_time)
+		try: 
+			related_property_same_time = property_dictionary.get_provided_property(related_property, happening, event)
+			result_related_properties.append(related_property_same_time)
+		except KeyError: 
+			print(f"There is no provided property with key {related_property}.")
 
 	return result_related_properties
 
@@ -199,4 +202,14 @@ def same_type_description(binding: Mapping[Variable, Identifier], other_binding:
 def subtype_matches(binding: Mapping[Variable, Identifier], other_binding: Mapping[Variable, Identifier]) -> bool:
 	# Checks whether the product subtype of two result bindings is identical
 	return (str(binding.get("inOutSubType")) == str(other_binding.get("inOutSubType")))
+
+class PropertyPairCache:
+	property_pairs: List[PropertyPair] = list()
+
+	@staticmethod
+	def get_property_pairs(graph: Graph):
+		if not PropertyPairCache.property_pairs:
+			PropertyPairCache.property_pairs = find_property_pairs(graph)			
+
+		return PropertyPairCache.property_pairs
 
