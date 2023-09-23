@@ -102,13 +102,13 @@ def cask_to_smt():
 
 	# ------------------- Proposition support (P5 + P6) ----------------------------
 	add_comment(solver, "## Start of proposition support ##")
-	proposition_supports = getPropositionSupports(property_dictionary, happenings, event_bound)
+	proposition_supports = getPropositionSupports(g, property_dictionary, happenings, event_bound)
 	for support in proposition_supports:
 		solver.add(support)
 
 	# ----------------- Continuous change on real variables (P11) ------------------
 	add_comment(solver, "## Start of real variable continuous change ##")
-	real_variable_cont_changes = get_real_variable_continuous_changes(property_dictionary, happenings, event_bound)
+	real_variable_cont_changes = get_real_variable_continuous_changes(g, property_dictionary, happenings, event_bound)
 	for real_variable_cont_change in real_variable_cont_changes:
 		solver.add(real_variable_cont_change)
 

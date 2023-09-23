@@ -5,35 +5,11 @@ from dicts.CapabilityDictionary import CapabilityDictionary
 from dicts.PropertyDictionary import PropertyDictionary
 from typing import List, MutableSequence, Mapping
 from operator import itemgetter
-from z3 import BoolRef
+from z3 import BoolRef, ArithRef
 
 def get_property_cross_relations(graph: Graph, property_dictionary: PropertyDictionary, happenings: int, event_bound: int) -> List[BoolRef]:
-	query_string = """
-	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
-	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
-	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
-	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
-	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-	SELECT ?cap ?inOut ?de ?td ?inOutType ?inOutSubType WHERE {
-		?cap a ?capType;
-			^CSS:requiresCapability ?process.
-		values ?capType { CaSk:ProvidedCapability CaSk:RequiredCapability }.
-		?process VDI3682:hasInput|VDI3682:hasOutput ?inOut.
-		?de a DINEN61360:Data_Element.
-		?de DINEN61360:has_Type_Description ?td;
-			DINEN61360:has_Instance_Description ?id.
-		?inOut VDI3682:isCharacterizedBy ?id.
-		BIND(VDI3682:Product AS ?inOutType)
-		?inOut a ?inOutType.
-		OPTIONAL {
-			?inOut a ?inOutSubType.
-			?inOutSubType rdfs:subClassOf VDI3682:Product.
-		}
-	}
-	"""
-
-	result = graph.query(query_string)
-	related_property_pairs = find_property_pairs(result.bindings)
+	
+	related_property_pairs = find_property_pairs(graph)
 	
 	relation_constraints = []
 
@@ -41,10 +17,10 @@ def get_property_cross_relations(graph: Graph, property_dictionary: PropertyDict
 	# Both requirements and assurances need to be bound because otherwise assurance would be "floating" and could be set to goal without respecting caps
 	required_input_properties = get_inputs_of_required_cap(graph)
 	for required_input_prop_iri in required_input_properties:
-		related_prop_iris = find_related_properties(str(required_input_prop_iri), related_property_pairs)
+		related_prop_iris = get_partners(str(required_input_prop_iri), related_property_pairs)
 		for related_property_iri in related_prop_iris:
-			required_input_prop = property_dictionary.getPropertyVariable(required_input_prop_iri, 0, 0)
-			related_property = property_dictionary.getPropertyVariable(related_property_iri, 0, 0)
+			required_input_prop = property_dictionary.get_required_property(required_input_prop_iri)
+			related_property = property_dictionary.get_provided_property(related_property_iri, 0, 0)
 			relation_constraint = (required_input_prop == related_property)
 			relation_constraints.append(relation_constraint)
 
@@ -52,39 +28,17 @@ def get_property_cross_relations(graph: Graph, property_dictionary: PropertyDict
 	# Only constrain output properties because we are only interested in the final output. The input depends on the capability and must not be "over-constrained"
 	required_output_properties = get_outputs_of_required_cap(graph)
 	for required_output_prop_iri in required_output_properties:
-		related_prop_iris = find_related_properties(str(required_output_prop_iri), related_property_pairs)
+		related_prop_iris = get_partners(str(required_output_prop_iri), related_property_pairs)
 		for related_property_iri in related_prop_iris:
 			related_property_relation_type = property_dictionary.get_relation_type_of_property(related_property_iri)
 			if related_property_relation_type != "Output":
 				continue
 
-			required_output_prop = property_dictionary.getPropertyVariable(required_output_prop_iri, happenings-1, 1)
-			related_property = property_dictionary.getPropertyVariable(related_property_iri, happenings-1, 1)
+			required_output_prop = property_dictionary.get_required_property(required_output_prop_iri)
+			related_property = property_dictionary.get_provided_property(related_property_iri, happenings-1, 1)
 			relation_constraint = (required_output_prop == related_property)
 			relation_constraints.append(relation_constraint)
 
-	# 3: Propagate changes to related properties. If there is a change in a property after a capabilty (output), this change needs to be reflected to related properties (inputs)
-	# Otherwise the change would not be propagated between different properties that are only implicitly related
-	for happening in range(happenings-2):
-		# Get this happening's properties and filter only for Outputs
-		properties_after_cap = property_dictionary.get_properties_at_happening_and_event(happening, 1)
-		outputs_after_cap = list(filter(lambda x: x.relation_type == "Output", properties_after_cap))
-
-		# Find all related properties
-		for output_after_cap in outputs_after_cap:
-			related_properties = find_related_properties(output_after_cap.iri, related_property_pairs)
-			
-			for related_property in related_properties:
-				# Get related at next happening and event = 1
-				next_happening = happening + 1
-				related_property_next_happening = property_dictionary.getPropertyVariable(related_property, next_happening, 0)
-
-				# Filter only for inputs
-				if property_dictionary.get_relation_type_of_property(related_property) != "Input": continue 
-				
-				output_after_cap_property = property_dictionary.getPropertyVariable(output_after_cap.iri, happening, 1)
-				relation_constraint = (output_after_cap_property == related_property_next_happening)
-				relation_constraints.append(relation_constraint)
 
 	return relation_constraints
 
@@ -134,13 +88,33 @@ def get_outputs_of_required_cap(graph: Graph):
 	return output_iris
 
 
+def get_related_properties_at_same_time(graph: Graph, property_dictionary: PropertyDictionary, property_iri:str ,happening: int, event: int) -> List[ArithRef | BoolRef]:
+
+	property_pairs = find_property_pairs(graph)
+	result_related_properties: List[ArithRef | BoolRef] = []
+
+	# Find all related partners of the given property
+	related_properties = get_partners(property_iri, property_pairs)
+	
+	for related_property in related_properties:
+		# Get related at same happening and event, but only if Output
+		if property_dictionary.get_relation_type_of_property(related_property) != "Output": continue
+		
+		related_property_same_time = property_dictionary.get_property(related_property, happening, event)
+		result_related_properties.append(related_property_same_time)
+
+	return result_related_properties
+
+
 class PropertyPair:
 	def __init__(self, property_a: URIRef, property_b: URIRef) -> None:
 		self.property_a = property_a
 		self.property_b = property_b
 
 
-def find_related_properties(property_iri: str, property_pairs:List[PropertyPair]) -> List[URIRef]:
+def get_partners(property_iri: str, property_pairs:List[PropertyPair]) -> List[URIRef]:
+	# Returns all partners of a property from the list of property pairs
+	# Gets partnerA if partnerB is given and partnerB if partnerA is given
 	related_properties = []
 	for property_pair in property_pairs:
 		if (str(property_iri) ==  str(property_pair.property_a)):
@@ -162,13 +136,41 @@ def is_existing(pair: PropertyPair, other_pair: PropertyPair) -> bool:
 def is_self_pair(pair: PropertyPair) -> bool:
 	return str(pair.property_a) == str(pair.property_b)
 
-def find_property_pairs(result_bindings: MutableSequence[Mapping[Variable, Identifier]]) -> List[PropertyPair]: 
+
+def find_property_pairs(graph:Graph) -> List[PropertyPair]: 
+	# Queries the graph and finds all implicitly related property pairs
+
+	query_string = """
+	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
+	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
+	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
+	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
+	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+	SELECT ?cap ?inOut ?de ?td ?inOutType ?inOutSubType WHERE {
+		?cap a ?capType;
+			^CSS:requiresCapability ?process.
+		values ?capType { CaSk:ProvidedCapability CaSk:RequiredCapability }.
+		?process VDI3682:hasInput|VDI3682:hasOutput ?inOut.
+		?de a DINEN61360:Data_Element.
+		?de DINEN61360:has_Type_Description ?td;
+			DINEN61360:has_Instance_Description ?id.
+		?inOut VDI3682:isCharacterizedBy ?id.
+		BIND(VDI3682:Product AS ?inOutType)
+		?inOut a ?inOutType.
+		OPTIONAL {
+			?inOut a ?inOutSubType.
+			?inOutSubType rdfs:subClassOf VDI3682:Product.
+		}
+	}
+	"""
+
+	result = graph.query(query_string)
 	# Creates a list of pairs of related properties, i.e. a properties with a different data_element that is still implicitly connected and thus must be linked in SMT
 	# Requirement for a related property:
 	# Must belong to different capability, must have same type description and either both properties dont have a product subtype or both have the same subtype
 	related_property_pairs: List[PropertyPair] = []
-	for binding in result_bindings:
-		related_bindings = list(filter(lambda x: is_related_binding(binding, x), result_bindings))
+	for binding in result.bindings:
+		related_bindings = list(filter(lambda x: is_related_binding(binding, x), result.bindings))
 		for related_binding in related_bindings:
 			pair = PropertyPair(binding.get("de"), related_binding.get("de"))
 			existing_pair = next(filter(lambda x: is_existing(pair, x), related_property_pairs), None)
