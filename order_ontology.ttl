@@ -1,9 +1,9 @@
 @prefix : <http://www.hsu-hh.de/aut/RIVA/Logistic#> .
 @prefix ns1: <http://openmath.org/vocab/math#> .
 @prefix ns2: <http://openmath.org/vocab/math/meta#> .
-@prefix ns3: <http://www.w3id.org/hsu-aut/css#> .
+@prefix ns3: <http://www.hsu-ifa.de/ontologies/DINEN61360#> .
 @prefix ns4: <http://www.w3id.org/hsu-aut/VDI3682#> .
-@prefix ns5: <http://www.hsu-ifa.de/ontologies/DINEN61360#> .
+@prefix ns5: <http://www.w3id.org/hsu-aut/css#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -35,15 +35,15 @@ ns2:description a owl:DatatypeProperty .
         "2.5.2",
         "4.0.1" .
 
-:Rover7 a ns3:Resource ;
-    ns5:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/latitude_de>,
+:Rover7 a ns5:Resource ;
+    ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/latitude_de>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/longitude_de> ;
-    ns3:providesCapability <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19>,
+    ns5:providesCapability <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34> .
 
-ns5:Boolean_Operator a owl:DatatypeProperty,
+ns3:Boolean_Operator a owl:DatatypeProperty,
         owl:FunctionalProperty ;
     rdfs:comment "Is used with Boolean_Association to define what kind of boolean relation connects the Data_Elements of the Boolean_Association" ;
     rdfs:range [ a rdfs:Datatype ;
@@ -59,19 +59,19 @@ ns5:Boolean_Operator a owl:DatatypeProperty,
                                                     rdf:first "XOR" ;
                                                     rdf:rest () ] ] ] ] ] ] .
 
-ns5:Created_at_Date a owl:DatatypeProperty ;
+ns3:Created_at_Date a owl:DatatypeProperty ;
     rdfs:comment """Description: 
 A SemAnz40 attribute, that indicates the creation date for an instance.""" ;
-    rdfs:domain ns5:Instance_Description ;
+    rdfs:domain ns3:Instance_Description ;
     rdfs:range xsd:dateTimeStamp .
 
-ns5:Data_Element_describes a owl:ObjectProperty ;
+ns3:Data_Element_describes a owl:ObjectProperty ;
     rdfs:comment """Description:
 This ObjectProperty is used to connect a data element with any kind of entity that is described by the data element""" ;
-    rdfs:domain ns5:Data_Element ;
-    owl:inverseOf ns5:has_Data_Element .
+    rdfs:domain ns3:Data_Element ;
+    owl:inverseOf ns3:has_Data_Element .
 
-ns5:Drawing_Reference a owl:DatatypeProperty ;
+ns3:Drawing_Reference a owl:DatatypeProperty ;
     rdfs:comment """Description:
 A link to a drawing (or picture) that is used for further explanation of the data element
 
@@ -82,10 +82,10 @@ DIN EN 61360-1:2018 Section 6.13
 Type: Contains a URL link as a string to a picture
 
 Poposed Data Range Expression: xsd:string""" ;
-    rdfs:domain ns5:Type_Description ;
+    rdfs:domain ns3:Type_Description ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Format_DIN61360_SemAnz40 a owl:DatatypeProperty ;
+ns3:Format_DIN61360_SemAnz40 a owl:DatatypeProperty ;
     rdfs:comment """Description: 
 
 Indicates, whether the described type or entity is described by the DIN61360&SemAnz40 Format.
@@ -95,10 +95,10 @@ Liability: Necessary
 Type: If true, the Data Element is based on the Din61360 and SemAnz40 description
 
 Poposed Data Range Expression: xsd:boolean""" ;
-    rdfs:domain ns5:Data_Element ;
+    rdfs:domain ns3:Data_Element ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Formula a owl:DatatypeProperty ;
+ns3:Formula a owl:DatatypeProperty ;
     rdfs:comment """Description:
 A mathematical euqation that is being used for characterization of the data element
 
@@ -109,10 +109,10 @@ DIN EN 61360-1:2018 Section 6.5
 Type: contains a URL link as a string to a source file that describes the formula
 
 Poposed Data Range Expression: xsd:string""" ;
-    rdfs:domain ns5:Type_Description ;
+    rdfs:domain ns3:Type_Description ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Note a owl:DatatypeProperty ;
+ns3:Note a owl:DatatypeProperty ;
     rdfs:comment """Description:
 Additional information that are important to understand the meaning of the data element
 
@@ -123,22 +123,22 @@ DIN EN 61360-1:2018 Section 8.4
 Type: String
 
 Poposed Data Range Expression: xsd:string""" ;
-    rdfs:domain ns5:Type_Description ;
+    rdfs:domain ns3:Type_Description ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Quality a owl:DatatypeProperty ;
+ns3:Quality a owl:DatatypeProperty ;
     rdfs:comment """Description:
 
 Not supported so far, since it requires a additional quality ontology""" ;
-    rdfs:domain ns5:Instance_Description ;
+    rdfs:domain ns3:Instance_Description ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Remark a owl:DatatypeProperty ;
+ns3:Remark a owl:DatatypeProperty ;
     rdfs:comment """Additional information that can be used to express a oppinion but should not change the meaning of the definition.
 DIN EN 61360-1:2018 Section 8.5""" ;
-    rdfs:domain ns5:Type_Description .
+    rdfs:domain ns3:Type_Description .
 
-ns5:Revision_Number a owl:DatatypeProperty ;
+ns3:Revision_Number a owl:DatatypeProperty ;
     rdfs:comment """Description:
 Number that represents the actual count of changes
 
@@ -149,10 +149,10 @@ DIN EN 61360-1:2018 Section 7.5
 Type: Integer with two digits between 1 and 99
 
 Poposed Data Range Expression: xsd:integer[>= 1 , <= 99]""" ;
-    rdfs:domain ns5:Type_Description ;
+    rdfs:domain ns3:Type_Description ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Source_Document_of_Definition a owl:DatatypeProperty ;
+ns3:Source_Document_of_Definition a owl:DatatypeProperty ;
     rdfs:comment """Description:
 A link to a source file, where the definition of the data element was taken from
 
@@ -163,10 +163,10 @@ DIN EN 61360-1:2018 Section 8.6
 Type: Should contain a description of the source document with a maximum of 80 characters. Document has to be approved by ISO or IEC (e.g. should be a standard like IEC XXXXX). Alternatively use a URL to give a source document that is not approved by ISO.
 
 Poposed Data Range Expression: xsd:string""" ;
-    rdfs:domain ns5:Type_Description ;
+    rdfs:domain ns3:Type_Description ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Unit_of_Measure a owl:DatatypeProperty ;
+ns3:Unit_of_Measure a owl:DatatypeProperty ;
     rdfs:comment """Description:
 Defines the unit of measure for a data element (e.g. km/h)
 
@@ -177,10 +177,10 @@ DIN EN 61360-1:2018 Section 10.7
 Type: This data property represents the unit of measure, which should be ISO 31 compliant (SI-Units)
 
 Poposed Data Range Expression: xsd:string""" ;
-    rdfs:domain ns5:Type_Description ;
+    rdfs:domain ns3:Type_Description ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Value a owl:DatatypeProperty,
+ns3:Value a owl:DatatypeProperty,
         owl:FunctionalProperty ;
     rdfs:comment """Description:
 
@@ -194,12 +194,12 @@ Type: This data property represents the value of the data element, which is a st
 
 Poposed Data Range Expression: xsd:string""" ;
     rdfs:domain [ a owl:Class ;
-            owl:intersectionOf ( ns5:Instance_Description [ a owl:Restriction ;
-                        owl:allValuesFrom ns5:Simple_Data_Type ;
-                        owl:onProperty ns5:Instance_Description_has_Type ] ) ] ;
+            owl:intersectionOf ( ns3:Instance_Description [ a owl:Restriction ;
+                        owl:allValuesFrom ns3:Simple_Data_Type ;
+                        owl:onProperty ns3:Instance_Description_has_Type ] ) ] ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Value_Format_Field_length a owl:DatatypeProperty ;
+ns3:Value_Format_Field_length a owl:DatatypeProperty ;
     rdfs:comment """Description:
 Defines the representation of a data element in length and kind. See DIN61360 for detailed description of possible formats. Possible definitions include non-quantitative formats, quantitative formats and maximum count of characters
 
@@ -210,10 +210,10 @@ DIN EN 61360-1:2018 Section 10.8
 Type: This data property represents only the field length, since this could be exponential (expressed with an E), it is a string
 
 Poposed Data Range Expression: xsd:string""" ;
-    rdfs:domain ns5:Type_Description ;
+    rdfs:domain ns3:Type_Description ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Value_Format_Field_length_Variable a owl:DatatypeProperty ;
+ns3:Value_Format_Field_length_Variable a owl:DatatypeProperty ;
     rdfs:comment """Description:
 Defines the representation of a data element in length and kind. See DIN61360 for detailed description of possible formats. Possible definitions include non-quantitative formats, quantitative formats and maximum count of characters
 
@@ -224,10 +224,10 @@ DIN EN 61360-1:2018 Section 10.8
 Type: This data property represents only the case, that a value format has a variable field length (true)
 
 Poposed Data Range Expression: xsd:boolean""" ;
-    rdfs:domain ns5:Type_Description ;
+    rdfs:domain ns3:Type_Description ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Value_Format_non-quantitativ a owl:DatatypeProperty ;
+ns3:Value_Format_non-quantitativ a owl:DatatypeProperty ;
     rdfs:comment """Description:
 Defines the representation of a data element in length and kind. See DIN61360 for detailed description of possible formats. Possible definitions include non-quantitative formats, quantitative formats and maximum count of characters
 
@@ -238,7 +238,7 @@ DIN EN 61360-1:2018 Section 10.8
 Type: This data property represents only the non-quantitativ formats, string
 
 Poposed Data Range Expression: xsd:string""" ;
-    rdfs:domain ns5:Type_Description ;
+    rdfs:domain ns3:Type_Description ;
     rdfs:range [ a rdfs:Datatype ;
             owl:oneOf [ a rdf:List ;
                     rdf:first "A" ;
@@ -252,25 +252,25 @@ Poposed Data Range Expression: xsd:string""" ;
                                                     rdf:first "X" ;
                                                     rdf:rest () ] ] ] ] ] ] ;
     rdfs:subPropertyOf owl:topDataProperty ;
-    owl:propertyDisjointWith ns5:Value_Format_quantitativ .
+    owl:propertyDisjointWith ns3:Value_Format_quantitativ .
 
-ns5:backwards_compatible_Revision a owl:DatatypeProperty ;
+ns3:backwards_compatible_Revision a owl:DatatypeProperty ;
     rdfs:comment """Description:
 Indicates, to which revisions the data type is backwards compatible.
 
 Type: Integer
 
 Poposed Data Range Expression: xsd:string""" ;
-    rdfs:domain ns5:Type_Description .
+    rdfs:domain ns3:Type_Description .
 
-ns5:backwards_compatible_Version a owl:DatatypeProperty ;
+ns3:backwards_compatible_Version a owl:DatatypeProperty ;
     rdfs:comment """Description:
 Indicates, to which version numbers the data type is backwards compatible.
 
 Type: Integer
 
 Poposed Data Range Expression: xsd:string""" ;
-    rdfs:domain ns5:Type_Description .
+    rdfs:domain ns3:Type_Description .
 
 <http://www.hsu-ifa.de/ontologies/ISA-TR88#consistsOfState> a owl:ObjectProperty ;
     rdfs:comment "Defines that a State is part of a State Machine." ;
@@ -5286,11 +5286,11 @@ ns4:shortName a owl:DatatypeProperty,
     rdfs:comment "May be used to get the current state as an integer value" ;
     rdfs:subClassOf <http://www.w3id.org/hsu-aut/cask#SkillOutput> .
 
-<http://www.w3id.org/hsu-aut/cask#CurrentStateOutput_TD> a ns5:Type_Description,
+<http://www.w3id.org/hsu-aut/cask#CurrentStateOutput_TD> a ns3:Type_Description,
         owl:NamedIndividual ;
-    ns5:Definition "A CurrentStateOutput is an integer variable that is used to reflect the current state of the state machine." ;
-    ns5:Note "Note that there should always be instance descriptions connected to this type description that are connected to the states of the state machine in order to specify which value reflects a certain state." ;
-    ns5:Preferred_Name "CurrentStateOutput" .
+    ns3:Definition "A CurrentStateOutput is an integer variable that is used to reflect the current state of the state machine." ;
+    ns3:Note "Note that there should always be instance descriptions connected to this type description that are connected to the states of the state machine in order to specify which value reflects a certain state." ;
+    ns3:Preferred_Name "CurrentStateOutput" .
 
 <http://www.w3id.org/hsu-aut/cask#GetOutputs> a owl:Class ;
     rdfs:subClassOf <http://www.w3id.org/hsu-aut/cask#StatelessMethod> .
@@ -5298,36 +5298,36 @@ ns4:shortName a owl:DatatypeProperty,
 <http://www.w3id.org/hsu-aut/cask#SetParameters> a owl:Class ;
     rdfs:subClassOf <http://www.w3id.org/hsu-aut/cask#StatelessMethod> .
 
-<http://www.w3id.org/hsu-aut/cask#SkillCommandVariable_TD> a ns5:Type_Description,
+<http://www.w3id.org/hsu-aut/cask#SkillCommandVariable_TD> a ns3:Type_Description,
         owl:NamedIndividual ;
-    ns5:Definition "A SkillCommandVariable is an integer variable that is used to trigger transitions of the state machine. It can be seen as the counterpart to a skill method." ;
-    ns5:Note "Note that there should always be instance descriptions of this type description connected to the transitions of the state machine in order to specify which values have to be used to trigger a transition." ;
-    ns5:Preferred_Name "SkillCommandVariable" .
+    ns3:Definition "A SkillCommandVariable is an integer variable that is used to trigger transitions of the state machine. It can be seen as the counterpart to a skill method." ;
+    ns3:Note "Note that there should always be instance descriptions of this type description connected to the transitions of the state machine in order to specify which values have to be used to trigger a transition." ;
+    ns3:Preferred_Name "SkillCommandVariable" .
 
 <http://www.w3id.org/hsu-aut/cask#exposesSkillMethod> a owl:ObjectProperty ;
-    rdfs:domain ns3:SkillInterface ;
+    rdfs:domain ns5:SkillInterface ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#SkillMethod> ;
-    rdfs:subPropertyOf ns3:exposes .
+    rdfs:subPropertyOf ns5:exposes .
 
 <http://www.w3id.org/hsu-aut/cask#exposesSkillOutput> a owl:ObjectProperty ;
-    rdfs:domain ns3:SkillInterface ;
+    rdfs:domain ns5:SkillInterface ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#SkillOutput> ;
     rdfs:subPropertyOf <http://www.w3id.org/hsu-aut/cask#exposesSkillVariable> .
 
 <http://www.w3id.org/hsu-aut/cask#exposesSkillParameter> a owl:ObjectProperty ;
-    rdfs:domain ns3:SkillInterface ;
-    rdfs:range ns3:SkillParameter ;
+    rdfs:domain ns5:SkillInterface ;
+    rdfs:range ns5:SkillParameter ;
     rdfs:subPropertyOf <http://www.w3id.org/hsu-aut/cask#exposesSkillVariable> .
 
 <http://www.w3id.org/hsu-aut/cask#exposesStateMachine> a owl:ObjectProperty ;
-    rdfs:domain ns3:SkillInterface ;
-    rdfs:range ns3:StateMachine ;
-    rdfs:subPropertyOf ns3:exposes .
+    rdfs:domain ns5:SkillInterface ;
+    rdfs:range ns5:StateMachine ;
+    rdfs:subPropertyOf ns5:exposes .
 
 <http://www.w3id.org/hsu-aut/cask#hasCurrentState> a owl:AsymmetricProperty,
         owl:FunctionalProperty,
         owl:ObjectProperty ;
-    rdfs:domain ns3:Skill ;
+    rdfs:domain ns5:Skill ;
     rdfs:range <http://www.hsu-ifa.de/ontologies/ISA-TR88#State> .
 
 <http://www.w3id.org/hsu-aut/cask#hasCurrentStateOutput> a owl:ObjectProperty ;
@@ -5340,12 +5340,12 @@ ns4:shortName a owl:DatatypeProperty,
     rdfs:domain <http://www.w3id.org/hsu-aut/cask#SkillVariable> .
 
 <http://www.w3id.org/hsu-aut/cask#hasSkillCommand> a owl:ObjectProperty ;
-    rdfs:domain ns3:Skill ;
+    rdfs:domain ns5:Skill ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#SkillCommand> ;
-    rdfs:subPropertyOf ns3:hasParameter .
+    rdfs:subPropertyOf ns5:hasParameter .
 
 <http://www.w3id.org/hsu-aut/cask#hasSkillMethod> a owl:ObjectProperty ;
-    rdfs:domain ns3:Skill ;
+    rdfs:domain ns5:Skill ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#SkillMethod> .
 
 <http://www.w3id.org/hsu-aut/cask#hasVariableName> a owl:DatatypeProperty ;
@@ -5362,93 +5362,93 @@ ns4:shortName a owl:DatatypeProperty,
 <http://www.w3id.org/hsu-aut/cask#isRequired> a owl:DatatypeProperty ;
     rdfs:domain <http://www.w3id.org/hsu-aut/cask#SkillVariable> .
 
-ns3:accessibleThrough a owl:ObjectProperty ;
-    rdfs:domain ns3:Skill ;
-    rdfs:range ns3:SkillInterface .
+ns5:accessibleThrough a owl:ObjectProperty ;
+    rdfs:domain ns5:Skill ;
+    rdfs:range ns5:SkillInterface .
 
-ns3:assures a owl:ObjectProperty ;
-    rdfs:domain ns3:Service ;
-    rdfs:range ns3:Product .
+ns5:assures a owl:ObjectProperty ;
+    rdfs:domain ns5:Service ;
+    rdfs:range ns5:Product .
 
-ns3:behaviorConformsTo a owl:ObjectProperty ;
-    rdfs:domain ns3:Resource,
-        ns3:Skill ;
-    rdfs:range ns3:StateMachine .
+ns5:behaviorConformsTo a owl:ObjectProperty ;
+    rdfs:domain ns5:Resource,
+        ns5:Skill ;
+    rdfs:range ns5:StateMachine .
 
-ns3:controls a owl:ObjectProperty ;
-    rdfs:domain ns3:Skill ;
-    rdfs:range ns3:Process .
+ns5:controls a owl:ObjectProperty ;
+    rdfs:domain ns5:Skill ;
+    rdfs:range ns5:Process .
 
-ns3:demands a owl:ObjectProperty ;
-    rdfs:domain ns3:ServiceRequester ;
-    rdfs:range ns3:Service .
+ns5:demands a owl:ObjectProperty ;
+    rdfs:domain ns5:ServiceRequester ;
+    rdfs:range ns5:Service .
 
-ns3:hasInput a owl:ObjectProperty ;
-    rdfs:domain ns3:Process ;
-    rdfs:range ns3:Product .
+ns5:hasInput a owl:ObjectProperty ;
+    rdfs:domain ns5:Process ;
+    rdfs:range ns5:Product .
 
-ns3:hasOutput a owl:ObjectProperty ;
-    rdfs:domain ns3:Process ;
-    rdfs:range ns3:Product .
+ns5:hasOutput a owl:ObjectProperty ;
+    rdfs:domain ns5:Process ;
+    rdfs:range ns5:Product .
 
-ns3:isInputFor a owl:ObjectProperty ;
-    rdfs:domain ns3:Service ;
-    rdfs:range ns3:ServiceOffer .
+ns5:isInputFor a owl:ObjectProperty ;
+    rdfs:domain ns5:Service ;
+    rdfs:range ns5:ServiceOffer .
 
-ns3:isRealizedBySkill a owl:ObjectProperty ;
-    rdfs:domain ns3:Capability ;
-    rdfs:range ns3:Skill ;
-    rdfs:subPropertyOf ns3:isRealizedBy .
+ns5:isRealizedBySkill a owl:ObjectProperty ;
+    rdfs:domain ns5:Capability ;
+    rdfs:range ns5:Skill ;
+    rdfs:subPropertyOf ns5:isRealizedBy .
 
-ns3:isRealizedBySkillParameter a owl:ObjectProperty ;
-    rdfs:domain ns3:Property ;
-    rdfs:range ns3:SkillParameter ;
-    rdfs:subPropertyOf ns3:isRealizedBy .
+ns5:isRealizedBySkillParameter a owl:ObjectProperty ;
+    rdfs:domain ns5:Property ;
+    rdfs:range ns5:SkillParameter ;
+    rdfs:subPropertyOf ns5:isRealizedBy .
 
-ns3:isSpecifiedBy a owl:ObjectProperty ;
-    rdfs:domain ns3:Capability,
-        ns3:Service ;
-    rdfs:range ns3:Property .
+ns5:isSpecifiedBy a owl:ObjectProperty ;
+    rdfs:domain ns5:Capability,
+        ns5:Service ;
+    rdfs:range ns5:Property .
 
-ns3:offers a owl:ObjectProperty ;
-    rdfs:domain ns3:ServiceProvider ;
-    rdfs:range ns3:Service .
+ns5:offers a owl:ObjectProperty ;
+    rdfs:domain ns5:ServiceProvider ;
+    rdfs:range ns5:Service .
 
-ns3:offersUseOf a owl:ObjectProperty ;
-    rdfs:domain ns3:Service ;
-    rdfs:range ns3:Capability .
+ns5:offersUseOf a owl:ObjectProperty ;
+    rdfs:domain ns5:Service ;
+    rdfs:range ns5:Capability .
 
-ns3:proposes a owl:ObjectProperty ;
-    rdfs:domain ns3:ServiceProvider ;
-    rdfs:range ns3:ServiceOffer .
+ns5:proposes a owl:ObjectProperty ;
+    rdfs:domain ns5:ServiceProvider ;
+    rdfs:range ns5:ServiceOffer .
 
-ns3:providesCapability a owl:ObjectProperty ;
-    rdfs:domain ns3:Resource ;
+ns5:providesCapability a owl:ObjectProperty ;
+    rdfs:domain ns5:Resource ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#ProvidedCapability>,
-        ns3:Capability ;
-    rdfs:subPropertyOf ns3:provides .
+        ns5:Capability ;
+    rdfs:subPropertyOf ns5:provides .
 
-ns3:providesSkill a owl:ObjectProperty ;
-    rdfs:domain ns3:Resource ;
-    rdfs:range ns3:Skill ;
-    rdfs:subPropertyOf ns3:provides .
+ns5:providesSkill a owl:ObjectProperty ;
+    rdfs:domain ns5:Resource ;
+    rdfs:range ns5:Skill ;
+    rdfs:subPropertyOf ns5:provides .
 
-ns3:receives a owl:ObjectProperty ;
-    rdfs:domain ns3:ServiceRequester ;
-    rdfs:range ns3:ServiceOffer .
+ns5:receives a owl:ObjectProperty ;
+    rdfs:domain ns5:ServiceRequester ;
+    rdfs:range ns5:ServiceOffer .
 
-ns3:references a owl:ObjectProperty ;
-    rdfs:domain ns3:CapabilityConstraint ;
-    rdfs:range ns3:Property .
+ns5:references a owl:ObjectProperty ;
+    rdfs:domain ns5:CapabilityConstraint ;
+    rdfs:range ns5:Property .
 
-ns3:requiresCapability a owl:ObjectProperty ;
-    rdfs:domain ns3:Process ;
+ns5:requiresCapability a owl:ObjectProperty ;
+    rdfs:domain ns5:Process ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#RequiredCapability>,
-        ns3:Capability .
+        ns5:Capability .
 
-ns3:requiresProduct a owl:ObjectProperty ;
-    rdfs:domain ns3:ServiceRequester ;
-    rdfs:range ns3:Product .
+ns5:requiresProduct a owl:ObjectProperty ;
+    rdfs:domain ns5:ServiceRequester ;
+    rdfs:range ns5:Product .
 
 ns1:VariableList a owl:Class ;
     rdfs:comment "A list of variables." ;
@@ -5473,35 +5473,47 @@ ns2:formalProperty a owl:ObjectProperty .
 :Required-cap-Transport a <http://www.w3id.org/hsu-aut/cask#RequiredCapability> ;
     ns4:hasInput <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3> ;
     ns4:hasOutput <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3> ;
-    ns3:requiresCapability :Required-cap-Transport .
+    ns5:requiresCapability :Required-cap-Transport .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3> a ns4:Product ;
-    ns5:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/latitude_de>,
+    ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/grabbed_de>,
+        <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/latitude_de>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/longitude_de> ;
-    ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/latitude_id>,
+    ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/grabbed_id>,
+        <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/latitude_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/longitude_id> .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/latitude_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/latitude_id> ;
-    ns5:has_Type_Description :latitude_TD .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/grabbed_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/grabbed_id> ;
+    ns3:has_Type_Description :grabbed_TD .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/longitude_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/longitude_id> ;
-    ns5:has_Type_Description :longitude_TD .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/latitude_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/latitude_id> ;
+    ns3:has_Type_Description :latitude_TD .
+
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/longitude_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/longitude_id> ;
+    ns3:has_Type_Description :longitude_TD .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3> a ns4:Product ;
-    ns5:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/latitude_de>,
+    ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/grabbed_de>,
+        <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/latitude_de>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/longitude_de> ;
-    ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/latitude_id>,
+    ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/grabbed_id>,
+        <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/latitude_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/longitude_id> .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/latitude_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/latitude_id> ;
-    ns5:has_Type_Description :latitude_TD .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/grabbed_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/grabbed_id> ;
+    ns3:has_Type_Description :grabbed_TD .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/longitude_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/longitude_id> ;
-    ns5:has_Type_Description :longitude_TD .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/latitude_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/latitude_id> ;
+    ns3:has_Type_Description :latitude_TD .
+
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/longitude_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/longitude_id> ;
+    ns3:has_Type_Description :longitude_TD .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceInflat> a ns4:Information ;
     ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceInflat/latitude71_id> .
@@ -5510,94 +5522,94 @@ ns2:formalProperty a owl:ObjectProperty .
     ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceInflong/longitude70_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem> a ns4:Product ;
-    ns5:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/latitude_de>,
+    ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/latitude_de>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/longitude_de> ;
     ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/latitude_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/longitude_id> .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/latitude_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/latitude_id> ;
-    ns5:has_Type_Description :latitude_TD .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/latitude_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/latitude_id> ;
+    ns3:has_Type_Description :latitude_TD .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/longitude_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/longitude_id> ;
-    ns5:has_Type_Description :longitude_TD .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/longitude_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/longitude_id> ;
+    ns3:has_Type_Description :longitude_TD .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/Constraint/latitude> a ns1:Application,
-        ns3:CapabilityConstraint ;
+        ns5:CapabilityConstraint ;
     ns1:arguments <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/Constraint/latitude/ArgList> ;
     ns1:operator <http://www.openmath.org/cd/relation1#eq> ;
-    ns3:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/latitude_id>,
+    ns5:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/latitude_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflat/latitude71_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/Constraint/latitude/ArgList> rdf:first <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/latitude_id> ;
     rdf:rest ( <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflat/latitude71_id> ) .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/Constraint/latitude71> a ns1:Application,
-        ns3:CapabilityConstraint ;
+        ns5:CapabilityConstraint ;
     ns1:arguments <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/Constraint/latitude71/ArgList> ;
     ns1:operator <http://www.openmath.org/cd/relation1#eq> ;
-    ns3:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceInflat/latitude71_id>,
+    ns5:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceInflat/latitude71_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflat/latitude71_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/Constraint/latitude71/ArgList> rdf:first <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceInflat/latitude71_id> ;
     rdf:rest ( <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflat/latitude71_id> ) .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/Constraint/longitude> a ns1:Application,
-        ns3:CapabilityConstraint ;
+        ns5:CapabilityConstraint ;
     ns1:arguments <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/Constraint/longitude/ArgList> ;
     ns1:operator <http://www.openmath.org/cd/relation1#eq> ;
-    ns3:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/longitude_id>,
+    ns5:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/longitude_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflong/longitude70_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/Constraint/longitude/ArgList> rdf:first <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/longitude_id> ;
     rdf:rest ( <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflong/longitude70_id> ) .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/Constraint/longitude70> a ns1:Application,
-        ns3:CapabilityConstraint ;
+        ns5:CapabilityConstraint ;
     ns1:arguments <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/Constraint/longitude70/ArgList> ;
     ns1:operator <http://www.openmath.org/cd/relation1#eq> ;
-    ns3:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceInflong/longitude70_id>,
+    ns5:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceInflong/longitude70_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflong/longitude70_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/Constraint/longitude70/ArgList> rdf:first <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceInflong/longitude70_id> ;
     rdf:rest ( <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflong/longitude70_id> ) .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflat> a ns4:Information ;
-    ns5:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflat/latitude71_de> ;
+    ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflat/latitude71_de> ;
     ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflat/latitude71_id> .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflat/latitude71_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflat/latitude71_id> ;
-    ns5:has_Type_Description :latitude_TD .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflat/latitude71_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflat/latitude71_id> ;
+    ns3:has_Type_Description :latitude_TD .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflong> a ns4:Information ;
-    ns5:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflong/longitude70_de> ;
+    ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflong/longitude70_de> ;
     ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflong/longitude70_id> .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflong/longitude70_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflong/longitude70_id> ;
-    ns5:has_Type_Description :longitude_TD .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflong/longitude70_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflong/longitude70_id> ;
+    ns3:has_Type_Description :longitude_TD .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem> a ns4:Product ;
-    ns5:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/grabbed_de>,
+    ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/grabbed_de>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/latitude_de>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/longitude_de> ;
     ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/grabbed_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/latitude_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/longitude_id> .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/grabbed_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/grabbed_id> ;
-    ns5:has_Type_Description :grabbed_TD .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/grabbed_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/grabbed_id> ;
+    ns3:has_Type_Description :grabbed_TD .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/latitude_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/latitude_id> ;
-    ns5:has_Type_Description :latitude_TD .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/latitude_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/latitude_id> ;
+    ns3:has_Type_Description :latitude_TD .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/longitude_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/longitude_id> ;
-    ns5:has_Type_Description :longitude_TD .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/longitude_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/longitude_id> ;
+    ns3:has_Type_Description :longitude_TD .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat> a ns4:Information ;
     ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat/latitude71_id> .
@@ -5606,87 +5618,87 @@ ns2:formalProperty a owl:ObjectProperty .
     ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflong/longitude70_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/latitude71> a ns1:Application,
-        ns3:CapabilityConstraint ;
+        ns5:CapabilityConstraint ;
     ns1:arguments <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/latitude71/ArgList> ;
     ns1:operator <http://www.openmath.org/cd/relation1#eq> ;
-    ns3:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat/latitude71_id>,
+    ns5:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat/latitude71_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/latitude71/ArgList> rdf:first <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat/latitude71_id> ;
     rdf:rest ( <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_id> ) .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/longitude70> a ns1:Application,
-        ns3:CapabilityConstraint ;
+        ns5:CapabilityConstraint ;
     ns1:arguments <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/longitude70/ArgList> ;
     ns1:operator <http://www.openmath.org/cd/relation1#eq> ;
-    ns3:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflong/longitude70_id>,
+    ns5:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflong/longitude70_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong/longitude70_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/longitude70/ArgList> rdf:first <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflong/longitude70_id> ;
     rdf:rest ( <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong/longitude70_id> ) .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat> a ns4:Information ;
-    ns5:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_de> ;
+    ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_de> ;
     ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_id> .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_id> ;
-    ns5:has_Type_Description :latitude_TD .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_id> ;
+    ns3:has_Type_Description :latitude_TD .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong> a ns4:Information ;
-    ns5:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong/longitude70_de> ;
+    ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong/longitude70_de> ;
     ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong/longitude70_id> .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong/longitude70_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong/longitude70_id> ;
-    ns5:has_Type_Description :longitude_TD .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong/longitude70_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong/longitude70_id> ;
+    ns3:has_Type_Description :longitude_TD .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/AssuranceProdItem> a ns4:Product ;
-    ns5:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/AssuranceProdItem/grabbed158_de> ;
+    ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/AssuranceProdItem/grabbed158_de> ;
     ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/AssuranceProdItem/grabbed158_id> .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/AssuranceProdItem/grabbed158_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/AssuranceProdItem/grabbed158_id> ;
-    ns5:has_Type_Description :grabbed_TD .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/AssuranceProdItem/grabbed158_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/AssuranceProdItem/grabbed158_id> ;
+    ns3:has_Type_Description :grabbed_TD .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/RequiredProdItem> a ns4:Product ;
-    ns5:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/RequiredProdItem/grabbed158_de> ;
+    ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/RequiredProdItem/grabbed158_de> ;
     ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/RequiredProdItem/grabbed158_id> .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/RequiredProdItem/grabbed158_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/RequiredProdItem/grabbed158_id> ;
-    ns5:has_Type_Description :grabbed_TD .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/RequiredProdItem/grabbed158_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/RequiredProdItem/grabbed158_id> ;
+    ns3:has_Type_Description :grabbed_TD .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem> a ns4:Product ;
-    ns5:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_de> ;
+    ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_de> ;
     ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_id> .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_id> ;
-    ns5:has_Type_Description :grabbed_TD .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_id> ;
+    ns3:has_Type_Description :grabbed_TD .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/latitude> a ns1:Application,
-        ns3:CapabilityConstraint ;
+        ns5:CapabilityConstraint ;
     ns1:arguments <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/latitude/ArgList> ;
     ns1:operator <http://www.openmath.org/cd/relation1#eq> ;
-    ns3:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/latitude_id>,
+    ns5:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/latitude_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/latitude_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/latitude/ArgList> rdf:first <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/latitude_id> ;
     rdf:rest ( <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/latitude_id> ) .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/longitude> a ns1:Application,
-        ns3:CapabilityConstraint ;
+        ns5:CapabilityConstraint ;
     ns1:arguments <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/longitude/ArgList> ;
     ns1:operator <http://www.openmath.org/cd/relation1#eq> ;
-    ns3:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/longitude_id>,
+    ns5:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/longitude_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/longitude_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/longitude/ArgList> rdf:first <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/longitude_id> ;
     rdf:rest ( <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/longitude_id> ) .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem> a ns4:Product ;
-    ns5:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/grabbed162_de>,
+    ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/grabbed162_de>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/latitude_de>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/longitude_de> ;
     ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/latitude_id>,
@@ -5695,60 +5707,60 @@ ns2:formalProperty a owl:ObjectProperty .
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/latitude_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/longitude_id> .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/grabbed162_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/grabbed162_id> ;
-    ns5:has_Type_Description :grabbed_TD .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/grabbed162_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/grabbed162_id> ;
+    ns3:has_Type_Description :grabbed_TD .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/latitude_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/latitude_id>,
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/latitude_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/latitude_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/latitude_id> ;
-    ns5:has_Type_Description :latitude_TD .
+    ns3:has_Type_Description :latitude_TD .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/longitude_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/longitude_id>,
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/longitude_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/longitude_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/longitude_id> ;
-    ns5:has_Type_Description :longitude_TD .
+    ns3:has_Type_Description :longitude_TD .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/latitude_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceInflat/latitude71_id>,
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/latitude_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceInflat/latitude71_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat/latitude71_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/latitude_id> ;
-    ns5:has_Type_Description :latitude_TD .
+    ns3:has_Type_Description :latitude_TD .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/longitude_de> a ns5:Data_Element ;
-    ns5:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceInflong/longitude70_id>,
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/longitude_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceInflong/longitude70_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflong/longitude70_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/longitude_id> ;
-    ns5:has_Type_Description :longitude_TD .
+    ns3:has_Type_Description :longitude_TD .
 
-ns5:Array a owl:Class ;
+ns3:Array a owl:Class ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom ns5:Array_Member ;
-            owl:onProperty ns5:complex_Data_Type_has_Member ],
-        ns5:Complex_Data_Type .
+            owl:allValuesFrom ns3:Array_Member ;
+            owl:onProperty ns3:complex_Data_Type_has_Member ],
+        ns3:Complex_Data_Type .
 
-ns5:Array_Member_Dimension a owl:DatatypeProperty ;
+ns3:Array_Member_Dimension a owl:DatatypeProperty ;
     rdfs:comment """Description:
 
 Indicates the dimension of an array member.""" ;
-    rdfs:domain ns5:Array_Member ;
+    rdfs:domain ns3:Array_Member ;
     rdfs:range xsd:int .
 
-ns5:Array_Member_Position a owl:DatatypeProperty ;
+ns3:Array_Member_Position a owl:DatatypeProperty ;
     rdfs:comment """Description:
 
 DataProperty that indicates the position of an Array_Member in a DataType List.""" .
 
-ns5:Bag a owl:Class ;
+ns3:Bag a owl:Class ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom ns5:Bag_Member ;
-            owl:onProperty ns5:complex_Data_Type_has_Member ],
-        ns5:Complex_Data_Type .
+            owl:allValuesFrom ns3:Bag_Member ;
+            owl:onProperty ns3:complex_Data_Type_has_Member ],
+        ns3:Complex_Data_Type .
 
-ns5:Bag_Member a owl:Class ;
-    rdfs:subClassOf ns5:Complex_Data_Type_Member .
+ns3:Bag_Member a owl:Class ;
+    rdfs:subClassOf ns3:Complex_Data_Type_Member .
 
-ns5:Code a owl:DatatypeProperty,
+ns3:Code a owl:DatatypeProperty,
         owl:FunctionalProperty ;
     rdfs:comment """Description:
 DIN EN 61360-1:2018 Section 7.3
@@ -5757,10 +5769,10 @@ Unique identifier of this data element type. Preferable this should be a standar
 Liability: necessary    
 
 type: string with 6 digits between, first three digits are a-z and last three digits are 0-9  poposed data range expression: xsd:string[pattern "[a-z0-9] {6}"]""" ;
-    rdfs:domain ns5:Type_Description ;
+    rdfs:domain ns3:Type_Description ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Definition a owl:DatatypeProperty ;
+ns3:Definition a owl:DatatypeProperty ;
     rdfs:comment """Description:
 A textual definition of the data element
 
@@ -5771,36 +5783,36 @@ DIN EN 61360-1:2018 Section 8.3
 Type: String
 
 Poposed Data Range Expression: xsd:string""" ;
-    rdfs:domain ns5:Type_Description ;
+    rdfs:domain ns3:Type_Description ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Integer a owl:Class ;
+ns3:Integer a owl:Class ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:allValuesFrom xsd:int ;
-            owl:onProperty ns5:Value_List_Member ],
-        ns5:Simple_Data_Type .
+            owl:onProperty ns3:Value_List_Member ],
+        ns3:Simple_Data_Type .
 
-ns5:List a owl:Class ;
+ns3:List a owl:Class ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom ns5:List_Member ;
-            owl:onProperty ns5:complex_Data_Type_has_Member ],
-        ns5:Complex_Data_Type .
+            owl:allValuesFrom ns3:List_Member ;
+            owl:onProperty ns3:complex_Data_Type_has_Member ],
+        ns3:Complex_Data_Type .
 
-ns5:List_Member_Position a owl:DatatypeProperty ;
+ns3:List_Member_Position a owl:DatatypeProperty ;
     rdfs:comment """Description:
 
 DataProperty that indicates the position of a List_Member in a DataType List.""" ;
-    rdfs:domain ns5:List_Member ;
+    rdfs:domain ns3:List_Member ;
     rdfs:range xsd:int .
 
-ns5:Logic_Interpretation a owl:DatatypeProperty,
+ns3:Logic_Interpretation a owl:DatatypeProperty,
         owl:FunctionalProperty ;
     rdfs:comment """Description:
 
 Indicates, whether a value with a certain Expression Goal has to be considered as equal ("="), greater than ("<"), lower than (">") or in combination with an equals (i.e. "<=", ">=").
 
 Liability: Necessary""" ;
-    rdfs:domain ns5:Instance_Description ;
+    rdfs:domain ns3:Instance_Description ;
     rdfs:range [ a rdfs:Datatype ;
             owl:oneOf [ a rdf:List ;
                     rdf:first "<" ;
@@ -5815,7 +5827,7 @@ Liability: Necessary""" ;
                                                     rdf:rest () ] ] ] ] ] ] ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Preferred_Letter_Symbol a owl:DatatypeProperty ;
+ns3:Preferred_Letter_Symbol a owl:DatatypeProperty ;
     rdfs:comment """Description:
 A sign or literal that is used to represent the property (e.g. greek "sigma" for tension))
 
@@ -5826,10 +5838,10 @@ DIN EN 61360-1:2018 Section 6.6
 Type: IEC 60027, IEC 60747 or IEC 60148 compliant formula sign described as a string
 
 Poposed Data Range Expression: xsd:string""" ;
-    rdfs:domain ns5:Type_Description ;
+    rdfs:domain ns3:Type_Description ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Preferred_Name a owl:DatatypeProperty ;
+ns3:Preferred_Name a owl:DatatypeProperty ;
     rdfs:comment """Description:
 Represents the preferred name of the data element type, that is being used for searches for instance.
 
@@ -5840,19 +5852,19 @@ DIN EN 61360-1:2018 Section 7.4
 Type: String with lower and upper case, with a maximum of 70 characters
 
 Poposed Data Range Expression: xsd:string[maxLength 70]""" ;
-    rdfs:domain ns5:Type_Description ;
+    rdfs:domain ns3:Type_Description ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Set a owl:Class ;
+ns3:Set a owl:Class ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom ns5:Set_Member ;
-            owl:onProperty ns5:complex_Data_Type_has_Member ],
-        ns5:Complex_Data_Type .
+            owl:allValuesFrom ns3:Set_Member ;
+            owl:onProperty ns3:complex_Data_Type_has_Member ],
+        ns3:Complex_Data_Type .
 
-ns5:Set_Member a owl:Class ;
-    rdfs:subClassOf ns5:Complex_Data_Type_Member .
+ns3:Set_Member a owl:Class ;
+    rdfs:subClassOf ns3:Complex_Data_Type_Member .
 
-ns5:Short_Name a owl:DatatypeProperty ;
+ns3:Short_Name a owl:DatatypeProperty ;
     rdfs:comment """Description:
 A short name or acronym that is used for the preferred name
 
@@ -5863,16 +5875,16 @@ DIN EN 61360-1:2018 Section 7.6
 Type: Strong restrictions of DIN61360  not implemented, just strings necessary. Maximum characters is 17.
 
 Poposed Data Range Expression: xsd:string[maxLength 17]""" ;
-    rdfs:domain ns5:Type_Description ;
+    rdfs:domain ns3:Type_Description ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:String a owl:Class ;
+ns3:String a owl:Class ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:allValuesFrom xsd:string ;
-            owl:onProperty ns5:Value_List_Member ],
-        ns5:Simple_Data_Type .
+            owl:onProperty ns3:Value_List_Member ],
+        ns3:Simple_Data_Type .
 
-ns5:Synonymous_Letter_Symbol a owl:DatatypeProperty ;
+ns3:Synonymous_Letter_Symbol a owl:DatatypeProperty ;
     rdfs:comment """Description:
 A synonym that is used for the preferred equation sign
 
@@ -5883,10 +5895,10 @@ DIN EN 61360-1:2018 Section 6.7
 Type: IEC 60027, IEC 60747 or IEC 60148 compliant formula sign
 
 Poposed Data Range Expression: xsd:string""" ;
-    rdfs:domain ns5:Type_Description ;
+    rdfs:domain ns3:Type_Description ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Synonymous_Name a owl:DatatypeProperty ;
+ns3:Synonymous_Name a owl:DatatypeProperty ;
     rdfs:comment """Description:
 Synonyms to the preferred name
 
@@ -5897,14 +5909,14 @@ DIN EN 61360-1:2018 Section 7.7
 Type: String with lower and upper case, with a maximum of 70 characters
 
 Poposed Data Range Expression: xsd:string[maxLength 70]""" ;
-    rdfs:domain ns5:Type_Description ;
+    rdfs:domain ns3:Type_Description ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Type_Description_has_Instance a owl:ObjectProperty ;
-    rdfs:domain ns5:Type_Description ;
-    rdfs:range ns5:Instance_Description .
+ns3:Type_Description_has_Instance a owl:ObjectProperty ;
+    rdfs:domain ns3:Type_Description ;
+    rdfs:range ns3:Instance_Description .
 
-ns5:Value_Format_quantitativ a owl:DatatypeProperty ;
+ns3:Value_Format_quantitativ a owl:DatatypeProperty ;
     rdfs:comment """Description:
 Defines the representation of a data element in length and kind. See DIN61360 for detailed description of possible formats. Possible definitions include non-quantitative formats, quantitative formats and maximum count of characters
 
@@ -5915,7 +5927,7 @@ DIN EN 61360-1:2018 Section 10.8
 Type: This data property represents only the quantitativ formats, string
 
 Poposed Data Range Expression: xsd:string""" ;
-    rdfs:domain ns5:Type_Description ;
+    rdfs:domain ns3:Type_Description ;
     rdfs:range [ a rdfs:Datatype ;
             owl:oneOf [ a rdf:List ;
                     rdf:first "NR1" ;
@@ -5926,7 +5938,7 @@ Poposed Data Range Expression: xsd:string""" ;
                                     rdf:rest () ] ] ] ] ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Value_List a owl:DatatypeProperty ;
+ns3:Value_List a owl:DatatypeProperty ;
     rdfs:comment """Description: 
 Represents the possible values for a data element
 
@@ -5937,10 +5949,10 @@ DIN EN 61360-1:2018 Section 16
 Type: This data property represents the information, if there is a value list (if so, true), basically the values that the data property "Value" is allowed to hold. 
 
 Poposed Data Range Expression: xsd:boolean""" ;
-    rdfs:domain ns5:Simple_Data_Type ;
+    rdfs:domain ns3:Simple_Data_Type ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Version_Number a owl:DatatypeProperty ;
+ns3:Version_Number a owl:DatatypeProperty ;
     rdfs:comment """Description:
 Number that indicates different versions of one data element type
 
@@ -5951,15 +5963,15 @@ DIN EN 61360-1:2018 Section 7.8
 Type: Integer with three digits max, so between 1 and 999
 
 Poposed Data Range Expression: xsd:integer[>= 1 , <= 999]""" ;
-    rdfs:domain ns5:Type_Description ;
+    rdfs:domain ns3:Type_Description ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:has_Data_Element a owl:ObjectProperty ;
+ns3:has_Data_Element a owl:ObjectProperty ;
     rdfs:comment """Description:
 This ObjectProperty is used to connect any kind of entity with a data element that is used for its description.""" ;
-    rdfs:range ns5:Data_Element .
+    rdfs:range ns3:Data_Element .
 
-ns5:has_Type_Description a owl:FunctionalProperty,
+ns3:has_Type_Description a owl:FunctionalProperty,
         owl:ObjectProperty ;
     rdfs:comment """Description:
 ObjectProperty is used to connect an individual that needs to be described by DataProperties with the Type Description of that properties.
@@ -5967,24 +5979,24 @@ ObjectProperty is used to connect an individual that needs to be described by Da
 Functional:
 Any indivudual representing a property, can have only one Type Description""" ;
     rdfs:domain [ a owl:Class ;
-            owl:unionOf ( ns5:Complex_Data_Type_Member ns5:Data_Element ) ] ;
-    rdfs:range ns5:Type_Description ;
-    owl:inverseOf ns5:is_Type_Description_of_Data_Element .
+            owl:unionOf ( ns3:Complex_Data_Type_Member ns3:Data_Element ) ] ;
+    rdfs:range ns3:Type_Description ;
+    owl:inverseOf ns3:is_Type_Description_of_Data_Element .
 
-ns5:is_Instance_Description_of_Data_Element a owl:ObjectProperty ;
+ns3:is_Instance_Description_of_Data_Element a owl:ObjectProperty ;
     rdfs:comment """Description:
 ObjectProperty is used to connect an Instance Description with the Data_Element that it describes.
 
 Inverse of has_Instance_Description""" .
 
-ns5:is_Member_of_Complex_Data_Type a owl:ObjectProperty ;
-    rdfs:domain ns5:Complex_Data_Type_Member ;
+ns3:is_Member_of_Complex_Data_Type a owl:ObjectProperty ;
+    rdfs:domain ns3:Complex_Data_Type_Member ;
     rdfs:range [ a owl:Class ;
-            owl:intersectionOf ( ns5:Instance_Description [ a owl:Restriction ;
-                        owl:allValuesFrom ns5:Complex_Data_Type ;
-                        owl:onProperty ns5:Instance_Description_has_Type ] ) ] .
+            owl:intersectionOf ( ns3:Instance_Description [ a owl:Restriction ;
+                        owl:allValuesFrom ns3:Complex_Data_Type ;
+                        owl:onProperty ns3:Instance_Description_has_Type ] ) ] .
 
-ns5:is_Type_Description_of_Data_Element a owl:ObjectProperty ;
+ns3:is_Type_Description_of_Data_Element a owl:ObjectProperty ;
     rdfs:comment """Description:
 ObjectProperty is used to connect a Type_Description with a Data_Element that has instace descriptions of this type. 
 
@@ -10358,26 +10370,26 @@ ns4:hasSuccessor a owl:ObjectProperty,
 
 <http://www.w3id.org/hsu-aut/cask#SkillCommand> a owl:Class ;
     rdfs:comment "May be used to invoke a transition with a numerical value" ;
-    rdfs:subClassOf ns3:SkillParameter .
+    rdfs:subClassOf ns5:SkillParameter .
 
 <http://www.w3id.org/hsu-aut/cask#StatefulMethod> a owl:Class ;
     rdfs:subClassOf <http://www.w3id.org/hsu-aut/cask#SkillMethod> .
 
 <http://www.w3id.org/hsu-aut/cask#hasSkillOutput> a owl:ObjectProperty ;
-    rdfs:domain ns3:Skill ;
+    rdfs:domain ns5:Skill ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#SkillOutput> ;
     rdfs:subPropertyOf <http://www.w3id.org/hsu-aut/cask#hasSkillVariable> .
 
 <http://www.w3id.org/hsu-aut/cask#isInvokedBy> a owl:ObjectProperty .
 
-ns3:hasParameter a owl:ObjectProperty ;
-    rdfs:domain ns3:Skill ;
-    rdfs:range ns3:SkillParameter ;
+ns5:hasParameter a owl:ObjectProperty ;
+    rdfs:domain ns5:Skill ;
+    rdfs:range ns5:SkillParameter ;
     rdfs:subPropertyOf <http://www.w3id.org/hsu-aut/cask#hasSkillVariable> .
 
-ns3:isRestrictedBy a owl:ObjectProperty ;
-    rdfs:domain ns3:Capability ;
-    rdfs:range ns3:CapabilityConstraint .
+ns5:isRestrictedBy a owl:ObjectProperty ;
+    rdfs:domain ns5:Capability ;
+    rdfs:range ns5:CapabilityConstraint .
 
 ns1:AttributionList a owl:Class ;
     rdfs:comment "A list of attribute-value pairs." ;
@@ -10422,38 +10434,50 @@ ns1:value a owl:DatatypeProperty ;
 
 ns1:variables a owl:ObjectProperty .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/latitude_id> a ns5:Instance_Description,
-        ns5:Real ;
-    ns5:Expression_Goal "Actual_Value" ;
-    ns5:Logic_Interpretation "=" ;
-    ns5:Value 5.356687e+01 .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/grabbed_id> a ns3:Boolean,
+        ns3:Instance_Description ;
+    ns3:Expression_Goal "Actual_Value" ;
+    ns3:Logic_Interpretation "=" ;
+    ns3:Value "false" .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/longitude_id> a ns5:Instance_Description,
-        ns5:Real ;
-    ns5:Expression_Goal "Actual_Value" ;
-    ns5:Logic_Interpretation "=" ;
-    ns5:Value 1.011041e+01 .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/latitude_id> a ns3:Instance_Description,
+        ns3:Real ;
+    ns3:Expression_Goal "Actual_Value" ;
+    ns3:Logic_Interpretation "=" ;
+    ns3:Value 5.356687e+01 .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/latitude_id> a ns5:Instance_Description,
-        ns5:Real ;
-    ns5:Expression_Goal "Requirement" ;
-    ns5:Logic_Interpretation "=" ;
-    ns5:Value 5.35672e+01 .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Input/Item3/longitude_id> a ns3:Instance_Description,
+        ns3:Real ;
+    ns3:Expression_Goal "Actual_Value" ;
+    ns3:Logic_Interpretation "=" ;
+    ns3:Value 1.011041e+01 .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/longitude_id> a ns5:Instance_Description,
-        ns5:Real ;
-    ns5:Expression_Goal "Requirement" ;
-    ns5:Logic_Interpretation "=" ;
-    ns5:Value 1.011102e+01 .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/grabbed_id> a ns3:Boolean,
+        ns3:Instance_Description ;
+    ns3:Expression_Goal "Requirement" ;
+    ns3:Logic_Interpretation "=" ;
+    ns3:Value "false" .
+
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/latitude_id> a ns3:Instance_Description,
+        ns3:Real ;
+    ns3:Expression_Goal "Requirement" ;
+    ns3:Logic_Interpretation "=" ;
+    ns3:Value 5.35672e+01 .
+
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport/Output/Item3/longitude_id> a ns3:Instance_Description,
+        ns3:Real ;
+    ns3:Expression_Goal "Requirement" ;
+    ns3:Logic_Interpretation "=" ;
+    ns3:Value 1.011102e+01 .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19> a <http://www.w3id.org/hsu-aut/cask#ProvidedCapability> ;
     ns4:hasInput <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong> ;
     ns4:hasOutput <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflong> ;
-    ns3:isRestrictedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/latitude71>,
+    ns5:isRestrictedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/latitude71>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/longitude70> ;
-    ns3:requiresCapability <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19> .
+    ns5:requiresCapability <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport> a <http://www.w3id.org/hsu-aut/cask#ProvidedCapability> ;
     ns4:hasInput <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflat>,
@@ -10462,91 +10486,91 @@ ns1:variables a owl:ObjectProperty .
     ns4:hasOutput <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceInflat>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceInflong>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem> ;
-    ns3:isRestrictedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/Constraint/latitude>,
+    ns5:isRestrictedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/Constraint/latitude>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/Constraint/latitude71>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/Constraint/longitude>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/Constraint/longitude70> ;
-    ns3:requiresCapability <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport> .
+    ns5:requiresCapability <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport> .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/grabbed_id> a ns5:Boolean,
-        ns5:Instance_Description ;
-    ns5:Expression_Goal "Requirement" ;
-    ns5:Logic_Interpretation "=" ;
-    ns5:Value "true" .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/grabbed_id> a ns3:Boolean,
+        ns3:Instance_Description ;
+    ns3:Expression_Goal "Requirement" ;
+    ns3:Logic_Interpretation "=" ;
+    ns3:Value "true" .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/latitude_id> a ns5:Instance_Description,
-        ns5:Real ;
-    ns5:Expression_Goal "Actual_Value" ;
-    ns5:Logic_Interpretation "=" .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/latitude_id> a ns3:Instance_Description,
+        ns3:Real ;
+    ns3:Expression_Goal "Actual_Value" ;
+    ns3:Logic_Interpretation "=" .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/longitude_id> a ns5:Instance_Description,
-        ns5:Real ;
-    ns5:Expression_Goal "Actual_Value" ;
-    ns5:Logic_Interpretation "=" .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredProdItem/longitude_id> a ns3:Instance_Description,
+        ns3:Real ;
+    ns3:Expression_Goal "Actual_Value" ;
+    ns3:Logic_Interpretation "=" .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33> a <http://www.w3id.org/hsu-aut/cask#ProvidedCapability> ;
     ns4:hasInput <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/RequiredProdItem> ;
     ns4:hasOutput <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/AssuranceProdItem> ;
-    ns3:requiresCapability <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33> .
+    ns5:requiresCapability <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33> .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/AssuranceProdItem/grabbed158_id> a ns5:Boolean,
-        ns5:Instance_Description ;
-    ns5:Expression_Goal "Assurance" ;
-    ns5:Logic_Interpretation "=" ;
-    ns5:Value "false" .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/AssuranceProdItem/grabbed158_id> a ns3:Boolean,
+        ns3:Instance_Description ;
+    ns3:Expression_Goal "Assurance" ;
+    ns3:Logic_Interpretation "=" ;
+    ns3:Value "false" .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/RequiredProdItem/grabbed158_id> a ns5:Boolean,
-        ns5:Instance_Description ;
-    ns5:Expression_Goal "Requirement" ;
-    ns5:Logic_Interpretation "=" ;
-    ns5:Value "true" .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/RequiredProdItem/grabbed158_id> a ns3:Boolean,
+        ns3:Instance_Description ;
+    ns3:Expression_Goal "Requirement" ;
+    ns3:Logic_Interpretation "=" ;
+    ns3:Value "true" .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34> a <http://www.w3id.org/hsu-aut/cask#ProvidedCapability> ;
     ns4:hasInput <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem> ;
     ns4:hasOutput <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem> ;
-    ns3:isRestrictedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/latitude>,
+    ns5:isRestrictedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/latitude>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/longitude> ;
-    ns3:requiresCapability <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34> .
+    ns5:requiresCapability <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34> .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_id> a ns5:Boolean,
-        ns5:Instance_Description ;
-    ns5:Expression_Goal "Assurance" ;
-    ns5:Logic_Interpretation "=" ;
-    ns5:Value "true" .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_id> a ns3:Boolean,
+        ns3:Instance_Description ;
+    ns3:Expression_Goal "Assurance" ;
+    ns3:Logic_Interpretation "=" ;
+    ns3:Value "true" .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/grabbed162_id> a ns5:Boolean,
-        ns5:Instance_Description ;
-    ns5:Expression_Goal "Requirement" ;
-    ns5:Logic_Interpretation "=" ;
-    ns5:Value "false" .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/grabbed162_id> a ns3:Boolean,
+        ns3:Instance_Description ;
+    ns3:Expression_Goal "Requirement" ;
+    ns3:Logic_Interpretation "=" ;
+    ns3:Value "false" .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/latitude_id> a ns5:Instance_Description,
-        ns5:Real ;
-    ns5:Expression_Goal "Actual_Value" ;
-    ns5:Logic_Interpretation "=" .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/latitude_id> a ns3:Instance_Description,
+        ns3:Real ;
+    ns3:Expression_Goal "Actual_Value" ;
+    ns3:Logic_Interpretation "=" .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/longitude_id> a ns5:Instance_Description,
-        ns5:Real ;
-    ns5:Expression_Goal "Actual_Value" ;
-    ns5:Logic_Interpretation "=" .
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/longitude_id> a ns3:Instance_Description,
+        ns3:Real ;
+    ns3:Expression_Goal "Actual_Value" ;
+    ns3:Logic_Interpretation "=" .
 
-ns5:Array_Member a owl:Class ;
+ns3:Array_Member a owl:Class ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:onDataRange xsd:int ;
-            owl:onProperty ns5:Array_Member_Dimension ;
+            owl:onProperty ns3:Array_Member_Dimension ;
             owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
         [ a owl:Restriction ;
             owl:onDataRange xsd:int ;
-            owl:onProperty ns5:Array_Member_Position ;
+            owl:onProperty ns3:Array_Member_Position ;
             owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
-        ns5:Complex_Data_Type_Member .
+        ns3:Complex_Data_Type_Member .
 
-ns5:List_Member a owl:Class ;
+ns3:List_Member a owl:Class ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:onDataRange xsd:int ;
-            owl:onProperty ns5:List_Member_Position ;
+            owl:onProperty ns3:List_Member_Position ;
             owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
-        ns5:Complex_Data_Type_Member .
+        ns3:Complex_Data_Type_Member .
 
 <http://www.hsu-ifa.de/ontologies/ISA-TR88#ResetCommand> a owl:Class ;
     rdfs:comment """A RESET command will cause an exit from STOPPED to the RESETTING state.
@@ -10559,7 +10583,7 @@ ANSl/ISA-TR88.00.02-2015""" ;
 
 <http://www.hsu-ifa.de/ontologies/ISA-TR88#StateMachine> a owl:Class ;
     rdfs:comment "To be used as a container for all states and transitions of a particular state machine." ;
-    rdfs:subClassOf ns3:StateMachine ;
+    rdfs:subClassOf ns5:StateMachine ;
     owl:disjointWith <http://www.hsu-ifa.de/ontologies/ISA-TR88#Transition> .
 
 <http://www.hsu-ifa.de/ontologies/ISA-TR88#Stopped> a owl:Class ;
@@ -13022,28 +13046,28 @@ ns4:isComposedOf a owl:ObjectProperty ;
     rdfs:range ns4:ProcessOperator .
 
 <http://www.w3id.org/hsu-aut/cask#RequiredCapability> a owl:Class ;
-    rdfs:subClassOf ns3:Capability .
+    rdfs:subClassOf ns5:Capability .
 
 <http://www.w3id.org/hsu-aut/cask#StatelessMethod> a owl:Class ;
     rdfs:subClassOf <http://www.w3id.org/hsu-aut/cask#SkillMethod> .
 
 <http://www.w3id.org/hsu-aut/cask#exposesSkillVariable> a owl:ObjectProperty ;
-    rdfs:domain ns3:SkillInterface ;
+    rdfs:domain ns5:SkillInterface ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#SkillVariable> ;
-    rdfs:subPropertyOf ns3:exposes .
+    rdfs:subPropertyOf ns5:exposes .
 
 <http://www.w3id.org/hsu-aut/cask#hasSkillVariable> a owl:ObjectProperty ;
-    rdfs:domain ns3:Skill ;
+    rdfs:domain ns5:Skill ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#SkillVariable> .
 
-ns3:isRealizedBy a owl:ObjectProperty ;
-    rdfs:domain ns3:Capability,
-        ns3:Property ;
-    rdfs:range ns3:Skill,
-        ns3:SkillParameter .
+ns5:isRealizedBy a owl:ObjectProperty ;
+    rdfs:domain ns5:Capability,
+        ns5:Property ;
+    rdfs:range ns5:Skill,
+        ns5:SkillParameter .
 
-ns3:provides a owl:ObjectProperty ;
-    rdfs:domain ns3:Resource .
+ns5:provides a owl:ObjectProperty ;
+    rdfs:domain ns5:Resource .
 
 ns1:ObjectList a owl:Class ;
     rdfs:comment "A list of mathematical objects." ;
@@ -13059,27 +13083,27 @@ ns1:ObjectList a owl:Class ;
                         owl:someValuesFrom ns1:ObjectList ] ) ] .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/latitude_id> a ns1:Variable,
-        ns5:Instance_Description,
-        ns5:Real ;
+        ns3:Instance_Description,
+        ns3:Real ;
     ns1:name "Rover7/latitude_id" ;
-    ns5:Expression_Goal "Actual_Value" ;
-    ns5:Logic_Interpretation "=" ;
-    ns5:Value 5.356682e+01 .
+    ns3:Expression_Goal "Actual_Value" ;
+    ns3:Logic_Interpretation "=" ;
+    ns3:Value 5.356682e+01 .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/longitude_id> a ns1:Variable,
-        ns5:Instance_Description,
-        ns5:Real ;
+        ns3:Instance_Description,
+        ns3:Real ;
     ns1:name "Rover7/longitude_id" ;
-    ns5:Expression_Goal "Actual_Value" ;
-    ns5:Logic_Interpretation "=" ;
-    ns5:Value 1.010965e+01 .
+    ns3:Expression_Goal "Actual_Value" ;
+    ns3:Logic_Interpretation "=" ;
+    ns3:Value 1.010965e+01 .
 
-ns5:Data_Type a owl:Class .
+ns3:Data_Type a owl:Class .
 
-ns5:Instance_Description_has_Type a owl:ObjectProperty ;
-    rdfs:domain ns5:Instance_Description ;
-    rdfs:range ns5:Type_Description ;
-    owl:inverseOf ns5:Type_Description_has_Instance .
+ns3:Instance_Description_has_Type a owl:ObjectProperty ;
+    rdfs:domain ns3:Instance_Description ;
+    rdfs:range ns3:Type_Description ;
+    owl:inverseOf ns3:Type_Description_has_Instance .
 
 <http://www.hsu-ifa.de/ontologies/ISA-TR88#Execute> a owl:Class ;
     rdfs:comment """Once the machine is processing materials it is in the EXECUTE state. Different machine modes will result in specific types of EXECUTE activities. For example, if the machine is in the "Production" mode, the EXECUTE will result in products being produced, while in "Clean Out" mode the EXECUTE state refers to the action of cleanino the machine.
@@ -14396,11 +14420,11 @@ ns4:consistsOf a owl:ObjectProperty ;
     rdfs:comment "May be used to retrieve results during or after Skill execution" ;
     rdfs:subClassOf <http://www.w3id.org/hsu-aut/cask#SkillVariable> .
 
-ns3:exposes a owl:ObjectProperty ;
-    rdfs:domain ns3:SkillInterface ;
+ns5:exposes a owl:ObjectProperty ;
+    rdfs:domain ns5:SkillInterface ;
     rdfs:range <http://www.w3id.org/hsu-aut/cask#SkillMethod>,
-        ns3:SkillParameter,
-        ns3:StateMachine .
+        ns5:SkillParameter,
+        ns5:StateMachine .
 
 ns1:Compound a owl:Class ;
     rdfs:comment "An object that is composed of some other mathematical objects." ;
@@ -14413,81 +14437,81 @@ ns2:BinderSymbol a owl:Class ;
     rdfs:subClassOf ns1:Symbol .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceInflat/latitude71_id> a ns1:Variable,
-        ns5:Instance_Description,
-        ns5:Real ;
+        ns3:Instance_Description,
+        ns3:Real ;
     ns1:name "Rover7/cap-driveTo19-transport/AssuranceInflat/latitude71_id" ;
-    ns5:Expression_Goal "Assurance" ;
-    ns5:Logic_Interpretation "=" .
+    ns3:Expression_Goal "Assurance" ;
+    ns3:Logic_Interpretation "=" .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceInflong/longitude70_id> a ns1:Variable,
-        ns5:Instance_Description,
-        ns5:Real ;
+        ns3:Instance_Description,
+        ns3:Real ;
     ns1:name "Rover7/cap-driveTo19-transport/AssuranceInflong/longitude70_id" ;
-    ns5:Expression_Goal "Assurance" ;
-    ns5:Logic_Interpretation "=" .
+    ns3:Expression_Goal "Assurance" ;
+    ns3:Logic_Interpretation "=" .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/latitude_id> a ns1:Variable,
-        ns5:Instance_Description,
-        ns5:Real ;
+        ns3:Instance_Description,
+        ns3:Real ;
     ns1:name "Rover7/cap-driveTo19-transport/AssuranceProdItem/latitude_id" ;
-    ns5:Expression_Goal "Assurance" ;
-    ns5:Logic_Interpretation "=" .
+    ns3:Expression_Goal "Assurance" ;
+    ns3:Logic_Interpretation "=" .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/AssuranceProdItem/longitude_id> a ns1:Variable,
-        ns5:Instance_Description,
-        ns5:Real ;
+        ns3:Instance_Description,
+        ns3:Real ;
     ns1:name "Rover7/cap-driveTo19-transport/AssuranceProdItem/longitude_id" ;
-    ns5:Expression_Goal "Assurance" ;
-    ns5:Logic_Interpretation "=" .
+    ns3:Expression_Goal "Assurance" ;
+    ns3:Logic_Interpretation "=" .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat/latitude71_id> a ns1:Variable,
-        ns5:Instance_Description,
-        ns5:Real ;
+        ns3:Instance_Description,
+        ns3:Real ;
     ns1:name "Rover7/cap-driveTo19/AssuranceInflat/latitude71_id" ;
-    ns5:Expression_Goal "Assurance" ;
-    ns5:Logic_Interpretation "=" .
+    ns3:Expression_Goal "Assurance" ;
+    ns3:Logic_Interpretation "=" .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflong/longitude70_id> a ns1:Variable,
-        ns5:Instance_Description,
-        ns5:Real ;
+        ns3:Instance_Description,
+        ns3:Real ;
     ns1:name "Rover7/cap-driveTo19/AssuranceInflong/longitude70_id" ;
-    ns5:Expression_Goal "Assurance" ;
-    ns5:Logic_Interpretation "=" .
+    ns3:Expression_Goal "Assurance" ;
+    ns3:Logic_Interpretation "=" .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_id> a ns1:Variable,
-        ns5:Instance_Description,
-        ns5:Real ;
+        ns3:Instance_Description,
+        ns3:Real ;
     ns1:name "Rover7/cap-driveTo19/RequiredInflat/latitude71_id" ;
-    ns5:Logic_Interpretation "=" .
+    ns3:Logic_Interpretation "=" .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflong/longitude70_id> a ns1:Variable,
-        ns5:Instance_Description,
-        ns5:Real ;
+        ns3:Instance_Description,
+        ns3:Real ;
     ns1:name "Rover7/cap-driveTo19/RequiredInflong/longitude70_id" ;
-    ns5:Logic_Interpretation "=" .
+    ns3:Logic_Interpretation "=" .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/latitude_id> a ns1:Variable,
-        ns5:Instance_Description,
-        ns5:Real ;
+        ns3:Instance_Description,
+        ns3:Real ;
     ns1:name "Rover7/cap-grab34/RequiredProdItem/Required/latitude_id" ;
-    ns5:Expression_Goal "Requirement" ;
-    ns5:Logic_Interpretation "=" .
+    ns3:Expression_Goal "Requirement" ;
+    ns3:Logic_Interpretation "=" .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/longitude_id> a ns1:Variable,
-        ns5:Instance_Description,
-        ns5:Real ;
+        ns3:Instance_Description,
+        ns3:Real ;
     ns1:name "Rover7/cap-grab34/RequiredProdItem/Required/longitude_id" ;
-    ns5:Expression_Goal "Requirement" ;
-    ns5:Logic_Interpretation "=" .
+    ns3:Expression_Goal "Requirement" ;
+    ns3:Logic_Interpretation "=" .
 
-ns5:Expression_Goal a owl:DatatypeProperty,
+ns3:Expression_Goal a owl:DatatypeProperty,
         owl:FunctionalProperty ;
     rdfs:comment """Description:
 
 The goal of the values expression, which can be a Requirement, an Assurance or an actual (e.g. measured) value.
 
 Liability: Necessary""" ;
-    rdfs:domain ns5:Instance_Description ;
+    rdfs:domain ns3:Instance_Description ;
     rdfs:range [ a rdfs:Datatype ;
             owl:oneOf [ a rdf:List ;
                     rdf:first "Actual_Value" ;
@@ -14498,7 +14522,7 @@ Liability: Necessary""" ;
                                     rdf:rest () ] ] ] ] ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:Value_List_Member a owl:DatatypeProperty ;
+ns3:Value_List_Member a owl:DatatypeProperty ;
     rdfs:comment """Description: 
 Represents the possible values for a data element
 
@@ -14509,27 +14533,27 @@ DIN EN 61360-1:2018 Section 16
 Type: This data property represents the one (!) member of the value list, violation may result in inconsistency, since the compliance of value list and value is checked by SWRL rule 3. 
 
 Poposed Data Range Expression: xsd:string""" ;
-    rdfs:domain ns5:Simple_Data_Type ;
+    rdfs:domain ns3:Simple_Data_Type ;
     rdfs:subPropertyOf owl:topDataProperty .
 
-ns5:complex_Data_Type_has_Member a owl:ObjectProperty ;
+ns3:complex_Data_Type_has_Member a owl:ObjectProperty ;
     rdfs:comment """Description:
 ObjectProperty that is used to connect an instance of a complex data type with corresponding members of the complex data type. These members are connected to types and instances of other (complex) data types""" ;
     rdfs:domain [ a owl:Class ;
-            owl:intersectionOf ( ns5:Instance_Description [ a owl:Restriction ;
-                        owl:allValuesFrom ns5:Complex_Data_Type ;
-                        owl:onProperty ns5:Instance_Description_has_Type ] ) ] ;
-    rdfs:range ns5:Complex_Data_Type_Member ;
-    owl:inverseOf ns5:is_Member_of_Complex_Data_Type .
+            owl:intersectionOf ( ns3:Instance_Description [ a owl:Restriction ;
+                        owl:allValuesFrom ns3:Complex_Data_Type ;
+                        owl:onProperty ns3:Instance_Description_has_Type ] ) ] ;
+    rdfs:range ns3:Complex_Data_Type_Member ;
+    owl:inverseOf ns3:is_Member_of_Complex_Data_Type .
 
-ns5:has_Instance_Description a owl:InverseFunctionalProperty,
+ns3:has_Instance_Description a owl:InverseFunctionalProperty,
         owl:ObjectProperty ;
     rdfs:comment """Description:
 ObjectProperty is used to connect an individual that needs to be described by DataProperties with the Instance Description of that properties.""" ;
     rdfs:domain [ a owl:Class ;
-            owl:unionOf ( ns5:Complex_Data_Type_Member ns5:Data_Element ) ] ;
-    rdfs:range ns5:Instance_Description ;
-    owl:inverseOf ns5:is_Instance_Description_of_Data_Element .
+            owl:unionOf ( ns3:Complex_Data_Type_Member ns3:Data_Element ) ] ;
+    rdfs:range ns3:Instance_Description ;
+    owl:inverseOf ns3:is_Instance_Description_of_Data_Element .
 
 <http://www.hsu-ifa.de/ontologies/VDI2206#Interface> a owl:Class ;
     owl:disjointWith [ a owl:Class ;
@@ -15646,8 +15670,6 @@ with vector calculus.""" ;
 
 ns1:arguments a owl:ObjectProperty .
 
-:grabbed_TD a ns5:Type_Description .
-
 <http://www.hsu-ifa.de/ontologies/VDI2206#BasicSystem> a owl:Class ;
     rdfs:label "Basic System" ;
     rdfs:comment "The basic system is generally a mechanical, electromechanical, hydraulic or pneumatic structure or a combination of these." .
@@ -15663,7 +15685,7 @@ ns1:arguments a owl:ObjectProperty .
 <http://www.hsu-ifa.de/ontologies/VDI2206#Product> a owl:Class ;
     rdfs:comment "Examples of materials which flow between units of mechatronic systems are solid bodies, objects under test, objects being treated, gases or liquids." ;
     owl:equivalentClass ns4:Product,
-        ns3:Product .
+        ns5:Product .
 
 <http://www.openmath.org/cd/combinat1#binomial> a ns2:ApplicationSymbol,
         owl:NamedIndividual ;
@@ -16370,9 +16392,9 @@ ns4:SystemLimit a owl:Class ;
     owl:disjointWith ns4:TechnicalResource .
 
 <http://www.w3id.org/hsu-aut/cask#ProvidedCapability> a owl:Class ;
-    rdfs:subClassOf ns3:Capability .
+    rdfs:subClassOf ns5:Capability .
 
-ns3:Process a owl:Class ;
+ns5:Process a owl:Class ;
     rdfs:comment """Production-relevant activity at any level of granularity that might affect materials and is performed by resources.
 
 Notes:
@@ -16380,15 +16402,15 @@ Notes:
 - A process can require capabilities to express that any suitable resource used for
 performing this process needs to provide compatible capabilities.
 - A process step relates to materials that constitute either input or output for the processing in this step""" ;
-    owl:disjointWith ns3:Resource,
-        ns3:Service,
-        ns3:ServiceOffer,
-        ns3:ServiceProvider,
-        ns3:Skill,
-        ns3:SkillInterface,
-        ns3:SkillParameter .
+    owl:disjointWith ns5:Resource,
+        ns5:Service,
+        ns5:ServiceOffer,
+        ns5:ServiceProvider,
+        ns5:Skill,
+        ns5:SkillInterface,
+        ns5:SkillParameter .
 
-ns3:Product a owl:Class ;
+ns5:Product a owl:Class ;
     rdfs:comment """Physical object being used as an input or created as an output of a production process.
 
 Notes:
@@ -16398,49 +16420,43 @@ Notes:
 ▪ specifications
 ▪ BOM
 - A Service Requester may use these additional artifacts to formulate requirements against products.""" ;
-    owl:disjointWith ns3:Service,
-        ns3:ServiceOffer,
-        ns3:ServiceProvider,
-        ns3:ServiceRequester,
-        ns3:Skill,
-        ns3:SkillInterface,
-        ns3:SkillParameter .
+    owl:disjointWith ns5:Service,
+        ns5:ServiceOffer,
+        ns5:ServiceProvider,
+        ns5:ServiceRequester,
+        ns5:Skill,
+        ns5:SkillInterface,
+        ns5:SkillParameter .
 
-ns3:Property a owl:Class ;
+ns5:Property a owl:Class ;
     rdfs:comment """Quality or characteristic inherent in or ascribed to any CSS model element
 
 Notes:
 - Properties may be used to describe and differentiate all kinds of PPR entities (i.e., products, process steps, resources)
 - Capabilities, services and offers are specified by properties in order to detail their description with regard to certain entities (e.g. products, process steps, resources)""" ;
-    owl:disjointWith ns3:Resource,
-        ns3:Service,
-        ns3:ServiceOffer,
-        ns3:ServiceProvider,
-        ns3:ServiceRequester,
-        ns3:Skill,
-        ns3:SkillInterface .
+    owl:disjointWith ns5:Resource,
+        ns5:Service,
+        ns5:ServiceOffer,
+        ns5:ServiceProvider,
+        ns5:ServiceRequester,
+        ns5:Skill,
+        ns5:SkillInterface .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflat/latitude71_id> a ns1:Variable,
-        ns5:Instance_Description,
-        ns5:Real ;
+        ns3:Instance_Description,
+        ns3:Real ;
     ns1:name "Rover7/cap-driveTo19-transport/RequiredInflat/latitude71_id" ;
-    ns5:Logic_Interpretation "=" .
+    ns3:Logic_Interpretation "=" .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19-transport/RequiredInflong/longitude70_id> a ns1:Variable,
-        ns5:Instance_Description,
-        ns5:Real ;
+        ns3:Instance_Description,
+        ns3:Real ;
     ns1:name "Rover7/cap-driveTo19-transport/RequiredInflong/longitude70_id" ;
-    ns5:Logic_Interpretation "=" .
+    ns3:Logic_Interpretation "=" .
 
-ns5:Boolean a owl:Class ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom xsd:boolean ;
-            owl:onProperty ns5:Value_List_Member ],
-        ns5:Simple_Data_Type .
-
-ns5:Complex_Data_Type a owl:Class ;
-    rdfs:subClassOf ns5:Data_Type ;
-    owl:disjointWith ns5:Simple_Data_Type .
+ns3:Complex_Data_Type a owl:Class ;
+    rdfs:subClassOf ns3:Data_Type ;
+    owl:disjointWith ns3:Simple_Data_Type .
 
 <http://www.openmath.org/cd/arith1#product> a ns2:ApplicationSymbol,
         owl:NamedIndividual ;
@@ -17175,6 +17191,8 @@ ns4:hasOutput a owl:ObjectProperty ;
 <http://www.w3id.org/hsu-aut/cask#SkillMethod> a owl:Class ;
     rdfs:comment "Abstract concept of a method to invoke a skill. Needs to be implemented and modeled in detail for a specific technology" .
 
+:grabbed_TD a ns3:Type_Description .
+
 <http://www.hsu-ifa.de/ontologies/ISA-TR88#Wait> a owl:Class ;
     rdfs:comment """A state used to identify that a machine has achieved a defined set of conditions. In such a state, the machine is maintaining a status until transitioning to an acting state. In ANSl/ISA-88.00.01 this was referred to as a "final" or "quiescent" state.
 
@@ -17799,14 +17817,20 @@ ns2:ErrorSymbol a owl:Class ;
     rdfs:comment "The symbol may appear as the first child of an OpenMath error object." ;
     rdfs:subClassOf ns1:Symbol .
 
-:latitude_TD a ns5:Type_Description .
+:latitude_TD a ns3:Type_Description .
 
-:longitude_TD a ns5:Type_Description .
+:longitude_TD a ns3:Type_Description .
 
-ns5:Complex_Data_Type_Member a owl:Class ;
-    rdfs:subClassOf ns5:Data_Type .
+ns3:Boolean a owl:Class ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom xsd:boolean ;
+            owl:onProperty ns3:Value_List_Member ],
+        ns3:Simple_Data_Type .
 
-ns5:Simple_Data_Type a owl:Class ;
+ns3:Complex_Data_Type_Member a owl:Class ;
+    rdfs:subClassOf ns3:Data_Type .
+
+ns3:Simple_Data_Type a owl:Class ;
     rdfs:comment """Description:
 Indicates which kind of DataType a data element must be. This does not include all data types of DIN61360! 
 
@@ -17817,9 +17841,9 @@ DIN61360: 3.4.1
 Type: is a enumeration of standard compliant data types. Please see DIN61360 for a description of level/class-instance/list/set/bag/array""" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:onDataRange xsd:boolean ;
-            owl:onProperty ns5:Value_List ;
+            owl:onProperty ns3:Value_List ;
             owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
-        ns5:Data_Type .
+        ns3:Data_Type .
 
 <http://www.hsu-ifa.de/ontologies/ISA-TR88#State> a owl:Class ;
     rdfs:comment """A unit/machine state completely defines the current condition of a machine. Two machine state types are defined: Acting states, which represent some processing activity. And Wait states which are used to identify that a machine has achieved a defined set of conditions.
@@ -18337,7 +18361,7 @@ result has absolute value $\\pi/2$.""" ;
 ns4:TechnicalResource a owl:Class ;
     rdfs:comment """The technical resource is able to implement certain processes and is an abstract description of a system.
 [VDI 3682-1]""" ;
-    rdfs:subClassOf ns3:Resource .
+    rdfs:subClassOf ns5:Resource .
 
 <http://www.hsu-ifa.de/ontologies/ISA-TR88#Command> a owl:Class ;
     rdfs:comment """State commands are transitions that need to be actively triggered, e.g., by one of the following ways: Operator intervention, Response to the status of one or more procedural elements, Response to machine conditions, Supervisory or remote system intervention.
@@ -18535,7 +18559,7 @@ Note that a process may have inputs and outputs. These are inputs / outputs that
     owl:disjointWith ns4:State,
         ns4:SystemLimit,
         ns4:TechnicalResource ;
-    owl:equivalentClass ns3:Process .
+    owl:equivalentClass ns5:Process .
 
 ns4:Product a owl:Class ;
     rdfs:comment """A rather generic concepts to describe all sorts of raw, intermediate or final products. Can also be used to describe flow of materials.
@@ -18548,20 +18572,20 @@ ns4:Product a owl:Class ;
 - SkillParameter: Allows to parameterize a Skill execution
 - SkillOutput: Allows to retrieve results from a Skill""" .
 
-ns3:ServiceProvider a owl:Class ;
+ns5:ServiceProvider a owl:Class ;
     rdfs:comment "Provides Services and can propose ServiceOffers to ServiceRequesters." ;
-    owl:disjointWith ns3:Skill,
-        ns3:SkillInterface,
-        ns3:SkillParameter,
-        ns3:StateMachine .
+    owl:disjointWith ns5:Skill,
+        ns5:SkillInterface,
+        ns5:SkillParameter,
+        ns5:StateMachine .
 
-ns3:ServiceRequester a owl:Class ;
+ns5:ServiceRequester a owl:Class ;
     rdfs:comment """Demands Services under particular commercial aspects by providing either a specification of
 services or a specification of product requirements.""" ;
-    owl:disjointWith ns3:Skill,
-        ns3:SkillInterface,
-        ns3:SkillParameter,
-        ns3:StateMachine .
+    owl:disjointWith ns5:Skill,
+        ns5:SkillInterface,
+        ns5:SkillParameter,
+        ns5:StateMachine .
 
 <http://www.openmath.org/cd/3Dgeo2> a ns2:Library,
         owl:NamedIndividual ;
@@ -18771,22 +18795,22 @@ lines,  etc, but also of other configurations.""" ;
             ns1:operator <http://www.openmath.org/cd/meta#Example> ] ;
     rdfs:isDefinedBy <http://www.openmath.org/cd/plangeo1> .
 
-ns3:Capability a owl:Class ;
+ns5:Capability a owl:Class ;
     rdfs:comment """Implementation-independent specification of a function in industrial production to achieve an effect in the physical or virtual world.
 
 Notes:
 - A capability can be restricted by constraints.
 - A capability can be specified by capability properties.
 - A capability can be realized by skills""" ;
-    owl:disjointWith ns3:Resource,
-        ns3:ServiceOffer,
-        ns3:ServiceProvider,
-        ns3:ServiceRequester,
-        ns3:Skill,
-        ns3:SkillInterface,
-        ns3:SkillParameter .
+    owl:disjointWith ns5:Resource,
+        ns5:ServiceOffer,
+        ns5:ServiceProvider,
+        ns5:ServiceRequester,
+        ns5:Skill,
+        ns5:SkillInterface,
+        ns5:SkillParameter .
 
-ns3:CapabilityConstraint a owl:Class ;
+ns5:CapabilityConstraint a owl:Class ;
     rdfs:comment """Condition imposed on a capability that further details its applicability. 
 
 Notes:
@@ -18797,46 +18821,46 @@ Notes:
 function.
 - A capability constraint restricts the values of the properties associated with the respective capability.
 - A capability constraint can involve one or more properties""" ;
-    owl:disjointWith ns3:Resource,
-        ns3:Service,
-        ns3:ServiceOffer,
-        ns3:ServiceProvider,
-        ns3:ServiceRequester,
-        ns3:Skill,
-        ns3:SkillInterface,
-        ns3:SkillParameter ;
+    owl:disjointWith ns5:Resource,
+        ns5:Service,
+        ns5:ServiceOffer,
+        ns5:ServiceProvider,
+        ns5:ServiceRequester,
+        ns5:Skill,
+        ns5:SkillInterface,
+        ns5:SkillParameter ;
     owl:equivalentClass [ a owl:Class ;
             owl:intersectionOf ( ns1:Application [ a owl:Restriction ;
-                        owl:onProperty [ owl:inverseOf ns3:isRestrictedBy ] ;
-                        owl:someValuesFrom ns3:Capability ] ) ] .
+                        owl:onProperty [ owl:inverseOf ns5:isRestrictedBy ] ;
+                        owl:someValuesFrom ns5:Capability ] ) ] .
 
-ns3:Resource a owl:Class ;
+ns5:Resource a owl:Class ;
     rdfs:comment """Entity capable of performing functions specified as Capabilities and potentially implemented as Skills.
 
 Notes
 - A production resource may consist of hardware, software or both
 - A production resource may only provide capabilities (i.e. when engineering a resource, for planning purposes) and may additionally provide skills for automatic execution of the specified function.
 - A human becomes a Production Resource, if that person is able to perform a function specified as a capability.""" ;
-    owl:disjointWith ns3:Service,
-        ns3:ServiceOffer,
-        ns3:Skill,
-        ns3:SkillInterface,
-        ns3:SkillParameter,
-        ns3:StateMachine .
+    owl:disjointWith ns5:Service,
+        ns5:ServiceOffer,
+        ns5:Skill,
+        ns5:SkillInterface,
+        ns5:SkillParameter,
+        ns5:StateMachine .
 
-ns3:ServiceOffer a owl:Class ;
+ns5:ServiceOffer a owl:Class ;
     rdfs:comment """Proposal for a binding contract from the Service Provider to execute one or more particular services that a ServiceRequester can receive and accept.
 
 Notes:
 - A ServiceOffer should determine the commercial aspects of the service provision
 and may remain valid for a certain period of time.
 - An Offer may consist of partial offers proposed by different service providers""" ;
-    owl:disjointWith ns3:ServiceProvider,
-        ns3:ServiceRequester,
-        ns3:Skill,
-        ns3:SkillInterface,
-        ns3:SkillParameter,
-        ns3:StateMachine .
+    owl:disjointWith ns5:ServiceProvider,
+        ns5:ServiceRequester,
+        ns5:Skill,
+        ns5:SkillInterface,
+        ns5:SkillParameter,
+        ns5:StateMachine .
 
 <http://www.hsu-ifa.de/ontologies/ISA-TR88#Acting> a owl:Class ;
     rdfs:comment """A state which represents some processing activity. It implies the single or repeated execution of processing steps in a logical order, for a finite time or until a specific condition has been reached. In ANSl/lSA-88.00.01 these are referred to transient states, those states ending in "ING".
@@ -19131,7 +19155,7 @@ ns4:State a owl:Class ;
     owl:disjointWith ns4:SystemLimit,
         ns4:TechnicalResource .
 
-ns3:Service a owl:Class ;
+ns5:Service a owl:Class ;
     rdfs:comment """Description of the commercial aspects and means of provision of offered capabilities.
 
 Notes:
@@ -19139,15 +19163,15 @@ Notes:
 - The capabilities and means of provisions are specified by properties
 - A service is demanded by service requesters and provided by a service provider
 - A service is an input for an offer proposed by""" ;
-    owl:disjointWith ns3:ServiceOffer,
-        ns3:ServiceProvider,
-        ns3:ServiceRequester,
-        ns3:Skill,
-        ns3:SkillInterface,
-        ns3:SkillParameter,
-        ns3:StateMachine .
+    owl:disjointWith ns5:ServiceOffer,
+        ns5:ServiceProvider,
+        ns5:ServiceRequester,
+        ns5:Skill,
+        ns5:SkillInterface,
+        ns5:SkillParameter,
+        ns5:StateMachine .
 
-ns3:StateMachine a owl:Class .
+ns5:StateMachine a owl:Class .
 
 <http://www.hsu-ifa.de/ontologies/ISA-TR88#StopCommand> a owl:Class ;
     rdfs:comment """The STOP command triggers a controlled halt of a machine trough logic triggered in the STOPPING state.
@@ -20063,7 +20087,7 @@ Abramowitz and Stegun, section 4.2. It takes one argument.""" ;
             ns1:variables [ ] ] ;
     rdfs:isDefinedBy <http://www.openmath.org/cd/transc1> .
 
-ns3:SkillInterface a owl:Class ;
+ns5:SkillInterface a owl:Class ;
     rdfs:comment """Access point to configure, control and monitor a skill.
 
 Notes:
@@ -20072,10 +20096,10 @@ Notes:
 - A skill interface exposes the state machine of a skill so that skill states can be
 monitored and transitions triggered.
 - A skill interface exposes the parameters of a skill so that they can be written and read.""" ;
-    owl:disjointWith ns3:SkillParameter,
-        ns3:StateMachine .
+    owl:disjointWith ns5:SkillParameter,
+        ns5:StateMachine .
 
-ns3:SkillParameter a owl:Class ;
+ns5:SkillParameter a owl:Class ;
     rdfs:comment """Data unit to configure, control and monitor the execution of a skill.
 
 Notes:
@@ -20083,7 +20107,7 @@ Notes:
 - Skill parameters might be used as results
 - Skill parameters might have a relation or be equivalent to capability properties""" ;
     rdfs:subClassOf <http://www.w3id.org/hsu-aut/cask#SkillVariable> ;
-    owl:disjointWith ns3:StateMachine .
+    owl:disjointWith ns5:StateMachine .
 
 <http://www.openmath.org/cd/arith1#abs> a ns2:ApplicationSymbol,
         owl:NamedIndividual ;
@@ -20445,7 +20469,7 @@ part of the complex number x + i y. (Where i is the square root of -1.)""" ;
      If you have questions about this license please contact the OpenMath
      society at http://www.openmath.org.""" .
 
-ns3:Skill a owl:Class ;
+ns5:Skill a owl:Class ;
     rdfs:comment """Executable implementation of an encapsulated (automation) function specified by a Capability.
 
 Notes:
@@ -20454,13 +20478,13 @@ Notes:
 - A skill may have any number of SkillParameters. 
 - A skill’s behavior conforms to a state machine. 
 - A skill controls a process step""" ;
-    owl:disjointWith ns3:SkillParameter .
+    owl:disjointWith ns5:SkillParameter .
 
-ns5:Real a owl:Class ;
+ns3:Real a owl:Class ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:allValuesFrom xsd:float ;
-            owl:onProperty ns5:Value_List_Member ],
-        ns5:Simple_Data_Type .
+            owl:onProperty ns3:Value_List_Member ],
+        ns3:Simple_Data_Type .
 
 <http://www.openmath.org/cd/SI_NamedDerivedUnits1> a ns2:Library,
         owl:NamedIndividual ;
@@ -20715,41 +20739,6 @@ a multivalued function.""" ;
 
 rdf:List a owl:Class .
 
-ns5:Data_Element a owl:Class ;
-    rdfs:comment """Description:
-Contains a the structure of all data element (DIN61360 3.5.2, see also section 4)
-
-Each Data_Element has to have a type description and may have an instance description""" ;
-    rdfs:subClassOf [ a owl:Class ;
-            owl:intersectionOf ( [ a owl:Restriction ;
-                        owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                        owl:onClass [ a owl:Class ;
-                                owl:intersectionOf ( ns5:Instance_Description [ a owl:Restriction ;
-                                            owl:hasValue "Actual_Value" ;
-                                            owl:onProperty ns5:Expression_Goal ] ) ] ;
-                        owl:onProperty ns5:has_Instance_Description ] [ a owl:Restriction ;
-                        owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                        owl:onClass [ a owl:Class ;
-                                owl:intersectionOf ( ns5:Instance_Description [ a owl:Restriction ;
-                                            owl:hasValue "Assurance" ;
-                                            owl:onProperty ns5:Expression_Goal ] ) ] ;
-                        owl:onProperty ns5:has_Instance_Description ] [ a owl:Restriction ;
-                        owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                        owl:onClass [ a owl:Class ;
-                                owl:intersectionOf ( ns5:Instance_Description [ a owl:Restriction ;
-                                            owl:hasValue "Requirement" ;
-                                            owl:onProperty ns5:Expression_Goal ] ) ] ;
-                        owl:onProperty ns5:has_Instance_Description ] ) ],
-        [ a owl:Restriction ;
-            owl:onProperty ns5:has_Type_Description ;
-            owl:someValuesFrom ns5:Type_Description ],
-        [ a owl:Restriction ;
-            owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger ;
-            owl:onClass ns5:Instance_Description ;
-            owl:onProperty ns5:has_Instance_Description ],
-        ns3:Property ;
-    owl:disjointWith ns5:Type_Description .
-
 <http://www.openmath.org/cd/logic1#equivalent> a ns2:ApplicationSymbol,
         owl:NamedIndividual ;
     ns2:commentedProperty """The condition (A is equivalent to B) is equivalent to the
@@ -20813,6 +20802,41 @@ effectively multiplied by 1,000 ($10^{3}$)""" ;
             ns1:arguments [ ] ;
             ns1:operator <http://www.openmath.org/cd/relations1#eq> ] ;
     rdfs:isDefinedBy <http://www.openmath.org/cd/units_ops1> .
+
+ns3:Data_Element a owl:Class ;
+    rdfs:comment """Description:
+Contains a the structure of all data element (DIN61360 3.5.2, see also section 4)
+
+Each Data_Element has to have a type description and may have an instance description""" ;
+    rdfs:subClassOf [ a owl:Class ;
+            owl:intersectionOf ( [ a owl:Restriction ;
+                        owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                        owl:onClass [ a owl:Class ;
+                                owl:intersectionOf ( ns3:Instance_Description [ a owl:Restriction ;
+                                            owl:hasValue "Actual_Value" ;
+                                            owl:onProperty ns3:Expression_Goal ] ) ] ;
+                        owl:onProperty ns3:has_Instance_Description ] [ a owl:Restriction ;
+                        owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                        owl:onClass [ a owl:Class ;
+                                owl:intersectionOf ( ns3:Instance_Description [ a owl:Restriction ;
+                                            owl:hasValue "Assurance" ;
+                                            owl:onProperty ns3:Expression_Goal ] ) ] ;
+                        owl:onProperty ns3:has_Instance_Description ] [ a owl:Restriction ;
+                        owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                        owl:onClass [ a owl:Class ;
+                                owl:intersectionOf ( ns3:Instance_Description [ a owl:Restriction ;
+                                            owl:hasValue "Requirement" ;
+                                            owl:onProperty ns3:Expression_Goal ] ) ] ;
+                        owl:onProperty ns3:has_Instance_Description ] ) ],
+        [ a owl:Restriction ;
+            owl:onProperty ns3:has_Type_Description ;
+            owl:someValuesFrom ns3:Type_Description ],
+        [ a owl:Restriction ;
+            owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger ;
+            owl:onClass ns3:Instance_Description ;
+            owl:onProperty ns3:has_Instance_Description ],
+        ns5:Property ;
+    owl:disjointWith ns3:Type_Description .
 
 <http://www.openmath.org/cd/fns2#apply_to_list> a ns2:ApplicationSymbol,
         owl:NamedIndividual ;
@@ -21009,40 +21033,40 @@ CMP is not valid in general.""" ;
             ns1:variables [ ] ] ;
     rdfs:isDefinedBy <http://www.openmath.org/cd/arith1> .
 
-ns5:Type_Description a owl:Class ;
+ns3:Type_Description a owl:Class ;
     rdfs:comment "Value list is expressed as exactly 1, since not using a value list has to result in value list false" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:onDataRange xsd:string ;
-            owl:onProperty ns5:Code ;
+            owl:onProperty ns3:Code ;
             owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
         [ a owl:Restriction ;
             owl:onDataRange xsd:string ;
-            owl:onProperty ns5:Definition ;
+            owl:onProperty ns3:Definition ;
             owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
         [ a owl:Restriction ;
             owl:onDataRange xsd:string ;
-            owl:onProperty ns5:Preferred_Name ;
+            owl:onProperty ns3:Preferred_Name ;
             owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
         [ a owl:Restriction ;
             owl:onDataRange xsd:string ;
-            owl:onProperty ns5:Short_Name ;
+            owl:onProperty ns3:Short_Name ;
             owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
         [ a owl:Restriction ;
             owl:onDataRange xsd:int ;
-            owl:onProperty ns5:Version_Number ;
+            owl:onProperty ns3:Version_Number ;
             owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
             owl:onDataRange xsd:string ;
-            owl:onProperty ns5:Preferred_Letter_Symbol ],
+            owl:onProperty ns3:Preferred_Letter_Symbol ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality "2"^^xsd:nonNegativeInteger ;
             owl:onDataRange xsd:string ;
-            owl:onProperty ns5:Synonymous_Letter_Symbol ],
+            owl:onProperty ns3:Synonymous_Letter_Symbol ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality "2"^^xsd:nonNegativeInteger ;
             owl:onDataRange xsd:string ;
-            owl:onProperty ns5:Synonymous_Name ] .
+            owl:onProperty ns3:Synonymous_Name ] .
 
 <http://www.openmath.org/cd/bigfloat1#bigfloat> a ns2:ApplicationSymbol,
         owl:NamedIndividual ;
@@ -21175,17 +21199,6 @@ ns1:AttributionPair a owl:Class ;
             owl:onProperty ns1:attributeValue ],
         owl:Thing .
 
-ns5:Instance_Description a owl:Class ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:string ;
-            owl:onProperty ns5:Expression_Goal ;
-            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
-        [ a owl:Restriction ;
-            owl:onDataRange xsd:string ;
-            owl:onProperty ns5:Logic_Interpretation ;
-            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ] ;
-    owl:disjointWith ns5:Type_Description .
-
 <http://www.openmath.org/cd/polyd1#term> a ns1:Symbol,
         owl:NamedIndividual ;
     ns2:description """The constructor of monomials. Valid applications are of the form
@@ -21194,6 +21207,17 @@ ns5:Instance_Description a owl:Class ;
          coeff * var1^exp1*...varn^expn
          where n is the number of variables, expi are non-negative integers.""" ;
     rdfs:isDefinedBy <http://www.openmath.org/cd/polyd1> .
+
+ns3:Instance_Description a owl:Class ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onDataRange xsd:string ;
+            owl:onProperty ns3:Expression_Goal ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
+        [ a owl:Restriction ;
+            owl:onDataRange xsd:string ;
+            owl:onProperty ns3:Logic_Interpretation ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ] ;
+    owl:disjointWith ns3:Type_Description .
 
 <http://www.openmath.org/cd/SI_Functions1#dim> a owl:NamedIndividual .
 
@@ -49312,7 +49336,7 @@ ns1:Application a owl:Class ;
     ns1:value 2 .
 
 [] a owl:AllDisjointClasses ;
-    owl:members ( ns5:Array ns5:Bag ns5:Boolean ns5:Integer ns5:List ns5:Real ns5:Set ns5:String ) .
+    owl:members ( ns3:Array ns3:Bag ns3:Boolean ns3:Integer ns3:List ns3:Real ns3:Set ns3:String ) .
 
 [] a owl:AllDisjointClasses ;
     owl:members ( <http://www.hsu-ifa.de/ontologies/VDI2206#Component> <http://www.hsu-ifa.de/ontologies/VDI2206#Module> <http://www.hsu-ifa.de/ontologies/VDI2206#System> ) .
