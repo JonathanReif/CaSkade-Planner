@@ -8,10 +8,17 @@ class PropertyEntry:
 		self.relation_type = relation_type
 		self.states = states
 
+class ReversedPropertyEntry:
+	def __init__(self, iri: URIRef, type: str, relation_type: str, variable: ArithRef | BoolRef):
+		self.iri = iri
+		self.type = type
+		self.relation_type = relation_type
+		self.variable = variable
+
 class PropertyDictionary:
 	def __init__(self):
 		self.properties: Dict[str, PropertyEntry] = dict()
-		self.property_index: Dict[Tuple, List[ArithRef | BoolRef]] = dict()
+		self.property_index: Dict[Tuple, List[ReversedPropertyEntry]] = dict()
 
 	def addProperty(self, iri:URIRef, type:str, relation_type:str):
 		self.properties[str(iri)] = PropertyEntry(type, relation_type, dict())
@@ -36,7 +43,8 @@ class PropertyDictionary:
 				new_var = Real(variableName)
 
 		self.properties[iriString].states[happening][event] = new_var
-		self.property_index.setdefault((happening,event), []).append(new_var)
+		relation_type = self.properties[iriString].relation_type
+		self.property_index.setdefault((happening,event), []).append(ReversedPropertyEntry(iri, type, relation_type, new_var))
 
 	def getPropertyVariable(self, iri: URIRef, happening:int, event:int):
 		iriString = str(iri)
@@ -44,7 +52,7 @@ class PropertyDictionary:
 			raise KeyError(f"There is no property with key {iriString}.")
 		return self.properties[iriString].states[happening][event]
 	
-	def get_property_variables_at_happening_and_event(self, happening: int, event:int) -> List[ArithRef | BoolRef]:
+	def get_properties_at_happening_and_event(self, happening: int, event:int) -> List[ReversedPropertyEntry]:
 		return self.property_index[(happening, event)]
 	
 	def getPropertyType(self, iri: URIRef):

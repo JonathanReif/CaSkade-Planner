@@ -48,7 +48,7 @@ def get_property_cross_relations(graph: Graph, property_dictionary: PropertyDict
 			relation_constraint = (required_input_prop == related_property)
 			relation_constraints.append(relation_constraint)
 
-	# 1: Relate goals. We need to get all outputs of the required capability and make sure that related output properties are bound to the valu of these outputs
+	# 2: Relate goals. We need to get all outputs of the required capability and make sure that related output properties are bound to the valu of these outputs
 	# Only constrain output properties because we are only interested in the final output. The input depends on the capability and must not be "over-constrained"
 	required_output_properties = get_outputs_of_required_cap(graph)
 	for required_output_prop_iri in required_output_properties:
@@ -62,6 +62,29 @@ def get_property_cross_relations(graph: Graph, property_dictionary: PropertyDict
 			related_property = property_dictionary.getPropertyVariable(related_property_iri, happenings-1, 1)
 			relation_constraint = (required_output_prop == related_property)
 			relation_constraints.append(relation_constraint)
+
+	# 3: Propagate changes to related properties. If there is a change in a property after a capabilty (output), this change needs to be reflected to related properties (inputs)
+	# Otherwise the change would not be propagated between different properties that are only implicitly related
+	for happening in range(happenings-2):
+		# Get this happening's properties and filter only for Outputs
+		properties_after_cap = property_dictionary.get_properties_at_happening_and_event(happening, 1)
+		outputs_after_cap = list(filter(lambda x: x.relation_type == "Output", properties_after_cap))
+
+		# Find all related properties
+		for output_after_cap in outputs_after_cap:
+			related_properties = find_related_properties(output_after_cap.iri, related_property_pairs)
+			
+			for related_property in related_properties:
+				# Get related at next happening and event = 1
+				next_happening = happening + 1
+				related_property_next_happening = property_dictionary.getPropertyVariable(related_property, next_happening, 0)
+
+				# Filter only for inputs
+				if property_dictionary.get_relation_type_of_property(related_property) != "Input": continue 
+				
+				output_after_cap_property = property_dictionary.getPropertyVariable(output_after_cap.iri, happening, 1)
+				relation_constraint = (output_after_cap_property == related_property_next_happening)
+				relation_constraints.append(relation_constraint)
 
 	return relation_constraints
 
