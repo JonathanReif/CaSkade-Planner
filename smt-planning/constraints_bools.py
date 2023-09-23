@@ -49,8 +49,8 @@ def get_bool_constraints(graph: Graph, capability_dict: CapabilityDictionary, pr
         for row in results:
             value = str(row.val)                                                        # type: ignore
             currentCap = capability_dict.getCapabilityVariableByIriAndHappening(row.cap, happening) # type: ignore
-            prop_start = property_dictionary.getPropertyVariable(row.de, happening, 0) # type: ignore
-            prop_end = property_dictionary.getPropertyVariable(row.de, happening, 1) # type: ignore
+            prop_start = property_dictionary.get_provided_property(row.de, happening, 0) # type: ignore
+            prop_end = property_dictionary.get_provided_property(row.de, happening, 1) # type: ignore
             if value == "true":
                 constraint_1 = Implies(prop_end, Or(prop_start, currentCap))
                 constraint_2 = Implies(Not(prop_end), Not(prop_start))
@@ -65,8 +65,8 @@ def get_bool_constraints(graph: Graph, capability_dict: CapabilityDictionary, pr
     results = graph.query(query_props_not_effected) 
     for happening in range(happenings):
         for row in results:
-            prop_start = property_dictionary.getPropertyVariable(row.de, happening, 0) # type: ignore
-            prop_end = property_dictionary.getPropertyVariable(row.de, happening, 1) # type: ignore
+            prop_start = property_dictionary.get_provided_property(row.de, happening, 0) # type: ignore
+            prop_end = property_dictionary.get_provided_property(row.de, happening, 1) # type: ignore
             constraint_1 = Implies(prop_end, prop_start)
             constraint_2 = Implies(Not(prop_end), Not(prop_start))
             constraints.append(constraint_1)

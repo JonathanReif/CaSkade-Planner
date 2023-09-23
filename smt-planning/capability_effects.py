@@ -33,10 +33,10 @@ def getCapabilityEffects(graph: Graph, capability_dictionary: CapabilityDictiona
 	for happening in range(happenings):
 		for row in results:
 			current_capability = capability_dictionary.getCapabilityVariableByIriAndHappening(row.cap, happening)	# type: ignore
-			effect_property = property_dictionary.getPropertyVariable(row.de, happening, 1)							# type: ignore
+			effect_property = property_dictionary.get_provided_property(row.de, happening, 1)							# type: ignore
 			relation = str(row.log)																					# type: ignore
 			value = str(row.val)																					# type: ignore		
-			prop_type = property_dictionary.getPropertyType(row.de) 												# type: ignore
+			prop_type = property_dictionary.get_property_type(row.de) 												# type: ignore
 			if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
 				match relation:
 					case "<":

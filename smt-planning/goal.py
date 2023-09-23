@@ -23,11 +23,11 @@ def get_goal(graph:Graph, property_dictionary: PropertyDictionary, happenings):
 	results = graph.query(query_string)
 	goals = []
 	for row in results:
-		property = property_dictionary.getPropertyVariable(row.de, happenings-1, 1)		# type: ignore
+		property = property_dictionary.get_required_property(row.de)					# type: ignore
 		relation = str(row.log)															# type: ignore
 		value = str(row.val)                                                            # type: ignore
 		
-		prop_type = property_dictionary.getPropertyType(row.de) # type: ignore
+		prop_type = property_dictionary.get_property_type(row.de) # type: ignore
 		if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
 
 			match relation:														    

@@ -52,8 +52,8 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
             for cap in caps_result:                    # type: ignore
                 currentCap = capability_dict.getCapabilityVariableByIriAndHappening(cap, happening) # type: ignore
                 caps.append(currentCap)
-            prop_start = property_dictionary.getPropertyVariable(row.de, happening, 0) # type: ignore
-            prop_end = property_dictionary.getPropertyVariable(row.de, happening, 1) # type: ignore
+            prop_start = property_dictionary.get_provided_property(row.de, happening, 0) # type: ignore
+            prop_end = property_dictionary.get_provided_property(row.de, happening, 1) # type: ignore
             caps_constraint = [Not(cap) for cap in caps]                
             constraint = Implies(And(*caps_constraint), prop_end == prop_start)
             constraints.append(constraint)
@@ -62,8 +62,8 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
     results = graph.query(query_props_not_effected) 
     for happening in range(happenings):
         for row in results:
-            prop_start = property_dictionary.getPropertyVariable(row.de, happening, 0) # type: ignore
-            prop_end = property_dictionary.getPropertyVariable(row.de, happening, 1) # type: ignore
+            prop_start = property_dictionary.get_provided_property(row.de, happening, 0) # type: ignore
+            prop_end = property_dictionary.get_provided_property(row.de, happening, 1) # type: ignore
             constraint = prop_end == prop_start
             constraints.append(constraint)
 

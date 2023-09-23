@@ -15,7 +15,7 @@ def getAllProperties(graph: Graph, happenings:int, eventBound:int) -> PropertyDi
 	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
 	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
 	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-	SELECT DISTINCT ?de ?dataType ?relationType WHERE { 
+	SELECT DISTINCT ?de ?capType ?dataType ?relationType WHERE { 
 		?cap a ?capType;
 			^CSS:requiresCapability ?process.
 		values ?capType { CaSk:ProvidedCapability CaSk:RequiredCapability }. 	
@@ -31,7 +31,11 @@ def getAllProperties(graph: Graph, happenings:int, eventBound:int) -> PropertyDi
 	results = graph.query(queryString)
 	properties = PropertyDictionary()
 	for row in results:
-		properties.addProperty(row.de, str(row.dataType), str(row.relationType)) # type: ignore 
+		if str(row.capType) == "http://www.w3id.org/hsu-aut/cask#RequiredCapability":
+			properties.add_required_property(row.de, str(row.dataType), str(row.relationType)) # type: ignore 
+			continue
+
+		properties.add_provided_property(row.de, str(row.dataType), str(row.relationType)) # type: ignore 
 		for happening in range(happenings):
 			properties.addPropertyHappening(row.de, happening) # type: ignore
 			for event in range(eventBound):
