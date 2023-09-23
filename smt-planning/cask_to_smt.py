@@ -1,4 +1,5 @@
 import json 
+import time
 
 from rdflib import Graph
 from z3 import Solver, sat, Bool
@@ -15,7 +16,6 @@ from goal import get_goal
 from real_variable_contin_change import get_real_variable_continuous_changes
 
 
-
 def add_comment(solver: Solver, comment_text: str):
 	# Adds a comment to the smt output in a pretty hackish way: 
 	# Z3 doesn't allow adding comments, so we create a variable with the comment as its name and add it to the solver
@@ -25,6 +25,8 @@ def add_comment(solver: Solver, comment_text: str):
 
 def cask_to_smt():
 
+	start_time = time.time()
+
 	# SMT Solver
 	solver = Solver()
 
@@ -32,10 +34,10 @@ def cask_to_smt():
 	g = Graph()
 
 	# Parse in an RDF file hosted beside this file
-	g.parse("ex_three_caps.ttl", format="turtle")
+	g.parse("order_ontology.ttl", format="turtle")
 
 	# TODO: Happenings müssen je nach Lösung angepasst werden (for schleife) 
-	happenings = 3
+	happenings = 4
 	# Fixed upper bound for number of events in one happening. Currently no events, so we just have the start and end of a happening
 	event_bound = 2
 
@@ -118,6 +120,8 @@ def cask_to_smt():
 	for cross_relation in property_cross_relations:
 		solver.add(cross_relation)
 
+	end_time = time.time()
+
 	# smtlib code  
 	print(solver.to_smt2())
 
@@ -135,6 +139,9 @@ def cask_to_smt():
 		return model 
 	else:
 		print("No solution found.")
-
+	
+	end_time_solver = time.time()
+	print(f"Time for generating SMT: {end_time - start_time}")
+	print(f"Time for solving SMT: {end_time_solver - end_time}")
 if __name__ == '__main__': 
 	cask_to_smt()
