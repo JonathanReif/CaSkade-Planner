@@ -13,6 +13,11 @@ def get_real_variable_continuous_changes(graph: Graph, property_dictionary: Prop
 			if property.type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
 				property_current_happening_start = property.states[happening][0]
 				property_last_happening_end = property.states[happening-1][event_bound-1]
+
+				if property.relation_type == "Output": 
+					continuous_change = property_current_happening_start == property_last_happening_end
+					continuous_changes.append(continuous_change)
+					continue
 				
 				related_properties_last_happening_end = get_related_properties_at_same_time(graph, property_dictionary, property_iri, happening-1, event_bound-1)
 

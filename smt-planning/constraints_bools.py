@@ -5,6 +5,7 @@ from typing import List
 from dicts.CapabilityDictionary import CapabilityDictionary
 from dicts.PropertyDictionary import PropertyDictionary
 
+#TODO like constraints for real variables there is the need of check for every cap which can influence property and add them to same constraint  
 def get_bool_constraints(graph: Graph, capability_dict: CapabilityDictionary, property_dictionary: PropertyDictionary, happenings: int, event_bound: int) -> List:
     
     # get all properties influenced by capability effect
