@@ -4,6 +4,7 @@ from typing import List
 
 from dicts.CapabilityDictionary import CapabilityDictionary
 from dicts.PropertyDictionary import PropertyDictionary
+from property_links import get_related_capabilities_at_same_time
 
 def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary, property_dictionary: PropertyDictionary, happenings: int, event_bound: int) -> List:
     
@@ -29,7 +30,7 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
         PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
         PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
         PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
-        SELECT ?de WHERE { 
+        SELECT ?de ?cap WHERE { 
             ?cap a CaSk:ProvidedCapability;
                 ^CSS:requiresCapability ?process.
             ?process VDI3682:hasInput ?in.
@@ -42,7 +43,7 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
                 ?out_id ^DINEN61360:has_Instance_Description ?de.
             }
         } """
-	
+    
     results = graph.query(query_props_effected) 
     constraints = []
     for happening in range(happenings):
@@ -52,6 +53,11 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
             for cap in caps_result:                    # type: ignore
                 currentCap = capability_dict.getCapabilityVariableByIriAndHappening(cap, happening) # type: ignore
                 caps.append(currentCap)
+                related_caps = get_related_capabilities_at_same_time(graph, capability_dict, cap, str(row.de), happening) # type: ignore
+                for related_cap in related_caps:
+                    if related_cap in caps: continue
+                    caps.append(related_cap)
+
             prop_start = property_dictionary.get_provided_property(row.de, happening, 0) # type: ignore
             prop_end = property_dictionary.get_provided_property(row.de, happening, 1) # type: ignore
             caps_constraint = [Not(cap) for cap in caps]                
@@ -62,9 +68,15 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
     results = graph.query(query_props_not_effected) 
     for happening in range(happenings):
         for row in results:
+            related_caps = get_related_capabilities_at_same_time(graph, capability_dict, str(row.cap), str(row.de), happening) # type: ignore
             prop_start = property_dictionary.get_provided_property(row.de, happening, 0) # type: ignore
             prop_end = property_dictionary.get_provided_property(row.de, happening, 1) # type: ignore
-            constraint = prop_end == prop_start
-            constraints.append(constraint)
+            if not related_caps: 
+                constraint = prop_end == prop_start
+                constraints.append(constraint)
+            else: 
+                caps_constraint = [Not(cap) for cap in related_caps]                
+                constraint = Implies(And(*caps_constraint), prop_end == prop_start)
+                constraints.append(constraint)
 
     return constraints
