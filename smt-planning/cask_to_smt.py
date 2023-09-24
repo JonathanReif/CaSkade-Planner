@@ -34,10 +34,10 @@ def cask_to_smt():
 	g = Graph()
 
 	# Parse in an RDF file hosted beside this file
-	g.parse("ex_three_caps.ttl", format="turtle")
+	g.parse("new_order_ontology.ttl", format="turtle")
 
 	# TODO: Happenings müssen je nach Lösung angepasst werden (for schleife) 
-	happenings = 1
+	happenings = 2
 	# Fixed upper bound for number of events in one happening. Currently no events, so we just have the start and end of a happening
 	event_bound = 2
 
@@ -48,14 +48,14 @@ def cask_to_smt():
 	# Get provided capabilities and transform to boolean SMT variables
 	capability_dictionary = getProvidedCapabilities(g, happenings, event_bound)
 
-	# ------Constraint Proposition (H1 + H2) and Cosntraint Real Variable (H5) --> bool and real properties-------
-	add_comment(solver, "## Start of variable constraints ##")
 	# ------------------------Constraint Proposition (H1 + H2) --> bool properties------------------
+	add_comment(solver, "## Start of constraints proposition ##")
 	bool_constraints = get_bool_constraints(g, capability_dictionary, property_dictionary, happenings, event_bound)
 	for bool_constraint in bool_constraints:
 		solver.add(bool_constraint)	
 
 	# ---------------------Constraint Real Variable (H5) --> real properties-----------------------------
+	add_comment(solver, "## Start of constraints real variables ##")
 	variable_constraints = get_variable_constraints(g, capability_dictionary, property_dictionary, happenings, event_bound)
 	for variable_constraint in variable_constraints:
 		solver.add(variable_constraint)	
@@ -124,7 +124,9 @@ def cask_to_smt():
 	print(f"Time for generating SMT: {end_time - start_time}")
 
 	# smtlib code  
-	print(solver.to_smt2())
+	# print(solver.to_smt2())
+	with open('smtlib5.txt', 'w') as file:
+		file.write(solver.to_smt2())
 	
 
 	# Check satisfiability and get the model
@@ -137,7 +139,7 @@ def cask_to_smt():
 		model_dict = {}
 
 		for var in model:
-			print(f"{var} = {model[var]}")
+			# print(f"{var} = {model[var]}")
 			model_dict[str(var)] = str((model[var]))
 		# Write the model to a JSON file
 		with open('plan.json', 'w') as json_file:
