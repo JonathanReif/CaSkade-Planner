@@ -88,6 +88,7 @@ def get_outputs_of_required_cap(graph: Graph):
 	return output_iris
 
 
+
 def get_related_properties_at_same_time(graph: Graph, property_dictionary: PropertyDictionary, property_iri:str ,happening: int, event: int) -> List[ArithRef | BoolRef]:
 
 	property_pairs = PropertyPairCache.get_property_pairs(graph)
@@ -98,7 +99,7 @@ def get_related_properties_at_same_time(graph: Graph, property_dictionary: Prope
 	
 	for related_property in related_properties:
 		# Get related at same happening and event, but only if Output
-		if property_dictionary.get_relation_type_of_property(related_property) != "Output": continue
+		# if property_dictionary.get_relation_type_of_property(related_property) != "Output": continue
 		
 		try: 
 			related_property_same_time = property_dictionary.get_provided_property(related_property, happening, event)
@@ -177,11 +178,90 @@ def find_property_pairs(graph:Graph) -> List[PropertyPair]:
 		for related_binding in related_bindings:
 			pair = PropertyPair(binding.get("de"), related_binding.get("de"))
 			existing_pair = next(filter(lambda x: is_existing(pair, x), related_property_pairs), None)
-			self_pair = is_self_pair(pair) 
-			if not existing_pair and not self_pair:
+			# self_pair = is_self_pair(pair) 
+			if not existing_pair:
 				related_property_pairs.append(pair)
 
 	return related_property_pairs
+
+class CapabilityPair:
+	def __init__(self, capability_a: URIRef, capability_b: URIRef, property: URIRef) -> None:
+		self.capability_a = capability_a
+		self.capability_b = capability_b
+		self.property = property
+
+def get_capability_partners(capability_iri: str, property_iri: str, capability_pairs:List[CapabilityPair]) -> List[URIRef]:
+	# Returns all partners of a property from the list of property pairs
+	# Gets partnerA if partnerB is given and partnerB if partnerA is given
+	related_capabilities = []
+	for capability_pair in capability_pairs:
+		if (str(capability_iri) == str(capability_pair.capability_a)) and (str(property_iri) == str(capability_pair.property)):
+			related_capabilities.append(capability_pair.capability_b)
+		if (str(capability_iri) == str(capability_pair.capability_b)) and (str(property_iri) == str(capability_pair.property)):
+			related_capabilities.append(capability_pair.capability_a)
+		
+	return related_capabilities
+
+def is_existing_cap(pair: CapabilityPair, other_pair: CapabilityPair) -> bool:
+	a_same_a = str(pair.capability_a) == str(other_pair.capability_a) and str(pair.property) == str(other_pair.property)
+	b_same_b = str(pair.capability_b) == str(other_pair.capability_b) and str(pair.property) == str(other_pair.property)
+	a_same_b = str(pair.capability_a) == str(other_pair.capability_b) and str(pair.property) == str(other_pair.property)
+	b_same_a = str(pair.capability_b) == str(other_pair.capability_a) and str(pair.property) == str(other_pair.property)
+	return (a_same_a and b_same_b) or (a_same_b and b_same_a)
+
+def find_capability_pairs(graph: Graph) -> List[CapabilityPair]:
+	query_string = """
+	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
+	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
+	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
+	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
+	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+	SELECT ?cap ?de ?td ?inOutSubType WHERE {
+		?cap a CaSk:ProvidedCapability;
+			^CSS:requiresCapability ?process.
+		?process VDI3682:hasInput|VDI3682:hasOutput ?inOut.
+		?de a DINEN61360:Data_Element.
+		?de DINEN61360:has_Type_Description ?td;
+			DINEN61360:has_Instance_Description ?id.
+		?inOut VDI3682:isCharacterizedBy ?id.
+		BIND(VDI3682:Product AS ?inOutType)
+		?inOut a ?inOutType.
+		OPTIONAL {
+			?inOut a ?inOutSubType.
+			?inOutSubType rdfs:subClassOf VDI3682:Product.
+		}
+	} """
+
+	result = graph.query(query_string)
+	# Creates a list of pairs of related capabilites, i.e. a capability with a different data_element that is still implicitly connected and thus must be linked in SMT
+	# Requirement for a related capability:
+	# Property of Output must have same type description and either both properties dont have a product subtype or both have the same subtype
+	related_capability_pairs: List[CapabilityPair] = []
+	for binding in result.bindings:
+		related_bindings = list(filter(lambda x: is_related_binding(binding, x), result.bindings))
+		for related_binding in related_bindings:
+			pair = CapabilityPair(binding.get("cap"), related_binding.get("cap"), binding.get("de"))
+			existing_pair = next(filter(lambda x: is_existing_cap(pair, x), related_capability_pairs), None)
+			if not existing_pair:
+				related_capability_pairs.append(pair)
+
+	return related_capability_pairs
+
+def get_related_capabilities_at_same_time(graph: Graph, capability_dictionary: CapabilityDictionary, capability_iri:str, property_iri:str, happening: int) -> List[BoolRef]:
+
+	capability_pairs = CapabilityPairCache.get_capability_pairs(graph)
+	result_related_capabilities: List[BoolRef] = []
+
+	# Find all related partners of the given capability
+	related_capabilities = get_capability_partners(capability_iri, property_iri, capability_pairs)
+	
+	for related_capability in related_capabilities:
+		# Get related at same happening
+		
+		related_capability_same_time = capability_dictionary.getCapabilityVariableByIriAndHappening(related_capability, happening)
+		result_related_capabilities.append(related_capability_same_time)
+
+	return result_related_capabilities
 
 
 def is_related_binding(binding: Mapping[Variable, Identifier], other_binding: Mapping[Variable, Identifier]) -> bool:
@@ -212,4 +292,14 @@ class PropertyPairCache:
 			PropertyPairCache.property_pairs = find_property_pairs(graph)			
 
 		return PropertyPairCache.property_pairs
+
+class CapabilityPairCache:
+	capability_pairs: List[CapabilityPair] = list()
+
+	@staticmethod
+	def get_capability_pairs(graph: Graph):
+		if not CapabilityPairCache.capability_pairs:
+			CapabilityPairCache.capability_pairs = find_capability_pairs(graph)			
+
+		return CapabilityPairCache.capability_pairs
 
