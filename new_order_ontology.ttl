@@ -5676,32 +5676,64 @@ ns2:formalProperty a owl:ObjectProperty .
     ns3:has_Type_Description :grabbed_TD .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem> a ns4:Product ;
-    ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_de> ;
-    ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_id> .
+    ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_de>,
+        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/latitude_de>,
+        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/longitude_de> ;
+    ns4:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_id>,
+        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/latitude_id>,
+        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/longitude_id> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_de> a ns3:Data_Element ;
     ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_id> ;
     ns3:has_Type_Description :grabbed_TD .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/latitude> a ns1:Application,
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/latitude_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/latitude_id> ;
+    ns3:has_Type_Description :latitude_TD .
+
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/longitude_de> a ns3:Data_Element ;
+    ns3:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/longitude_id> ;
+    ns3:has_Type_Description :longitude_TD .
+
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/Input/latitude> a ns1:Application,
         ns5:CapabilityConstraint ;
-    ns1:arguments <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/latitude/ArgList> ;
+    ns1:arguments <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/Input/latitude/ArgList> ;
     ns1:operator <http://www.openmath.org/cd/relation1#eq> ;
     ns5:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/latitude_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/latitude_id> .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/latitude/ArgList> rdf:first <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/latitude_id> ;
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/Input/latitude/ArgList> rdf:first <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/latitude_id> ;
     rdf:rest ( <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/latitude_id> ) .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/longitude> a ns1:Application,
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/Input/longitude> a ns1:Application,
         ns5:CapabilityConstraint ;
-    ns1:arguments <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/longitude/ArgList> ;
+    ns1:arguments <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/Input/longitude/ArgList> ;
     ns1:operator <http://www.openmath.org/cd/relation1#eq> ;
     ns5:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/longitude_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/longitude_id> .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/longitude/ArgList> rdf:first <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/longitude_id> ;
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/Input/longitude/ArgList> rdf:first <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/longitude_id> ;
     rdf:rest ( <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/longitude_id> ) .
+
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/Output/latitude> a ns1:Application,
+        ns5:CapabilityConstraint ;
+    ns1:arguments <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/Output/latitude/ArgList> ;
+    ns1:operator <http://www.openmath.org/cd/relation1#eq> ;
+    ns5:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/latitude_id>,
+        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/latitude_id> .
+
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/Output/latitude/ArgList> rdf:first <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/latitude_id> ;
+    rdf:rest ( <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/latitude_id> ) .
+
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/Output/longitude> a ns1:Application,
+        ns5:CapabilityConstraint ;
+    ns1:arguments <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/Output/longitude/ArgList> ;
+    ns1:operator <http://www.openmath.org/cd/relation1#eq> ;
+    ns5:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/longitude_id>,
+        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/longitude_id> .
+
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/Output/longitude/ArgList> rdf:first <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/longitude_id> ;
+    rdf:rest ( <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/longitude_id> ) .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem> a ns4:Product ;
     ns3:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/grabbed162_de>,
@@ -10540,8 +10572,10 @@ ns1:variables a owl:ObjectProperty .
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34> a <http://www.w3id.org/hsu-aut/cask#ProvidedCapability> ;
     ns4:hasInput <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem> ;
     ns4:hasOutput <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem> ;
-    ns5:isRestrictedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/latitude>,
-        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/longitude> ;
+    ns5:isRestrictedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/Input/latitude>,
+        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/Input/longitude>,
+        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/Output/latitude>,
+        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/Constraint/Output/longitude> ;
     ns5:requiresCapability <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_id> a ns3:Boolean,
@@ -10555,16 +10589,6 @@ ns1:variables a owl:ObjectProperty .
     ns3:Expression_Goal "Requirement" ;
     ns3:Logic_Interpretation "=" ;
     ns3:Value "false" .
-
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/latitude_id> a ns3:Instance_Description,
-        ns3:Real ;
-    ns3:Expression_Goal "Actual_Value" ;
-    ns3:Logic_Interpretation "=" .
-
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/longitude_id> a ns3:Instance_Description,
-        ns3:Real ;
-    ns3:Expression_Goal "Actual_Value" ;
-    ns3:Logic_Interpretation "=" .
 
 ns3:Array_Member a owl:Class ;
     rdfs:subClassOf [ a owl:Restriction ;
@@ -14502,6 +14526,20 @@ ns2:BinderSymbol a owl:Class ;
     ns1:name "Rover7/cap-driveTo19/RequiredInflong/longitude70_id" ;
     ns3:Logic_Interpretation "=" .
 
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/latitude_id> a ns1:Variable,
+        ns3:Instance_Description,
+        ns3:Real ;
+    ns1:name "Rover7/cap-grab34/AssuranceProdItem/latitude_id" ;
+    ns3:Expression_Goal "Assurance" ;
+    ns3:Logic_Interpretation "=" .
+
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/longitude_id> a ns1:Variable,
+        ns3:Instance_Description,
+        ns3:Real ;
+    ns1:name "Rover7/cap-grab34/AssuranceProdItem/longitude_id" ;
+    ns3:Expression_Goal "Assurance" ;
+    ns3:Logic_Interpretation "=" .
+
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/Required/latitude_id> a ns1:Variable,
         ns3:Instance_Description,
         ns3:Real ;
@@ -14514,6 +14552,20 @@ ns2:BinderSymbol a owl:Class ;
         ns3:Real ;
     ns1:name "Rover7/cap-grab34/RequiredProdItem/Required/longitude_id" ;
     ns3:Expression_Goal "Requirement" ;
+    ns3:Logic_Interpretation "=" .
+
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/latitude_id> a ns1:Variable,
+        ns3:Instance_Description,
+        ns3:Real ;
+    ns1:name "Rover7/cap-grab34/RequiredProdItem/latitude_id" ;
+    ns3:Expression_Goal "Actual_Value" ;
+    ns3:Logic_Interpretation "=" .
+
+<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/RequiredProdItem/longitude_id> a ns1:Variable,
+        ns3:Instance_Description,
+        ns3:Real ;
+    ns1:name "Rover7/cap-grab34/RequiredProdItem/longitude_id" ;
+    ns3:Expression_Goal "Actual_Value" ;
     ns3:Logic_Interpretation "=" .
 
 ns3:Expression_Goal a owl:DatatypeProperty,
@@ -17829,10 +17881,6 @@ ns2:ErrorSymbol a owl:Class ;
 
 :grabbed_TD a ns3:Type_Description .
 
-:latitude_TD a ns3:Type_Description .
-
-:longitude_TD a ns3:Type_Description .
-
 ns3:Complex_Data_Type_Member a owl:Class ;
     rdfs:subClassOf ns3:Data_Type .
 
@@ -18369,6 +18417,10 @@ ns4:TechnicalResource a owl:Class ;
 [VDI 3682-1]""" ;
     rdfs:subClassOf ns5:Resource .
 
+:latitude_TD a ns3:Type_Description .
+
+:longitude_TD a ns3:Type_Description .
+
 ns3:Boolean a owl:Class ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:allValuesFrom xsd:boolean ;
@@ -18821,30 +18873,6 @@ Notes:
         ns5:Skill,
         ns5:SkillInterface,
         ns5:SkillParameter .
-
-ns5:CapabilityConstraint a owl:Class ;
-    rdfs:comment """Condition imposed on a capability that further details its applicability. 
-
-Notes:
-- A capability constraint can be formulated as one of the following three constraint types:
-▪ A precondition, i.e., a condition that must hold before a function can be executed.
-▪ A postcondition, i.e., a condition that must hold after a function has been executed.
-▪ An invariant, i.e., a condition that must hold during the execution of a
-function.
-- A capability constraint restricts the values of the properties associated with the respective capability.
-- A capability constraint can involve one or more properties""" ;
-    owl:disjointWith ns5:Resource,
-        ns5:Service,
-        ns5:ServiceOffer,
-        ns5:ServiceProvider,
-        ns5:ServiceRequester,
-        ns5:Skill,
-        ns5:SkillInterface,
-        ns5:SkillParameter ;
-    owl:equivalentClass [ a owl:Class ;
-            owl:intersectionOf ( ns1:Application [ a owl:Restriction ;
-                        owl:onProperty [ owl:inverseOf ns5:isRestrictedBy ] ;
-                        owl:someValuesFrom ns5:Capability ] ) ] .
 
 ns5:Resource a owl:Class ;
     rdfs:comment """Entity capable of performing functions specified as Capabilities and potentially implemented as Skills.
@@ -19396,6 +19424,30 @@ prime.""" ;
             ns1:arguments [ ] ;
             ns1:operator <http://www.openmath.org/cd/relation1#eq> ] ;
     rdfs:isDefinedBy <http://www.openmath.org/cd/setname2> .
+
+ns5:CapabilityConstraint a owl:Class ;
+    rdfs:comment """Condition imposed on a capability that further details its applicability. 
+
+Notes:
+- A capability constraint can be formulated as one of the following three constraint types:
+▪ A precondition, i.e., a condition that must hold before a function can be executed.
+▪ A postcondition, i.e., a condition that must hold after a function has been executed.
+▪ An invariant, i.e., a condition that must hold during the execution of a
+function.
+- A capability constraint restricts the values of the properties associated with the respective capability.
+- A capability constraint can involve one or more properties""" ;
+    owl:disjointWith ns5:Resource,
+        ns5:Service,
+        ns5:ServiceOffer,
+        ns5:ServiceProvider,
+        ns5:ServiceRequester,
+        ns5:Skill,
+        ns5:SkillInterface,
+        ns5:SkillParameter ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( ns1:Application [ a owl:Restriction ;
+                        owl:onProperty [ owl:inverseOf ns5:isRestrictedBy ] ;
+                        owl:someValuesFrom ns5:Capability ] ) ] .
 
 <http://www.hsu-ifa.de/ontologies/VDI2206#Component> a owl:Class .
 
@@ -20492,12 +20544,6 @@ Notes:
 - A skill controls a process step""" ;
     owl:disjointWith ns5:SkillParameter .
 
-ns3:Real a owl:Class ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom xsd:float ;
-            owl:onProperty ns3:Value_List_Member ],
-        ns3:Simple_Data_Type .
-
 <http://www.openmath.org/cd/SI_NamedDerivedUnits1> a ns2:Library,
         owl:NamedIndividual ;
     ns2:description """2010-08-25    This CD defines symbols to represent the names of named derived
@@ -20751,6 +20797,12 @@ a multivalued function.""" ;
 
 rdf:List a owl:Class .
 
+ns3:Real a owl:Class ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom xsd:float ;
+            owl:onProperty ns3:Value_List_Member ],
+        ns3:Simple_Data_Type .
+
 <http://www.openmath.org/cd/logic1#equivalent> a ns2:ApplicationSymbol,
         owl:NamedIndividual ;
     ns2:commentedProperty """The condition (A is equivalent to B) is equivalent to the
@@ -20904,41 +20956,6 @@ Revision 0.2: added endomap. Help of Henny Wilbrink.""" ;
      If you have questions about this license please contact the OpenMath
      society at http://www.openmath.org.""" .
 
-ns3:Data_Element a owl:Class ;
-    rdfs:comment """Description:
-Contains a the structure of all data element (DIN61360 3.5.2, see also section 4)
-
-Each Data_Element has to have a type description and may have an instance description""" ;
-    rdfs:subClassOf [ a owl:Class ;
-            owl:intersectionOf ( [ a owl:Restriction ;
-                        owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                        owl:onClass [ a owl:Class ;
-                                owl:intersectionOf ( ns3:Instance_Description [ a owl:Restriction ;
-                                            owl:hasValue "Actual_Value" ;
-                                            owl:onProperty ns3:Expression_Goal ] ) ] ;
-                        owl:onProperty ns3:has_Instance_Description ] [ a owl:Restriction ;
-                        owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                        owl:onClass [ a owl:Class ;
-                                owl:intersectionOf ( ns3:Instance_Description [ a owl:Restriction ;
-                                            owl:hasValue "Assurance" ;
-                                            owl:onProperty ns3:Expression_Goal ] ) ] ;
-                        owl:onProperty ns3:has_Instance_Description ] [ a owl:Restriction ;
-                        owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                        owl:onClass [ a owl:Class ;
-                                owl:intersectionOf ( ns3:Instance_Description [ a owl:Restriction ;
-                                            owl:hasValue "Requirement" ;
-                                            owl:onProperty ns3:Expression_Goal ] ) ] ;
-                        owl:onProperty ns3:has_Instance_Description ] ) ],
-        [ a owl:Restriction ;
-            owl:onProperty ns3:has_Type_Description ;
-            owl:someValuesFrom ns3:Type_Description ],
-        [ a owl:Restriction ;
-            owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger ;
-            owl:onClass ns3:Instance_Description ;
-            owl:onProperty ns3:has_Instance_Description ],
-        ns5:Property ;
-    owl:disjointWith ns3:Type_Description .
-
 <http://www.openmath.org/cd/plangeo1#point> a ns1:Symbol,
         owl:NamedIndividual ;
     ns2:description """The symbol is used to indicate a point of  planar Euclidean geometry
@@ -20981,6 +20998,41 @@ Stegun, section 4.3. It takes one argument.""" ;
             ns1:arguments [ ] ;
             ns1:operator <http://www.openmath.org/cd/relation1#eq> ] ;
     rdfs:isDefinedBy <http://www.openmath.org/cd/transc1> .
+
+ns3:Data_Element a owl:Class ;
+    rdfs:comment """Description:
+Contains a the structure of all data element (DIN61360 3.5.2, see also section 4)
+
+Each Data_Element has to have a type description and may have an instance description""" ;
+    rdfs:subClassOf [ a owl:Class ;
+            owl:intersectionOf ( [ a owl:Restriction ;
+                        owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                        owl:onClass [ a owl:Class ;
+                                owl:intersectionOf ( ns3:Instance_Description [ a owl:Restriction ;
+                                            owl:hasValue "Actual_Value" ;
+                                            owl:onProperty ns3:Expression_Goal ] ) ] ;
+                        owl:onProperty ns3:has_Instance_Description ] [ a owl:Restriction ;
+                        owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                        owl:onClass [ a owl:Class ;
+                                owl:intersectionOf ( ns3:Instance_Description [ a owl:Restriction ;
+                                            owl:hasValue "Assurance" ;
+                                            owl:onProperty ns3:Expression_Goal ] ) ] ;
+                        owl:onProperty ns3:has_Instance_Description ] [ a owl:Restriction ;
+                        owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                        owl:onClass [ a owl:Class ;
+                                owl:intersectionOf ( ns3:Instance_Description [ a owl:Restriction ;
+                                            owl:hasValue "Requirement" ;
+                                            owl:onProperty ns3:Expression_Goal ] ) ] ;
+                        owl:onProperty ns3:has_Instance_Description ] ) ],
+        [ a owl:Restriction ;
+            owl:onProperty ns3:has_Type_Description ;
+            owl:someValuesFrom ns3:Type_Description ],
+        [ a owl:Restriction ;
+            owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger ;
+            owl:onClass ns3:Instance_Description ;
+            owl:onProperty ns3:has_Instance_Description ],
+        ns5:Property ;
+    owl:disjointWith ns3:Type_Description .
 
 <http://www.openmath.org/cd/SI_DerivedQuantities1> a ns2:Library,
         owl:NamedIndividual ;
