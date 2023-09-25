@@ -19,10 +19,17 @@ def get_property_cross_relations(graph: Graph, property_dictionary: PropertyDict
 	for required_input_prop_iri in required_input_properties:
 		related_prop_iris = get_partners(str(required_input_prop_iri), related_property_pairs)
 		for related_property_iri in related_prop_iris:
+			# related_property_relation_type = property_dictionary.get_relation_type_of_property(related_property_iri)
+			# if related_property_relation_type != "Input":
+			# 	continue
+
 			required_input_prop = property_dictionary.get_required_property(required_input_prop_iri)
-			related_property = property_dictionary.get_provided_property(related_property_iri, 0, 0)
-			relation_constraint = (required_input_prop == related_property)
-			relation_constraints.append(relation_constraint)
+			try: 
+				related_property = property_dictionary.get_provided_property(related_property_iri, 0, 0)
+				relation_constraint = (required_input_prop == related_property)
+				relation_constraints.append(relation_constraint)
+			except KeyError:
+				print(f"There is no provided property with key {related_property_iri}.")
 
 	# 2: Relate goals. We need to get all outputs of the required capability and make sure that related output properties are bound to the valu of these outputs
 	# Only constrain output properties because we are only interested in the final output. The input depends on the capability and must not be "over-constrained"
@@ -35,9 +42,12 @@ def get_property_cross_relations(graph: Graph, property_dictionary: PropertyDict
 				continue
 
 			required_output_prop = property_dictionary.get_required_property(required_output_prop_iri)
-			related_property = property_dictionary.get_provided_property(related_property_iri, happenings-1, 1)
-			relation_constraint = (required_output_prop == related_property)
-			relation_constraints.append(relation_constraint)
+			try:
+				related_property = property_dictionary.get_provided_property(related_property_iri, happenings-1, 1)
+				relation_constraint = (required_output_prop == related_property)
+				relation_constraints.append(relation_constraint)
+			except KeyError: 
+				print(f"There is no provided property with key {related_property_iri}.")
 
 
 	return relation_constraints
@@ -174,12 +184,12 @@ def find_property_pairs(graph:Graph) -> List[PropertyPair]:
 	# Must belong to different capability, must have same type description and either both properties dont have a product subtype or both have the same subtype
 	related_property_pairs: List[PropertyPair] = []
 	for binding in result.bindings:
-		related_bindings = list(filter(lambda x: is_related_binding(binding, x), result.bindings))
+		related_bindings = list(filter(lambda x: is_related_property_binding(binding, x), result.bindings))
 		for related_binding in related_bindings:
 			pair = PropertyPair(binding.get("de"), related_binding.get("de"))
 			existing_pair = next(filter(lambda x: is_existing(pair, x), related_property_pairs), None)
-			# self_pair = is_self_pair(pair) 
-			if not existing_pair:
+			self_pair = is_self_pair(pair) 
+			if not existing_pair and not self_pair:
 				related_property_pairs.append(pair)
 
 	return related_property_pairs
@@ -238,10 +248,11 @@ def find_capability_pairs(graph: Graph) -> List[CapabilityPair]:
 	# Property of Output must have same type description and either both properties dont have a product subtype or both have the same subtype
 	related_capability_pairs: List[CapabilityPair] = []
 	for binding in result.bindings:
-		related_bindings = list(filter(lambda x: is_related_binding(binding, x), result.bindings))
+		related_bindings = list(filter(lambda x: is_related_capability_binding(binding, x), result.bindings))
 		for related_binding in related_bindings:
 			pair = CapabilityPair(binding.get("cap"), related_binding.get("cap"), binding.get("de"))
 			existing_pair = next(filter(lambda x: is_existing_cap(pair, x), related_capability_pairs), None)
+			# TODO: do we need to check for same pair here as well?
 			if not existing_pair:
 				related_capability_pairs.append(pair)
 
@@ -264,7 +275,11 @@ def get_related_capabilities_at_same_time(graph: Graph, capability_dictionary: C
 	return result_related_capabilities
 
 
-def is_related_binding(binding: Mapping[Variable, Identifier], other_binding: Mapping[Variable, Identifier]) -> bool:
+def is_related_property_binding(binding: Mapping[Variable, Identifier], other_binding: Mapping[Variable, Identifier]) -> bool:
+	# Checks whether two properties are related
+	return same_type_description(binding, other_binding) and subtype_matches(binding, other_binding)
+
+def is_related_capability_binding(binding: Mapping[Variable, Identifier], other_binding: Mapping[Variable, Identifier]) -> bool:
 	# Checks whether two properties are related
 	return different_capability(binding, other_binding) and same_type_description(binding, other_binding) and subtype_matches(binding, other_binding)
 
