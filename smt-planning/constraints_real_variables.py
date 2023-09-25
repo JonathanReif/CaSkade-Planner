@@ -30,11 +30,12 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
         PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
         PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
         PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
-        SELECT ?de ?cap WHERE { 
+        SELECT ?de ?cap ?state WHERE { 
             ?cap a CaSk:ProvidedCapability;
                 ^CSS:requiresCapability ?process.
             ?process VDI3682:hasInput ?in.
-            ?in VDI3682:isCharacterizedBy ?id.
+            ?in a ?state; 
+                VDI3682:isCharacterizedBy ?id.
             ?id ^DINEN61360:has_Instance_Description ?de;
                 a DINEN61360:Real.
             FILTER NOT EXISTS {
@@ -42,7 +43,7 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
                 ?out VDI3682:isCharacterizedBy ?out_id.
                 ?out_id ^DINEN61360:has_Instance_Description ?de.
             }
-        } """
+        }  """
     
     results = graph.query(query_props_effected) 
     constraints = []
@@ -68,14 +69,19 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
     results = graph.query(query_props_not_effected) 
     for happening in range(happenings):
         for row in results:
+            caps = []
+            if str(row.state) != "http://www.w3id.org/hsu-aut/VDI3682#Information":                     # type: ignore
+                currentCap = capability_dict.getCapabilityVariableByIriAndHappening(row.cap, happening) # type: ignore
+                caps.append(currentCap)
             related_caps = get_related_capabilities_at_same_time(graph, capability_dict, str(row.cap), str(row.de), happening) # type: ignore
+            caps.extend(related_caps)
             prop_start = property_dictionary.get_provided_property(row.de, happening, 0) # type: ignore
             prop_end = property_dictionary.get_provided_property(row.de, happening, 1) # type: ignore
-            if not related_caps: 
+            if not caps: 
                 constraint = prop_end == prop_start
                 constraints.append(constraint)
             else: 
-                caps_constraint = [Not(cap) for cap in related_caps]                
+                caps_constraint = [Not(cap) for cap in caps]                
                 constraint = Implies(And(*caps_constraint), prop_end == prop_start)
                 constraints.append(constraint)
 
