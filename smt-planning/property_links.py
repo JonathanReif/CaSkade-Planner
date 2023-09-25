@@ -3,7 +3,7 @@ from rdflib import Graph, Variable, URIRef
 from rdflib.term import Identifier 
 from dicts.CapabilityDictionary import CapabilityDictionary
 from dicts.PropertyDictionary import PropertyDictionary
-from typing import List, MutableSequence, Mapping
+from typing import List, MutableSequence, Mapping, Dict
 from operator import itemgetter
 from z3 import BoolRef, ArithRef
 
@@ -271,6 +271,46 @@ def get_related_capabilities_at_same_time(graph: Graph, capability_dictionary: C
 		
 		related_capability_same_time = capability_dictionary.getCapabilityVariableByIriAndHappening(related_capability, happening)
 		result_related_capabilities.append(related_capability_same_time)
+
+	return result_related_capabilities
+
+def get_related_capabilities_at_same_time_bool(graph: Graph, capability_dictionary: CapabilityDictionary, capability_iri:str, property_iri:str, happening: int) -> Dict[BoolRef, str]:
+
+	query_string = """
+	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
+	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
+	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
+	select ?value where { 
+		BIND({ capIri } AS ?cap)
+		BIND({ propIri } AS ?relatedDe) 
+		?cap ^CSS:requiresCapability ?process.
+		?process VDI3682:hasOutput ?out.
+		?de a DINEN61360:Data_Element.
+		?de DINEN61360:has_Type_Description ?td;
+			DINEN61360:has_Instance_Description ?id.
+		?out VDI3682:isCharacterizedBy ?id.
+		?id a DINEN61360:Boolean; 
+			DINEN61360:Value ?value.
+		?relatedDe DINEN61360:has_Type_Description ?td.
+	}
+"""
+
+	capability_pairs = CapabilityPairCache.get_capability_pairs(graph)
+	result_related_capabilities: Dict[BoolRef, str] = {}
+
+	# Find all related partners of the given capability
+	related_capabilities = get_capability_partners(capability_iri, property_iri, capability_pairs)
+	
+	for related_capability in related_capabilities:
+		# Get related at same happening
+		
+		related_capability_same_time = capability_dictionary.getCapabilityVariableByIriAndHappening(related_capability, happening)
+		cap_query_string = query_string.replace("{ capIri }", "<" + str(related_capability) + ">")
+		cap_query_string = cap_query_string.replace("{ propIri }", "<" + property_iri + ">")
+		results = graph.query(cap_query_string)
+		for row in results: 
+			related_capability_same_time_value = str(row.value)					#type: ignore
+		result_related_capabilities[related_capability_same_time] = related_capability_same_time_value
 
 	return result_related_capabilities
 
