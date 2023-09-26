@@ -1,10 +1,10 @@
-from rdflib import Graph
+from rdflib import Graph, URIRef
 from z3 import Implies, Not, And
 from typing import List
 
 from dicts.CapabilityDictionary import CapabilityDictionary
 from dicts.PropertyDictionary import PropertyDictionary
-from property_links import get_related_capabilities_at_same_time
+from property_links import get_related_capabilities_at_same_time, get_related_properties_at_same_time
 
 def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary, property_dictionary: PropertyDictionary, happenings: int, event_bound: int) -> List:
     
@@ -55,6 +55,7 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
                 currentCap = capability_dict.getCapabilityVariableByIriAndHappening(cap, happening) # type: ignore
                 caps.append(currentCap)
                 related_caps = get_related_capabilities_at_same_time(graph, capability_dict, cap, str(row.de), happening) # type: ignore
+
                 for related_cap in related_caps:
                     if related_cap in caps: continue
                     caps.append(related_cap)
@@ -86,3 +87,6 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
                 constraints.append(constraint)
 
     return constraints
+
+def capability_has_effect_on_property(graph: Graph, property_dict: PropertyDictionary, capability_iri: URIRef, property_iri: URIRef, happening: int, event: int):
+    related_props = get_related_properties_at_same_time(graph, property_dict, property_iri, happening, event)

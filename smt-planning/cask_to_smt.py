@@ -34,10 +34,10 @@ def cask_to_smt():
 	g = Graph()
 
 	# Parse in an RDF file hosted beside this file
-	g.parse("new_order_ontology.ttl", format="turtle")
+	g.parse("ontology.ttl", format="turtle")
 
 	# TODO: Happenings müssen je nach Lösung angepasst werden (for schleife) 
-	happenings = 2
+	happenings = 4
 	# Fixed upper bound for number of events in one happening. Currently no events, so we just have the start and end of a happening
 	event_bound = 2
 

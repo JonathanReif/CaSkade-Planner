@@ -268,7 +268,31 @@ def get_related_capabilities_at_same_time(graph: Graph, capability_dictionary: C
 	
 	for related_capability in related_capabilities:
 		# Get related at same happening
-		
+
+		# query_string = """
+		# 	PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		# 	PREFIX OM: <http://openmath.org/vocab/math#>
+		# 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
+		# 	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
+		# 	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
+		# 	SELECT ?cap ?constraint ?outputArgument ?eq WHERE {
+		# 		?constraint a OM:Application, CSS:CapabilityConstraint.
+		# 		BIND({ capIri } AS ?cap)
+		# 		?cap ^CSS:requiresCapability ?process;
+		# 			CSS:isRestrictedBy ?constraint.
+		# 		?constraint OM:arguments/rdf:rest*/rdf:first* ?outputArgument.
+		# 		?process VDI3682:hasOutput/VDI3682:isCharacterizedBy ?outputArgument.
+		# 		?outputArgument ^DINEN61360:has_Instance_Description ?de. 
+		# 		?de DINEN61360:has_Type_Description ?td. 
+		# 		BIND({ propIri } AS ?prop)
+		# 		?prop DINEN61360:has_Type_Description ?td. 
+		# 		?constraint OM:operator ?eq.
+		# 	} """
+		# query_string = query_string.replace("{ capIri }", "<" + str(related_capability) + ">")
+		# query_string = query_string.replace("{ propIri }", "<" + property_iri + ">")
+		# result = graph.query(query_string)
+		# for row in result: 
+		# 	if str(row.eq) != "http://www.openmath.org/cd/relation1#eq" and str(row.inputType) != "http://www.w3id.org/hsu-aut/VDI3682#Information":			# type: ignore
 		related_capability_same_time = capability_dictionary.getCapabilityVariableByIriAndHappening(related_capability, happening)
 		result_related_capabilities.append(related_capability_same_time)
 
