@@ -1,15 +1,15 @@
 
 from rdflib import Graph, Variable, URIRef
 from rdflib.term import Identifier 
-from dicts.CapabilityDictionary import CapabilityDictionary
-from dicts.PropertyDictionary import PropertyDictionary
+from dicts.CapabilityDictionary import CapabilityDictionary, Capability
+from dicts.PropertyDictionary import PropertyDictionary, Property
 from typing import List, MutableSequence, Mapping, Dict
 from operator import itemgetter
 from z3 import BoolRef, ArithRef
 
 def get_property_cross_relations(graph: Graph, property_dictionary: PropertyDictionary, happenings: int, event_bound: int) -> List[BoolRef]:
 	
-	related_property_pairs = PropertyPairCache.get_property_pairs(graph)
+	related_property_pairs = PropertyPairCache.get_property_pairs(graph, property_dictionary)
 	
 	relation_constraints = []
 
@@ -17,37 +17,37 @@ def get_property_cross_relations(graph: Graph, property_dictionary: PropertyDict
 	# Both requirements and assurances need to be bound because otherwise assurance would be "floating" and could be set to goal without respecting caps
 	required_input_properties = get_inputs_of_required_cap(graph)
 	for required_input_prop_iri in required_input_properties:
-		related_prop_iris = get_partners(str(required_input_prop_iri), related_property_pairs)
-		for related_property_iri in related_prop_iris:
+		related_properties = get_partners(str(required_input_prop_iri), related_property_pairs)
+		for related_property in related_properties:
 			# related_property_relation_type = property_dictionary.get_relation_type_of_property(related_property_iri)
 			# if related_property_relation_type != "Input":
 			# 	continue
 
 			required_input_prop = property_dictionary.get_required_property_occurrence(str(required_input_prop_iri)).z3_variable
 			try: 
-				related_property = property_dictionary.get_provided_property_occurrence(str(related_property_iri), 0, 0).z3_variable
+				related_property = property_dictionary.get_provided_property_occurrence(str(related_property.iri), 0, 0).z3_variable
 				relation_constraint = (required_input_prop == related_property)
 				relation_constraints.append(relation_constraint)
 			except KeyError:
-				print(f"There is no provided property with key {related_property_iri}.")
+				print(f"There is no provided property with key {related_property.iri}.")
 
 	# 2: Relate goals. We need to get all outputs of the required capability and make sure that related output properties are bound to the valu of these outputs
 	# Only constrain output properties because we are only interested in the final output. The input depends on the capability and must not be "over-constrained"
 	required_output_properties = get_outputs_of_required_cap(graph)
 	for required_output_prop_iri in required_output_properties:
-		related_prop_iris = get_partners(str(required_output_prop_iri), related_property_pairs)
-		for related_property_iri in related_prop_iris:
-			related_property_relation_type = property_dictionary.get_property_relation_type(str(related_property_iri))
+		related_properties = get_partners(str(required_output_prop_iri), related_property_pairs)
+		for related_property in related_properties:
+			related_property_relation_type = property_dictionary.get_property_relation_type(related_property.iri)
 			if related_property_relation_type != "Output":
 				continue
 
 			required_output_prop = property_dictionary.get_required_property_occurrence(str(required_output_prop_iri)).z3_variable
 			try:
-				related_property = property_dictionary.get_provided_property_occurrence(str(related_property_iri), happenings-1, 1).z3_variable
+				related_property = property_dictionary.get_provided_property_occurrence(str(related_property.iri), happenings-1, 1).z3_variable
 				relation_constraint = (required_output_prop == related_property)
 				relation_constraints.append(relation_constraint)
 			except KeyError: 
-				print(f"There is no provided property with key {related_property_iri}.")
+				print(f"There is no provided property with key {related_property.iri}.")
 
 
 	return relation_constraints
@@ -99,10 +99,10 @@ def get_outputs_of_required_cap(graph: Graph):
 
 
 
-def get_related_properties_at_same_time(graph: Graph, property_dictionary: PropertyDictionary, property_iri:str ,happening: int, event: int) -> List[ArithRef | BoolRef]:
+def get_related_properties(graph: Graph, property_dictionary: PropertyDictionary, property_iri:str) -> List[Property]:
 
-	property_pairs = PropertyPairCache.get_property_pairs(graph)
-	result_related_properties: List[ArithRef | BoolRef] = []
+	property_pairs = PropertyPairCache.get_property_pairs(graph, property_dictionary)
+	result_related_properties: List[Property] = []
 
 	# Find all related partners of the given property
 	related_properties = get_partners(property_iri, property_pairs)
@@ -112,8 +112,8 @@ def get_related_properties_at_same_time(graph: Graph, property_dictionary: Prope
 		# if property_dictionary.get_relation_type_of_property(related_property) != "Output": continue
 		
 		try: 
-			related_property_same_time = property_dictionary.get_provided_property_occurrence(str(related_property), happening, event).z3_variable
-			result_related_properties.append(related_property_same_time)
+			related_property = property_dictionary.get_provided_property(related_property.iri)
+			result_related_properties.append(related_property)
 		except KeyError: 
 			print(f"There is no provided property with key {related_property}.")
 
@@ -121,19 +121,19 @@ def get_related_properties_at_same_time(graph: Graph, property_dictionary: Prope
 
 
 class PropertyPair:
-	def __init__(self, property_a: URIRef, property_b: URIRef) -> None:
+	def __init__(self, property_a: Property, property_b: Property) -> None:
 		self.property_a = property_a
 		self.property_b = property_b
 
 
-def get_partners(property_iri: str, property_pairs:List[PropertyPair]) -> List[URIRef]:
+def get_partners(property_iri: str, property_pairs:List[PropertyPair]) -> List[Property]:
 	# Returns all partners of a property from the list of property pairs
 	# Gets partnerA if partnerB is given and partnerB if partnerA is given
 	related_properties = []
 	for property_pair in property_pairs:
-		if (str(property_iri) ==  str(property_pair.property_a)):
+		if (str(property_iri) ==  str(property_pair.property_a.iri)):
 			related_properties.append(property_pair.property_b)
-		if (str(property_iri) ==  str(property_pair.property_b)):
+		if (str(property_iri) ==  str(property_pair.property_b.iri)):
 			related_properties.append(property_pair.property_a)
 		
 	return related_properties
@@ -141,17 +141,17 @@ def get_partners(property_iri: str, property_pairs:List[PropertyPair]) -> List[U
 
 
 def is_existing(pair: PropertyPair, other_pair: PropertyPair) -> bool:
-	a_same_a = str(pair.property_a) == str(other_pair.property_a)
-	b_same_b = str(pair.property_b) == str(other_pair.property_b)
-	a_same_b = str(pair.property_a) == str(other_pair.property_b)
-	b_same_a = str(pair.property_b) == str(other_pair.property_a)
+	a_same_a = str(pair.property_a.iri) == str(other_pair.property_a.iri)
+	b_same_b = str(pair.property_b.iri) == str(other_pair.property_b.iri)
+	a_same_b = str(pair.property_a.iri) == str(other_pair.property_b.iri)
+	b_same_a = str(pair.property_b.iri) == str(other_pair.property_a.iri)
 	return (a_same_a and b_same_b) or (a_same_b and b_same_a)
 
 def is_self_pair(pair: PropertyPair) -> bool:
-	return str(pair.property_a) == str(pair.property_b)
+	return str(pair.property_a.iri) == str(pair.property_b.iri)
 
 
-def find_property_pairs(graph:Graph) -> List[PropertyPair]: 
+def find_property_pairs(graph:Graph, property_dictionary: PropertyDictionary) -> List[PropertyPair]: 
 	# Queries the graph and finds all implicitly related property pairs
 
 	query_string = """
@@ -186,7 +186,9 @@ def find_property_pairs(graph:Graph) -> List[PropertyPair]:
 	for binding in result.bindings:
 		related_bindings = list(filter(lambda x: is_related_property_binding(binding, x), result.bindings))
 		for related_binding in related_bindings:
-			pair = PropertyPair(binding.get("de"), related_binding.get("de"))
+			property_a = property_dictionary.get_property(str(binding.get("de")))
+			property_b = property_dictionary.get_property(str(related_binding.get("de")))
+			pair = PropertyPair(property_a, property_b)
 			existing_pair = next(filter(lambda x: is_existing(pair, x), related_property_pairs), None)
 			self_pair = is_self_pair(pair) 
 			if not existing_pair and not self_pair:
@@ -194,32 +196,38 @@ def find_property_pairs(graph:Graph) -> List[PropertyPair]:
 
 	return related_property_pairs
 
+
+
+
+
 class CapabilityPair:
-	def __init__(self, capability_a: URIRef, capability_b: URIRef, property: URIRef) -> None:
+	def __init__(self, capability_a: Capability, capability_b: Capability, property: Property) -> None:
 		self.capability_a = capability_a
 		self.capability_b = capability_b
 		self.property = property
 
-def get_capability_partners(capability_iri: str, property_iri: str, capability_pairs:List[CapabilityPair]) -> List[URIRef]:
+
+def get_capability_partners(capability_iri: str, property_iri: str, capability_pairs:List[CapabilityPair]) -> List[Capability]:
 	# Returns all partners of a property from the list of property pairs
 	# Gets partnerA if partnerB is given and partnerB if partnerA is given
 	related_capabilities = []
 	for capability_pair in capability_pairs:
-		if (str(capability_iri) == str(capability_pair.capability_a)) and (str(property_iri) == str(capability_pair.property)):
+		if (str(capability_iri) == str(capability_pair.capability_a.iri)) and (str(property_iri) == str(capability_pair.property.iri)):
 			related_capabilities.append(capability_pair.capability_b)
-		if (str(capability_iri) == str(capability_pair.capability_b)) and (str(property_iri) == str(capability_pair.property)):
+		if (str(capability_iri) == str(capability_pair.capability_b.iri)) and (str(property_iri) == str(capability_pair.property.iri)):
 			related_capabilities.append(capability_pair.capability_a)
 		
 	return related_capabilities
 
 def is_existing_cap(pair: CapabilityPair, other_pair: CapabilityPair) -> bool:
-	a_same_a = str(pair.capability_a) == str(other_pair.capability_a) and str(pair.property) == str(other_pair.property)
-	b_same_b = str(pair.capability_b) == str(other_pair.capability_b) and str(pair.property) == str(other_pair.property)
-	a_same_b = str(pair.capability_a) == str(other_pair.capability_b) and str(pair.property) == str(other_pair.property)
-	b_same_a = str(pair.capability_b) == str(other_pair.capability_a) and str(pair.property) == str(other_pair.property)
+	a_same_a = str(pair.capability_a.iri) == str(other_pair.capability_a.iri) and str(pair.property.iri) == str(other_pair.property.iri)
+	b_same_b = str(pair.capability_b.iri) == str(other_pair.capability_b.iri) and str(pair.property.iri) == str(other_pair.property.iri)
+	a_same_b = str(pair.capability_a.iri) == str(other_pair.capability_b.iri) and str(pair.property.iri) == str(other_pair.property.iri)
+	b_same_a = str(pair.capability_b.iri) == str(other_pair.capability_a.iri) and str(pair.property.iri) == str(other_pair.property.iri)
 	return (a_same_a and b_same_b) or (a_same_b and b_same_a)
 
-def find_capability_pairs(graph: Graph) -> List[CapabilityPair]:
+
+def find_capability_pairs(graph: Graph, capability_dictionary: CapabilityDictionary, property_dictionary: PropertyDictionary) -> List[CapabilityPair]:
 	query_string = """
 	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
 	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
@@ -250,7 +258,10 @@ def find_capability_pairs(graph: Graph) -> List[CapabilityPair]:
 	for binding in result.bindings:
 		related_bindings = list(filter(lambda x: is_related_capability_binding(binding, x), result.bindings))
 		for related_binding in related_bindings:
-			pair = CapabilityPair(binding.get("cap"), related_binding.get("cap"), binding.get("de"))
+			capability_a = capability_dictionary.get_capability(str(binding.get("cap")))
+			capability_b = capability_dictionary.get_capability(str(related_binding.get("cap")))
+			property = property_dictionary.get_property(str(binding.get("de")))
+			pair = CapabilityPair(capability_a, capability_b, property)
 			existing_pair = next(filter(lambda x: is_existing_cap(pair, x), related_capability_pairs), None)
 			# TODO: do we need to check for same pair here as well?
 			if not existing_pair:
@@ -258,9 +269,9 @@ def find_capability_pairs(graph: Graph) -> List[CapabilityPair]:
 
 	return related_capability_pairs
 
-def get_related_capabilities_at_same_time(graph: Graph, capability_dictionary: CapabilityDictionary, capability_iri:str, property_iri:str, happening: int) -> List[BoolRef]:
+def get_related_capabilities_at_same_time(graph: Graph, capability_dictionary: CapabilityDictionary, property_dictionary: PropertyDictionary, capability_iri:str, property_iri:str, happening: int) -> List[Capability]:
 
-	capability_pairs = CapabilityPairCache.get_capability_pairs(graph)
+	capability_pairs = CapabilityPairCache.get_capability_pairs(graph, capability_dictionary, property_dictionary)
 	result_related_capabilities: List[BoolRef] = []
 
 	# Find all related partners of the given capability
@@ -298,45 +309,45 @@ def get_related_capabilities_at_same_time(graph: Graph, capability_dictionary: C
 
 	return result_related_capabilities
 
-def get_related_capabilities_at_same_time_bool(graph: Graph, capability_dictionary: CapabilityDictionary, capability_iri:str, property_iri:str, happening: int) -> Dict[BoolRef, str]:
+def get_related_capabilities(graph: Graph, capability_dictionary: CapabilityDictionary, property_dictionary: PropertyDictionary, capability_iri:str, property_iri:str) -> List[Capability]:
 
-	query_string = """
-	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
-	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
-	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
-	select ?value where { 
-		BIND({ capIri } AS ?cap)
-		BIND({ propIri } AS ?relatedDe) 
-		?cap ^CSS:requiresCapability ?process.
-		?process VDI3682:hasOutput ?out.
-		?de a DINEN61360:Data_Element.
-		?de DINEN61360:has_Type_Description ?td;
-			DINEN61360:has_Instance_Description ?id.
-		?out VDI3682:isCharacterizedBy ?id.
-		?id a DINEN61360:Boolean; 
-			DINEN61360:Value ?value.
-		?relatedDe DINEN61360:has_Type_Description ?td.
-	}
-"""
+# 	query_string = """
+# 	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
+# 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
+# 	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
+# 	select ?value where { 
+# 		BIND({ capIri } AS ?cap)
+# 		BIND({ propIri } AS ?relatedDe) 
+# 		?cap ^CSS:requiresCapability ?process.
+# 		?process VDI3682:hasOutput ?out.
+# 		?de a DINEN61360:Data_Element.
+# 		?de DINEN61360:has_Type_Description ?td;
+# 			DINEN61360:has_Instance_Description ?id.
+# 		?out VDI3682:isCharacterizedBy ?id.
+# 		?id a DINEN61360:Boolean; 
+# 			DINEN61360:Value ?value.
+# 		?relatedDe DINEN61360:has_Type_Description ?td.
+# 	}
+# """
 
-	capability_pairs = CapabilityPairCache.get_capability_pairs(graph)
-	result_related_capabilities: Dict[BoolRef, str] = {}
+	capability_pairs = CapabilityPairCache.get_capability_pairs(graph, capability_dictionary, property_dictionary)
+	# result_related_capabilities: Dict[BoolRef, str] = {}
 
 	# Find all related partners of the given capability
 	related_capabilities = get_capability_partners(capability_iri, property_iri, capability_pairs)
-	
-	for related_capability in related_capabilities:
-		# Get related at same happening
+	return related_capabilities
+	# for related_capability in related_capabilities:
+	# 	# Get related at same happening
 		
-		related_capability_same_time = capability_dictionary.get_capability_occurrence(str(related_capability), happening)
-		cap_query_string = query_string.replace("{ capIri }", "<" + str(related_capability) + ">")
-		cap_query_string = cap_query_string.replace("{ propIri }", "<" + property_iri + ">")
-		results = graph.query(cap_query_string)
-		for row in results: 
-			related_capability_same_time_value = str(row.value)					#type: ignore
-		result_related_capabilities[related_capability_same_time.z3_variable] = related_capability_same_time_value
+	# 	related_capability = capability_dictionary.get_capability(str(related_capability))
+	# 	cap_query_string = query_string.replace("{ capIri }", "<" + str(related_capability) + ">")
+	# 	cap_query_string = cap_query_string.replace("{ propIri }", "<" + property_iri + ">")
+	# 	results = graph.query(cap_query_string)
+	# 	for row in results: 
+	# 		related_capability_same_time_value = str(row.value)					#type: ignore
+	# 	result_related_capabilities[related_capability.z3_variable] = related_capability_same_time_value
 
-	return result_related_capabilities
+	# return result_related_capabilities
 
 
 def is_related_property_binding(binding: Mapping[Variable, Identifier], other_binding: Mapping[Variable, Identifier]) -> bool:
@@ -366,9 +377,9 @@ class PropertyPairCache:
 	property_pairs: List[PropertyPair] = list()
 
 	@staticmethod
-	def get_property_pairs(graph: Graph):
+	def get_property_pairs(graph: Graph, property_dictionary: PropertyDictionary):
 		if not PropertyPairCache.property_pairs:
-			PropertyPairCache.property_pairs = find_property_pairs(graph)			
+			PropertyPairCache.property_pairs = find_property_pairs(graph, property_dictionary)			
 
 		return PropertyPairCache.property_pairs
 
@@ -376,9 +387,9 @@ class CapabilityPairCache:
 	capability_pairs: List[CapabilityPair] = list()
 
 	@staticmethod
-	def get_capability_pairs(graph: Graph):
+	def get_capability_pairs(graph: Graph, capability_dictionary: CapabilityDictionary, property_dictionary: PropertyDictionary):
 		if not CapabilityPairCache.capability_pairs:
-			CapabilityPairCache.capability_pairs = find_capability_pairs(graph)			
+			CapabilityPairCache.capability_pairs = find_capability_pairs(graph, capability_dictionary, property_dictionary)			
 
 		return CapabilityPairCache.capability_pairs
 

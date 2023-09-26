@@ -12,9 +12,9 @@ class PropertyChange(Enum):
 	SetFalse = 5
 
 class CapabilityPropertyInfluence:
-	def __init__(self, property: Property, has_effect: PropertyChange):
+	def __init__(self, property: Property, effect: PropertyChange):
 		self.property = property
-		self.has_effect= has_effect
+		self.effect= effect
 
 class CapabilityOccurrence:
 	def __init__(self, iri: str, happening: int):
@@ -40,6 +40,22 @@ class Capability:
 
 	def add_output_property(self, property_influence: CapabilityPropertyInfluence):
 		self.output_properties.append(property_influence)
+
+	def has_effect_on_property(self, property: Property) -> bool:
+		# Get output of this property and see if it has an effect
+		outputs = [influence for influence in self.output_properties if influence.property.iri == property.iri]
+		if len(outputs) == 0: return False
+		return (not outputs[0].effect == PropertyChange.NoChange)
+
+	def sets_property_true(self, property: Property) -> bool:
+		outputs = [influence for influence in self.output_properties if influence.property.iri == property.iri]
+		if len(outputs) == 0: return False
+		return (outputs[0].effect == PropertyChange.SetTrue)
+	
+	def sets_property_false(self, property: Property) -> bool:
+		outputs = [influence for influence in self.output_properties if influence.property.iri == property.iri]
+		if len(outputs) == 0: return False
+		return (outputs[0].effect == PropertyChange.SetFalse)
 
 
 class CapabilityDictionary:

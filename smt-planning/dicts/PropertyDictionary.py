@@ -105,6 +105,11 @@ class PropertyDictionary:
 				raise KeyError(f"There is neither a provided nor a required property with key {str(iri)}.")
 		return property
 
+	def get_provided_property(self, iri:str) -> Property:
+		if (not iri in self.provided_properties):
+			raise KeyError(f"There is no provided property with key {iri}.")
+		return self.provided_properties[iri]
+
 	def get_property(self, iri:str) -> Property:
 		all_properties = {**self.required_properties, **self.provided_properties}
 		if (not iri in all_properties):

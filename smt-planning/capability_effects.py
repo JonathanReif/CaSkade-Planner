@@ -2,7 +2,7 @@ from rdflib import Graph
 from dicts.CapabilityDictionary import CapabilityDictionary
 from dicts.PropertyDictionary import PropertyDictionary
 from typing import List
-from property_links import get_related_properties_at_same_time
+from property_links import get_related_properties
 from z3 import Implies, Not, BoolRef, ArithRef
 
 
@@ -44,10 +44,11 @@ def getCapabilityEffects(graph: Graph, capability_dictionary: CapabilityDictiona
 			else: 
 				# TODO: Constraint effect currently in capability_constraints. Needs to be changed  
 				pass
-			related_properties = get_related_properties_at_same_time(graph, property_dictionary, str(row.de), happening, 1)  
+			related_properties = get_related_properties(graph, property_dictionary, str(row.de))
 			for related_property in related_properties:
 				# effect = generate_effect_constraint(current_capability, related_property, prop_type, relation, value)
-				effect = Implies(current_capability, effect_property == related_property)
+				property = property_dictionary.get_property_occurence(related_property.iri, happening, 1)
+				effect = Implies(current_capability, effect_property == property.z3_variable)
 				effects.append(effect)
 				
 	return effects

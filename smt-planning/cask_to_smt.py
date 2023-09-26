@@ -3,7 +3,7 @@ import time
 
 from rdflib import Graph
 from z3 import Solver, sat, Bool
-from variable_declaration import getProvidedCapabilities, getAllProperties
+from variable_declaration import getAllProperties, get_provided_capabilities
 from capability_preconditions import getCapabilityPreconditions
 from capability_effects import getCapabilityEffects
 from capability_constraints import getCapabilityConstraints
@@ -46,7 +46,7 @@ def cask_to_smt():
 	property_dictionary = getAllProperties(g, happenings, event_bound)
 
 	# Get provided capabilities and transform to boolean SMT variables
-	capability_dictionary = getProvidedCapabilities(g, happenings, property_dictionary)
+	capability_dictionary = get_provided_capabilities(g, happenings, property_dictionary)
 
 	# ------------------------Constraint Proposition (H1 + H2) --> bool properties------------------
 	add_comment(solver, "## Start of constraints proposition ##")
