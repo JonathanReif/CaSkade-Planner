@@ -82,8 +82,8 @@ def get_bool_constraints(graph: Graph, capability_dict: CapabilityDictionary, pr
                     elif related_cap in caps or related_caps[related_cap] == "false": 
                         rel_caps_neg.append(related_cap)   
                 
-            prop_start = property_dictionary.get_provided_property(str(row.de), happening, 0) 
-            prop_end = property_dictionary.get_provided_property(str(row.de), happening, 1) 
+            prop_start = property_dictionary.get_provided_property_occurrence(str(row.de), happening, 0) 
+            prop_end = property_dictionary.get_provided_property_occurrence(str(row.de), happening, 1) 
             
             if value == "true":
                 caps_sum = caps + rel_caps_pos
@@ -137,8 +137,8 @@ def get_bool_constraints(graph: Graph, capability_dict: CapabilityDictionary, pr
                         rel_caps_pos.append(related_cap)
                     elif related_caps[related_cap] == "false": 
                         rel_caps_neg.append(related_cap)   
-            prop_start = property_dictionary.get_provided_property(str(row.de), happening, 0).z3_variable
-            prop_end = property_dictionary.get_provided_property(str(row.de), happening, 1).z3_variable 
+            prop_start = property_dictionary.get_provided_property_occurrence(str(row.de), happening, 0).z3_variable
+            prop_end = property_dictionary.get_provided_property_occurrence(str(row.de), happening, 1).z3_variable 
             constraint_1 = Implies(prop_end, Or(prop_start, *rel_caps_pos))
             constraint_2 = Implies(Not(prop_end), Or(Not(prop_start), *rel_caps_neg))
             constraints.append(constraint_1)

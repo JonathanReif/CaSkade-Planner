@@ -31,7 +31,7 @@ def getCapabilityPreconditions(graph: Graph, capabilityDictionary: CapabilityDic
 	for happening in range(happenings):
 		for row in results:
 			currentCap = capabilityDictionary.get_capability_occurrence(str(row.cap), happening).z3_variable
-			currentProp = propertyDictionary.get_provided_property(str(row.de), happening, 0).z3_variable						
+			currentProp = propertyDictionary.get_provided_property_occurrence(str(row.de), happening, 0).z3_variable						
 			relation = str(row.log)																			
 			value = str(row.val)																			
 

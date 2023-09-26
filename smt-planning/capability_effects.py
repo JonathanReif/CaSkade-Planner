@@ -33,7 +33,7 @@ def getCapabilityEffects(graph: Graph, capability_dictionary: CapabilityDictiona
 	for happening in range(happenings):
 		for row in results:
 			current_capability = capability_dictionary.get_capability_occurrence(str(row.cap), happening).z3_variable
-			effect_property = property_dictionary.get_provided_property(str(row.de), happening, 1).z3_variable
+			effect_property = property_dictionary.get_provided_property_occurrence(str(row.de), happening, 1).z3_variable
 			relation = str(row.log)																						
 			# Case 1: Constant effect 																					
 			if row.val: 																								

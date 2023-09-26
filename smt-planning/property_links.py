@@ -23,9 +23,9 @@ def get_property_cross_relations(graph: Graph, property_dictionary: PropertyDict
 			# if related_property_relation_type != "Input":
 			# 	continue
 
-			required_input_prop = property_dictionary.get_required_property(str(required_input_prop_iri)).z3_variable
+			required_input_prop = property_dictionary.get_required_property_occurrence(str(required_input_prop_iri)).z3_variable
 			try: 
-				related_property = property_dictionary.get_provided_property(str(related_property_iri), 0, 0).z3_variable
+				related_property = property_dictionary.get_provided_property_occurrence(str(related_property_iri), 0, 0).z3_variable
 				relation_constraint = (required_input_prop == related_property)
 				relation_constraints.append(relation_constraint)
 			except KeyError:
@@ -41,9 +41,9 @@ def get_property_cross_relations(graph: Graph, property_dictionary: PropertyDict
 			if related_property_relation_type != "Output":
 				continue
 
-			required_output_prop = property_dictionary.get_required_property(str(required_output_prop_iri)).z3_variable
+			required_output_prop = property_dictionary.get_required_property_occurrence(str(required_output_prop_iri)).z3_variable
 			try:
-				related_property = property_dictionary.get_provided_property(str(related_property_iri), happenings-1, 1).z3_variable
+				related_property = property_dictionary.get_provided_property_occurrence(str(related_property_iri), happenings-1, 1).z3_variable
 				relation_constraint = (required_output_prop == related_property)
 				relation_constraints.append(relation_constraint)
 			except KeyError: 
@@ -112,7 +112,7 @@ def get_related_properties_at_same_time(graph: Graph, property_dictionary: Prope
 		# if property_dictionary.get_relation_type_of_property(related_property) != "Output": continue
 		
 		try: 
-			related_property_same_time = property_dictionary.get_provided_property(str(related_property), happening, event).z3_variable
+			related_property_same_time = property_dictionary.get_provided_property_occurrence(str(related_property), happening, event).z3_variable
 			result_related_properties.append(related_property_same_time)
 		except KeyError: 
 			print(f"There is no provided property with key {related_property}.")

@@ -60,8 +60,8 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
                     if related_cap in caps: continue
                     caps.append(related_cap)
 
-            prop_start = property_dictionary.get_provided_property(str(row.de), happening, 0).z3_variable 
-            prop_end = property_dictionary.get_provided_property(str(row.de), happening, 1).z3_variable 
+            prop_start = property_dictionary.get_provided_property_occurrence(str(row.de), happening, 0).z3_variable 
+            prop_end = property_dictionary.get_provided_property_occurrence(str(row.de), happening, 1).z3_variable 
             caps_constraint = [Not(cap) for cap in caps]                
             constraint = Implies(And(*caps_constraint), prop_end == prop_start)
             constraints.append(constraint)
@@ -76,8 +76,8 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
                 caps.append(currentCap)
             related_caps = get_related_capabilities_at_same_time(graph, capability_dict, str(row.cap), str(row.de), happening) 
             caps.extend(related_caps)
-            prop_start = property_dictionary.get_provided_property(str(row.de), happening, 0).z3_variable 
-            prop_end = property_dictionary.get_provided_property(str(row.de), happening, 1).z3_variable 
+            prop_start = property_dictionary.get_provided_property_occurrence(str(row.de), happening, 0).z3_variable 
+            prop_end = property_dictionary.get_provided_property_occurrence(str(row.de), happening, 1).z3_variable 
             if not caps: 
                 constraint = prop_end == prop_start
                 constraints.append(constraint)

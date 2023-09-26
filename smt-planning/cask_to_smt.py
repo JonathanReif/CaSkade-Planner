@@ -46,7 +46,7 @@ def cask_to_smt():
 	property_dictionary = getAllProperties(g, happenings, event_bound)
 
 	# Get provided capabilities and transform to boolean SMT variables
-	capability_dictionary = getProvidedCapabilities(g, happenings)
+	capability_dictionary = getProvidedCapabilities(g, happenings, property_dictionary)
 
 	# ------------------------Constraint Proposition (H1 + H2) --> bool properties------------------
 	add_comment(solver, "## Start of constraints proposition ##")

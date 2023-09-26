@@ -24,7 +24,7 @@ def get_init(graph: Graph, property_dictionary: PropertyDictionary):
 	results = graph.query(sparql_string)
 	inits = []
 	for row in results:
-		property = property_dictionary.get_property(str(row.de), 0, 0).z3_variable					
+		property = property_dictionary.get_property_occurence(str(row.de), 0, 0).z3_variable					
 		relation = str(row.log)															
 		value = str(row.val)														    
 		

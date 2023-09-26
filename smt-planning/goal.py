@@ -23,7 +23,7 @@ def get_goal(graph:Graph, property_dictionary: PropertyDictionary, happenings):
 	results = graph.query(query_string)
 	goals = []
 	for row in results:
-		property = property_dictionary.get_required_property(str(row.de)).z3_variable					
+		property = property_dictionary.get_required_property_occurrence(str(row.de)).z3_variable					
 		relation = str(row.log)															
 		value = str(row.val)                                                            
 		
