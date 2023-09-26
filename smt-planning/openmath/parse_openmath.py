@@ -150,8 +150,8 @@ class QueryCache:
 	query_result = None
 
 	@staticmethod
-	def query(store: Graph, query_string: str):
+	def query(graph: Graph, query_string: str):
 		if(QueryCache.query_result is None):
-			QueryCache.query_result = store.query(query_string)			
+			QueryCache.query_result = graph.query(query_string)			
 
 		return QueryCache.query_result

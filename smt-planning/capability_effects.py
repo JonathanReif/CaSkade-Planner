@@ -32,19 +32,19 @@ def getCapabilityEffects(graph: Graph, capability_dictionary: CapabilityDictiona
 	effects = []
 	for happening in range(happenings):
 		for row in results:
-			current_capability = capability_dictionary.getCapabilityVariableByIriAndHappening(row.cap, happening)		# type: ignore
-			effect_property = property_dictionary.get_provided_property(row.de, happening, 1)							# type: ignore
-			relation = str(row.log)																						# type: ignore
-			# Case 1: Constant effect 																					# type: ignore
-			if row.val: 																								# type: ignore
-				value = str(row.val)																					# type: ignore		
-				prop_type = property_dictionary.get_property_type(row.de) 												# type: ignore
+			current_capability = capability_dictionary.get_capability_occurrence(str(row.cap), happening).z3_variable
+			effect_property = property_dictionary.get_provided_property(str(row.de), happening, 1).z3_variable
+			relation = str(row.log)																						
+			# Case 1: Constant effect 																					
+			if row.val: 																								
+				value = str(row.val)																							
+				prop_type = property_dictionary.get_property_data_type(str(row.de)) 												
 				effect = generate_effect_constraint(current_capability, effect_property, prop_type, relation, value)	
 				effects.append(effect)
 			else: 
 				# TODO: Constraint effect currently in capability_constraints. Needs to be changed  
 				pass
-			related_properties = get_related_properties_at_same_time(graph, property_dictionary, str(row.de), happening, 1) # type: ignore 
+			related_properties = get_related_properties_at_same_time(graph, property_dictionary, str(row.de), happening, 1)  
 			for related_property in related_properties:
 				# effect = generate_effect_constraint(current_capability, related_property, prop_type, relation, value)
 				effect = Implies(current_capability, effect_property == related_property)
@@ -52,22 +52,22 @@ def getCapabilityEffects(graph: Graph, capability_dictionary: CapabilityDictiona
 				
 	return effects
 
-def generate_effect_constraint(capability: BoolRef, property: BoolRef | ArithRef, prop_type: str, relation: str, value: str) -> BoolRef :	# type: ignore
+def generate_effect_constraint(capability: BoolRef, property: BoolRef | ArithRef, prop_type: str, relation: str, value: str) -> BoolRef :	
 	
 	if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
 		match relation:
 			case "<":
-				effect = Implies(capability, property < value)									# type: ignore
+				effect = Implies(capability, property < value)									
 			case "<=":
-				effect = Implies(capability, property <= value)									# type: ignore
+				effect = Implies(capability, property <= value)									
 			case "=":
-				effect = Implies(capability, property == value)									# type: ignore
+				effect = Implies(capability, property == value)									
 			case "!=":
-				effect = Implies(capability, property != value)									# type: ignore
+				effect = Implies(capability, property != value)									
 			case ">=":
-				effect = Implies(capability, property >= value)									# type: ignore
+				effect = Implies(capability, property >= value)									
 			case ">":
-				effect = Implies(capability, property > value)									# type: ignore
+				effect = Implies(capability, property > value)									
 			case _:
 				raise RuntimeError("Incorrect logical relation")
 		return effect

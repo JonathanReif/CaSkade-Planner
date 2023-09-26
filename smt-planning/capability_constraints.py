@@ -32,22 +32,22 @@ def getCapabilityConstraints(graph: Graph, capability_dictionary: CapabilityDict
 	output_constraints: List[ConstraintInfo] = []
 	for row in results:
 		# As soon as an outputArgument is present, the constraint is considered an output constraint
-		if row.outputArgument:																# type: ignore
-			output_constraints.append(ConstraintInfo(str(row.cap), str(row.constraint)))	# type: ignore
+		if row.outputArgument:																
+			output_constraints.append(ConstraintInfo(str(row.cap), str(row.constraint)))	
 		# If a row only has an inputArgument, the constraint is considered an input constraint
-		if (row.inputArgument and not row.outputArgument):									# type: ignore 
-			input_constraints.append(ConstraintInfo(str(row.cap), str(row.constraint)))		# type: ignore
+		if (row.inputArgument and not row.outputArgument):									 
+			input_constraints.append(ConstraintInfo(str(row.cap), str(row.constraint)))		
 
 	constraint_assertions = []
 	for happening in range(happenings):
 		for constraint_info in input_constraints:
-			current_capability = capability_dictionary.getCapabilityVariableByIriAndHappening(constraint_info.cap, happening)	# type: ignore
+			current_capability = capability_dictionary.get_capability_occurrence(constraint_info.cap, happening).z3_variable	
 			infix_constraint = from_open_math_in_graph(graph, constraint_info.constraintIri, happening, 0)							
 			prefix_expression = infix_to_prefix(infix_constraint)
 			assertion = f"(assert (=> {(current_capability.sexpr())} ({prefix_expression})))"
 			constraint_assertions.append(assertion)
 		for constraint_info in output_constraints:
-			current_capability = capability_dictionary.getCapabilityVariableByIriAndHappening(constraint_info.cap, happening)	# type: ignore
+			current_capability = capability_dictionary.get_capability_occurrence(constraint_info.cap, happening).z3_variable	
 			infix_constraint = from_open_math_in_graph(graph, constraint_info.constraintIri, happening, 1)							
 			prefix_expression = infix_to_prefix(infix_constraint)
 			assertion = f"(assert (=> {(current_capability.sexpr())} ({prefix_expression})))"

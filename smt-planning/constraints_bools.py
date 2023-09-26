@@ -1,8 +1,8 @@
 from rdflib import Graph
-from z3 import Implies, Not, Or
+from z3 import BoolRef, Implies, Not, Or
 from typing import List
 
-from dicts.CapabilityDictionary import CapabilityDictionary
+from dicts.CapabilityDictionary import CapabilityDictionary, CapabilityOccurrence
 from dicts.PropertyDictionary import PropertyDictionary
 from property_links import get_related_capabilities_at_same_time_bool
 
@@ -67,53 +67,53 @@ def get_bool_constraints(graph: Graph, capability_dict: CapabilityDictionary, pr
         number_of_rows = len(results)
         for row in results:
             i += 1
-            value = str(row.val)                                                        # type: ignore
-            caps_result = row.caps.split(', ')                                          # type: ignore 
-            caps = []
+            value = str(row.val)                                                        
+            caps_result = row.caps.split(', ')                                           
+            caps: List[BoolRef] = []
             rel_caps_pos = []
             rel_caps_neg = []
-            for cap in caps_result:                                                     # type: ignore
-                currentCap = capability_dict.getCapabilityVariableByIriAndHappening(cap, happening) # type: ignore
-                caps.append(currentCap)
-                related_caps = get_related_capabilities_at_same_time_bool(graph, capability_dict, cap, str(row.de), happening) # type: ignore
+            for cap in caps_result:                                                     
+                currentCap = capability_dict.get_capability_occurrence(cap, happening) 
+                caps.append(currentCap.z3_variable)
+                related_caps = get_related_capabilities_at_same_time_bool(graph, capability_dict, cap, str(row.de), happening) 
                 for related_cap in related_caps:
                     if related_cap in caps or related_caps[related_cap] == "true": 
                         rel_caps_pos.append(related_cap)
                     elif related_cap in caps or related_caps[related_cap] == "false": 
                         rel_caps_neg.append(related_cap)   
                 
-            prop_start = property_dictionary.get_provided_property(row.de, happening, 0) # type: ignore
-            prop_end = property_dictionary.get_provided_property(row.de, happening, 1) # type: ignore
+            prop_start = property_dictionary.get_provided_property(str(row.de), happening, 0) 
+            prop_end = property_dictionary.get_provided_property(str(row.de), happening, 1) 
             
             if value == "true":
                 caps_sum = caps + rel_caps_pos
-                constraint_1 = Implies(prop_end, Or(prop_start, *caps_sum))
+                constraint_1 = Implies(prop_end.z3_variable, Or(prop_start.z3_variable, *caps_sum))
                 constraints.append(constraint_1)
             elif value == "false":
                 caps_sum = caps + rel_caps_neg
-                constraint_2 = Implies(Not(prop_end), Or(Not(prop_start), *caps_sum))
+                constraint_2 = Implies(Not(prop_end.z3_variable), Or(Not(prop_start.z3_variable), *caps_sum))
                 constraints.append(constraint_2)
 
-            if previous_property == row.de: continue                                       # type: ignore
+            if previous_property == row.de: continue                                       
             if previous_value == "true":
-                constraint_2 = Implies(Not(previous_prop_end), Or(Not(previous_prop_start), *previous_rel_neg))
+                constraint_2 = Implies(Not(previous_prop_end.z3_variable), Or(Not(previous_prop_start.z3_variable), *previous_rel_neg))
                 constraints.append(constraint_2)
 
             elif previous_value == "false":
-                constraint_1 = Implies(previous_prop_end, Or(previous_prop_start, *previous_rel_pos))
+                constraint_1 = Implies(previous_prop_end.z3_variable, Or(previous_prop_start.z3_variable, *previous_rel_pos))
                 constraints.append(constraint_1)
             
             if i == number_of_rows:
                 if value == "true":
-                    constraint_2 = Implies(Not(prop_end), Or(Not(prop_start), *rel_caps_neg))
+                    constraint_2 = Implies(Not(prop_end.z3_variable), Or(Not(prop_start.z3_variable), *rel_caps_neg))
                     constraints.append(constraint_2)
 
                 elif value == "false":
-                    constraint_1 = Implies(prop_end, Or(prop_start, *rel_caps_pos))
+                    constraint_1 = Implies(prop_end.z3_variable, Or(prop_start.z3_variable, *rel_caps_pos))
                     constraints.append(constraint_1)
 
-            previous_property = row.de                                                   # type: ignore 
-            previous_value = str(row.val)                                                # type: ignore
+            previous_property = row.de                                                    
+            previous_value = str(row.val)                                                
             previous_prop_end = prop_end
             previous_prop_start = prop_start
             previous_rel_pos = rel_caps_pos
@@ -126,19 +126,19 @@ def get_bool_constraints(graph: Graph, capability_dict: CapabilityDictionary, pr
         for row in results:
             rel_caps_pos = []
             rel_caps_neg = []
-            currentCap = capability_dict.getCapabilityVariableByIriAndHappening(row.cap, happening) # type: ignore
-            if str(row.val) == "true":                                                              # type: ignore
+            currentCap = capability_dict.get_capability_occurrence(str(row.cap), happening).z3_variable 
+            if str(row.val) == "true":                                                              
                 rel_caps_pos.append(currentCap)
-            elif str(row.val) == "false":                                                           # type: ignore
+            elif str(row.val) == "false":                                                           
                 rel_caps_neg.append(currentCap)
-            related_caps = get_related_capabilities_at_same_time_bool(graph, capability_dict, str(row.cap), str(row.de), happening) # type: ignore
+            related_caps = get_related_capabilities_at_same_time_bool(graph, capability_dict, str(row.cap), str(row.de), happening) 
             for related_cap in related_caps:
                     if related_caps[related_cap] == "true": 
                         rel_caps_pos.append(related_cap)
                     elif related_caps[related_cap] == "false": 
                         rel_caps_neg.append(related_cap)   
-            prop_start = property_dictionary.get_provided_property(row.de, happening, 0) # type: ignore
-            prop_end = property_dictionary.get_provided_property(row.de, happening, 1) # type: ignore
+            prop_start = property_dictionary.get_provided_property(str(row.de), happening, 0).z3_variable
+            prop_end = property_dictionary.get_provided_property(str(row.de), happening, 1).z3_variable 
             constraint_1 = Implies(prop_end, Or(prop_start, *rel_caps_pos))
             constraint_2 = Implies(Not(prop_end), Or(Not(prop_start), *rel_caps_neg))
             constraints.append(constraint_1)

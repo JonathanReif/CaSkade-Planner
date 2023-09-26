@@ -49,19 +49,19 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
     constraints = []
     for happening in range(happenings):
         for row in results:
-            caps_result = row.caps.split(', ')           # type: ignore 
+            caps_result = row.caps.split(', ')            
             caps = []
-            for cap in caps_result:                    # type: ignore
-                currentCap = capability_dict.getCapabilityVariableByIriAndHappening(cap, happening) # type: ignore
+            for cap in caps_result:                    
+                currentCap = capability_dict.get_capability_occurrence(cap, happening).z3_variable 
                 caps.append(currentCap)
-                related_caps = get_related_capabilities_at_same_time(graph, capability_dict, cap, str(row.de), happening) # type: ignore
+                related_caps = get_related_capabilities_at_same_time(graph, capability_dict, cap, str(row.de), happening) 
 
                 for related_cap in related_caps:
                     if related_cap in caps: continue
                     caps.append(related_cap)
 
-            prop_start = property_dictionary.get_provided_property(row.de, happening, 0) # type: ignore
-            prop_end = property_dictionary.get_provided_property(row.de, happening, 1) # type: ignore
+            prop_start = property_dictionary.get_provided_property(str(row.de), happening, 0).z3_variable 
+            prop_end = property_dictionary.get_provided_property(str(row.de), happening, 1).z3_variable 
             caps_constraint = [Not(cap) for cap in caps]                
             constraint = Implies(And(*caps_constraint), prop_end == prop_start)
             constraints.append(constraint)
@@ -71,13 +71,13 @@ def get_variable_constraints(graph: Graph, capability_dict: CapabilityDictionary
     for happening in range(happenings):
         for row in results:
             caps = []
-            if str(row.state) != "http://www.w3id.org/hsu-aut/VDI3682#Information":                     # type: ignore
-                currentCap = capability_dict.getCapabilityVariableByIriAndHappening(row.cap, happening) # type: ignore
+            if str(row.state) != "http://www.w3id.org/hsu-aut/VDI3682#Information":                     
+                currentCap = capability_dict.get_capability_occurrence(str(row.cap), happening).z3_variable 
                 caps.append(currentCap)
-            related_caps = get_related_capabilities_at_same_time(graph, capability_dict, str(row.cap), str(row.de), happening) # type: ignore
+            related_caps = get_related_capabilities_at_same_time(graph, capability_dict, str(row.cap), str(row.de), happening) 
             caps.extend(related_caps)
-            prop_start = property_dictionary.get_provided_property(row.de, happening, 0) # type: ignore
-            prop_end = property_dictionary.get_provided_property(row.de, happening, 1) # type: ignore
+            prop_start = property_dictionary.get_provided_property(str(row.de), happening, 0).z3_variable 
+            prop_end = property_dictionary.get_provided_property(str(row.de), happening, 1).z3_variable 
             if not caps: 
                 constraint = prop_end == prop_start
                 constraints.append(constraint)

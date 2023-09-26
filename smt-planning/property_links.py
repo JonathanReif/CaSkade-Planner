@@ -23,9 +23,9 @@ def get_property_cross_relations(graph: Graph, property_dictionary: PropertyDict
 			# if related_property_relation_type != "Input":
 			# 	continue
 
-			required_input_prop = property_dictionary.get_required_property(required_input_prop_iri)
+			required_input_prop = property_dictionary.get_required_property(str(required_input_prop_iri)).z3_variable
 			try: 
-				related_property = property_dictionary.get_provided_property(related_property_iri, 0, 0)
+				related_property = property_dictionary.get_provided_property(str(related_property_iri), 0, 0).z3_variable
 				relation_constraint = (required_input_prop == related_property)
 				relation_constraints.append(relation_constraint)
 			except KeyError:
@@ -37,13 +37,13 @@ def get_property_cross_relations(graph: Graph, property_dictionary: PropertyDict
 	for required_output_prop_iri in required_output_properties:
 		related_prop_iris = get_partners(str(required_output_prop_iri), related_property_pairs)
 		for related_property_iri in related_prop_iris:
-			related_property_relation_type = property_dictionary.get_relation_type_of_property(related_property_iri)
+			related_property_relation_type = property_dictionary.get_property_relation_type(str(related_property_iri))
 			if related_property_relation_type != "Output":
 				continue
 
-			required_output_prop = property_dictionary.get_required_property(required_output_prop_iri)
+			required_output_prop = property_dictionary.get_required_property(str(required_output_prop_iri)).z3_variable
 			try:
-				related_property = property_dictionary.get_provided_property(related_property_iri, happenings-1, 1)
+				related_property = property_dictionary.get_provided_property(str(related_property_iri), happenings-1, 1).z3_variable
 				relation_constraint = (required_output_prop == related_property)
 				relation_constraints.append(relation_constraint)
 			except KeyError: 
@@ -112,7 +112,7 @@ def get_related_properties_at_same_time(graph: Graph, property_dictionary: Prope
 		# if property_dictionary.get_relation_type_of_property(related_property) != "Output": continue
 		
 		try: 
-			related_property_same_time = property_dictionary.get_provided_property(related_property, happening, event)
+			related_property_same_time = property_dictionary.get_provided_property(str(related_property), happening, event).z3_variable
 			result_related_properties.append(related_property_same_time)
 		except KeyError: 
 			print(f"There is no provided property with key {related_property}.")
@@ -292,8 +292,8 @@ def get_related_capabilities_at_same_time(graph: Graph, capability_dictionary: C
 		# query_string = query_string.replace("{ propIri }", "<" + property_iri + ">")
 		# result = graph.query(query_string)
 		# for row in result: 
-		# 	if str(row.eq) != "http://www.openmath.org/cd/relation1#eq" and str(row.inputType) != "http://www.w3id.org/hsu-aut/VDI3682#Information":			# type: ignore
-		related_capability_same_time = capability_dictionary.getCapabilityVariableByIriAndHappening(related_capability, happening)
+		# 	if str(row.eq) != "http://www.openmath.org/cd/relation1#eq" and str(row.inputType) != "http://www.w3id.org/hsu-aut/VDI3682#Information":			
+		related_capability_same_time = capability_dictionary.get_capability_occurrence(str(related_capability), happening).z3_variable
 		result_related_capabilities.append(related_capability_same_time)
 
 	return result_related_capabilities
@@ -328,13 +328,13 @@ def get_related_capabilities_at_same_time_bool(graph: Graph, capability_dictiona
 	for related_capability in related_capabilities:
 		# Get related at same happening
 		
-		related_capability_same_time = capability_dictionary.getCapabilityVariableByIriAndHappening(related_capability, happening)
+		related_capability_same_time = capability_dictionary.get_capability_occurrence(str(related_capability), happening)
 		cap_query_string = query_string.replace("{ capIri }", "<" + str(related_capability) + ">")
 		cap_query_string = cap_query_string.replace("{ propIri }", "<" + property_iri + ">")
 		results = graph.query(cap_query_string)
 		for row in results: 
 			related_capability_same_time_value = str(row.value)					#type: ignore
-		result_related_capabilities[related_capability_same_time] = related_capability_same_time_value
+		result_related_capabilities[related_capability_same_time.z3_variable] = related_capability_same_time_value
 
 	return result_related_capabilities
 

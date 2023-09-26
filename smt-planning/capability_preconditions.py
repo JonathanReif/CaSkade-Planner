@@ -30,12 +30,12 @@ def getCapabilityPreconditions(graph: Graph, capabilityDictionary: CapabilityDic
 	preconditions = []
 	for happening in range(happenings):
 		for row in results:
-			currentCap = capabilityDictionary.getCapabilityVariableByIriAndHappening(row.cap, happening)	# type: ignore
-			currentProp = propertyDictionary.get_provided_property(row.de, happening, 0)						# type: ignore
-			relation = str(row.log)																			# type: ignore
-			value = str(row.val)																			# type: ignore
+			currentCap = capabilityDictionary.get_capability_occurrence(str(row.cap), happening).z3_variable
+			currentProp = propertyDictionary.get_provided_property(str(row.de), happening, 0).z3_variable						
+			relation = str(row.log)																			
+			value = str(row.val)																			
 
-			prop_type = propertyDictionary.get_property_type(row.de) # type: ignore
+			prop_type = propertyDictionary.get_property_data_type(str(row.de)) 
 			if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
 
 				match relation:

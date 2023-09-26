@@ -24,11 +24,11 @@ def get_init(graph: Graph, property_dictionary: PropertyDictionary):
 	results = graph.query(sparql_string)
 	inits = []
 	for row in results:
-		property = property_dictionary.get_property(row.de, 0, 0)						# type: ignore
-		relation = str(row.log)															# type: ignore
-		value = str(row.val)														    # type: ignore
+		property = property_dictionary.get_property(str(row.de), 0, 0).z3_variable					
+		relation = str(row.log)															
+		value = str(row.val)														    
 		
-		prop_type = property_dictionary.get_property_type(row.de) # type: ignore
+		prop_type = property_dictionary.get_property_data_type(str(row.de)) 
 		if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
 
 			match relation:
