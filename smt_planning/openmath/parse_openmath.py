@@ -2,8 +2,8 @@ from rdflib import Graph, Variable
 from rdflib.term import Identifier
 from rdflib.query import Result
 from typing import Mapping, Callable, MutableSequence, List
-from openmath.math_symbol_information import MathSymbolInformation
-from openmath.operator_dictionary import OperatorDictionary
+from smt_planning.openmath.math_symbol_information import MathSymbolInformation
+from smt_planning.openmath.operator_dictionary import OperatorDictionary
 
 APPLICATION = Variable("application")
 ARG = Variable("arg")

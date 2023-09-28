@@ -1,4 +1,4 @@
-from openmath.math_symbol_information import MathSymbolInformation
+from smt_planning.openmath.math_symbol_information import MathSymbolInformation
 
 class OperatorDictionary:
 	mathJsToOpenMathMapping = {
