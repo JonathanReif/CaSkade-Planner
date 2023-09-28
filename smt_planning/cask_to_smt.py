@@ -138,7 +138,7 @@ def cask_to_smt(ontology_file: str, max_happenings: int, problem_location: str, 
 
 		# smtlib code  
 		# print(solver.to_smt2())
-		with open('smtlib5.txt', 'w') as file:
+		with open(problem_location, 'w') as file:
 			file.write(solver.to_smt2())
 		
 
@@ -152,15 +152,11 @@ def cask_to_smt(ontology_file: str, max_happenings: int, problem_location: str, 
 		else:
 			model = solver.model()
 			result = PlanningResult(model, problem_location, result_location)
-			model_dict = {}
 
-			for var in model:
-				# print(f"{var} = {model[var]}")
-				model_dict[str(var)] = str((model[var]))
 			# Write the model to a JSON file
-			with open('plan.json', 'w') as json_file:
-				json.dump(model_dict, json_file, indent=4)
-			return model 
+			with open('result_location', 'w') as json_file:
+				json.dump(result, json_file, default=lambda o: o.__dict__, indent=4)
+			return result 
 
 
 if __name__ == '__main__': 
