@@ -3,8 +3,7 @@ from typing import List, Dict
 from z3 import ModelRef
 
 from smt_planning.StateHandler import StateHandler
-from smt_planning.dicts.PropertyDictionary import Property, PropertyDictionary
-from smt_planning.dicts.CapabilityDictionary import Capability, CapabilityDictionary
+from smt_planning.dicts.PropertyDictionary import Property
 
 class PropertyAppearance:
 	def __init__(self, property: Property, value: int | str) -> None:
