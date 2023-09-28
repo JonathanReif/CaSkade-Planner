@@ -2,7 +2,7 @@ from rdflib import Graph
 from z3 import Not, Or
 import itertools
 from typing import List
-from dicts.CapabilityDictionary import CapabilityDictionary, Capability
+from smt_planning.dicts.CapabilityDictionary import CapabilityDictionary, Capability
 
 def get_capability_mutexes(graph: Graph, capability_dictionary: CapabilityDictionary, happenings):
 
