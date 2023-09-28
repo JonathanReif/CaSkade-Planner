@@ -1,7 +1,7 @@
 from typing import Dict, List
-from z3 import Bool, BoolRef
+from z3 import Bool, BoolRef, AstRef
 from rdflib import URIRef
-from dicts.PropertyDictionary import Property
+from smt_planning.dicts.PropertyDictionary import Property
 from enum import Enum
 
 class PropertyChange(Enum):
@@ -56,6 +56,14 @@ class Capability:
 		outputs = [influence for influence in self.output_properties if influence.property.iri == property.iri]
 		if len(outputs) == 0: return False
 		return (outputs[0].effect == PropertyChange.SetFalse)
+	
+	def get_occurrence_by_z3_variable(self, z3_variable_name: str) -> CapabilityOccurrence | None:
+		# Filters occurrences for the given z3_variable. There should only be one result
+		for occurrence in self.occurrences.values():
+			if str(occurrence.z3_variable) == z3_variable_name:
+				return occurrence
+		
+		return None
 
 
 class CapabilityDictionary:
@@ -76,3 +84,12 @@ class CapabilityDictionary:
 	def get_capability_occurrence(self, iri: str, happening:int) -> CapabilityOccurrence:
 		capability = self.get_capability(iri)
 		return capability.occurrences[happening]
+	
+	def get_capability_from_z3_variable(self, z3_variable: AstRef) -> CapabilityOccurrence:
+		for capability in self.capabilities.values():
+			capability_occurrence = capability.get_occurrence_by_z3_variable(str(z3_variable))
+			if capability_occurrence is not None:
+				return capability_occurrence
+			
+		raise KeyError(f"There is not a single capability occurrence for the z3_variable {z3_variable}")
+		

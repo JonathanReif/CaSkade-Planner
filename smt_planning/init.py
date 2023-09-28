@@ -1,8 +1,9 @@
-from rdflib import Graph
 from z3 import Not
-from dicts.PropertyDictionary import PropertyDictionary
 
-def get_init(graph: Graph, property_dictionary: PropertyDictionary):
+from smt_planning.StateHandler import StateHandler
+from smt_planning.dicts.PropertyDictionary import PropertyDictionary
+
+def get_init():
 	
 	'''
 	Get initial state properties by checking the values of all Actual_Value instances
@@ -21,7 +22,9 @@ def get_init(graph: Graph, property_dictionary: PropertyDictionary):
 		} """
 
 	# Inits 
+	graph = StateHandler().get_graph()
 	results = graph.query(sparql_string)
+	property_dictionary = StateHandler().get_property_dictionary()
 	inits = []
 	for row in results:
 		property = property_dictionary.get_property_occurence(str(row.de), 0, 0).z3_variable					

@@ -1,10 +1,10 @@
-from rdflib import Graph
-from dicts.CapabilityDictionary import CapabilityDictionary
-from dicts.PropertyDictionary import PropertyDictionary
-from openmath.parse_openmath import from_open_math_in_graph
 from typing import List
+from rdflib import Graph
 
-def getCapabilityConstraints(graph: Graph, capability_dictionary: CapabilityDictionary, property_dictionary: PropertyDictionary, happenings: int, event_bound: int) -> List[str]:
+from smt_planning.StateHandler import StateHandler
+from smt_planning.openmath.parse_openmath import from_open_math_in_graph
+
+def getCapabilityConstraints(happenings: int, event_bound: int) -> List[str]:
 	# Get all capability constraint IRIs and check whether its a constraint on an input or output
 	query_string = """
 	PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -27,6 +27,7 @@ def getCapabilityConstraints(graph: Graph, capability_dictionary: CapabilityDict
 	}
 	"""
 	
+	graph = StateHandler().get_graph()
 	results = graph.query(query_string)
 	input_constraints: List[ConstraintInfo] = []
 	output_constraints: List[ConstraintInfo] = []
@@ -38,6 +39,7 @@ def getCapabilityConstraints(graph: Graph, capability_dictionary: CapabilityDict
 		if (row.inputArgument and not row.outputArgument):									 
 			input_constraints.append(ConstraintInfo(str(row.cap), str(row.constraint)))		
 
+	capability_dictionary = StateHandler().get_capability_dictionary()
 	constraint_assertions = []
 	for happening in range(happenings):
 		for constraint_info in input_constraints:

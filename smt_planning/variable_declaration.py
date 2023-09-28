@@ -1,11 +1,11 @@
 from rdflib import Graph
 from typing import List
-from dicts.CapabilityDictionary import CapabilityDictionary, CapabilityPropertyInfluence, PropertyChange
-from dicts.PropertyDictionary import PropertyDictionary, PropertyOccurrence
+from smt_planning.StateHandler import StateHandler
+from smt_planning.dicts.CapabilityDictionary import CapabilityDictionary, CapabilityPropertyInfluence, PropertyChange
+from smt_planning.dicts.PropertyDictionary import PropertyDictionary
 
 
-def getAllProperties(graph: Graph, happenings:int, eventBound:int) -> PropertyDictionary :
-	'''Create names for all properties related to the provided capabilities'''
+def getAllProperties(happenings:int, eventBound:int) -> PropertyDictionary :
 	
 	# Names need to be a combination of the thing that has a property (ID) with the corresponding type description. 
 	# Thing and type description together define a certain property in a context.
@@ -29,7 +29,7 @@ def getAllProperties(graph: Graph, happenings:int, eventBound:int) -> PropertyDi
 			BIND(STRAFTER(STR(?relation), "has") AS ?relationType)
 	} GROUP BY ?de ?capType ?dataType ?relationType
 	"""
-	
+	graph = StateHandler().get_graph()
 	results = graph.query(queryString)
 	properties = PropertyDictionary()
 	for row in results:
@@ -50,7 +50,7 @@ def getAllProperties(graph: Graph, happenings:int, eventBound:int) -> PropertyDi
 	return properties
 
 
-def get_provided_capabilities(graph:Graph, happenings:int, property_dictionary: PropertyDictionary) -> CapabilityDictionary :
+def get_provided_capabilities(happenings:int) -> CapabilityDictionary :
 	queryString = """
 	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
@@ -64,7 +64,9 @@ def get_provided_capabilities(graph:Graph, happenings:int, property_dictionary: 
 		?de DINEN61360:has_Instance_Description ?id.
 	}
 	"""
+	graph = StateHandler().get_graph()
 	results = graph.query(queryString)
+	property_dictionary = StateHandler().get_property_dictionary()
 	capability_dictionary = CapabilityDictionary()
 
 	caps = set([str(row.cap) for row in results])
@@ -73,7 +75,7 @@ def get_provided_capabilities(graph:Graph, happenings:int, property_dictionary: 
 		inputs = [str(row.de) for row in results if (str(row.cap) == cap)]
 		input_properties = [property_dictionary.get_property(input) for input in inputs]
 		# Outputs need to have their effect attached and are more tricky
-		outputs = get_output_influences_of_capability(graph, cap, property_dictionary)
+		outputs = get_output_influences_of_capability(graph, cap)
 		for happening in range(happenings): 
 			capability_dictionary.add_capability_occurrence(cap, "http://www.w3id.org/hsu-aut/cask#ProvidedCapability", happening, input_properties, outputs)
 
@@ -81,7 +83,7 @@ def get_provided_capabilities(graph:Graph, happenings:int, property_dictionary: 
 
 
 # TODO: Can both functions be done with one query?
-def get_output_influences_of_capability(graph:Graph, capability_iri: str, property_dictionary:PropertyDictionary) -> List[CapabilityPropertyInfluence] :
+def get_output_influences_of_capability(graph:Graph, capability_iri: str) -> List[CapabilityPropertyInfluence] :
 	'''Get all provided capabilities'''
 
 	queryString = """
@@ -127,6 +129,7 @@ def get_output_influences_of_capability(graph:Graph, capability_iri: str, proper
 	} """
 	queryString = queryString.replace("{capability_iri}", capability_iri)
 	results = graph.query(queryString)
+	property_dictionary = StateHandler().get_property_dictionary()
 	influences: List[CapabilityPropertyInfluence] = []
 	for row in results: 
 		# for happening in range(happenings): 

@@ -31,24 +31,19 @@ class Property:
 		happening = occurrence.happening
 		event = occurrence.event
 		self.occurrences.setdefault(happening, {}).setdefault(event, occurrence)
-# class ProvidedPropertyEntry:
-# 	def __init__(self, type: str, relation_type: str, states: Dict[Tuple[int, int], PropertyOccurrence]):
-# 		self.type = type
-# 		self.relation_type = relation_type
-# 		self.states = states
 
-# class RequiredPropertyEntry:
-# 	def __init__(self, type: str, relation_type: str, variable: ArithRef | BoolRef):
-# 		self.type = type
-# 		self.relation_type = relation_type
-# 		self.variable = variable
+	def get_occurrence_by_z3_variable(self, z3_variable_name: str) -> PropertyOccurrence | None:
+		# Filters occurrences for the given z3_variable. There should only be one result
+		happening_occurrences = [occ for occ in self.occurrences.values()]
+		all_occurrences_2d = [list(occ.values()) for occ in happening_occurrences]
+		all_occurrences: List[PropertyOccurrence] = []
+		[all_occurrences.extend(occ) for occ in all_occurrences_2d]
+		try:
+			occurrence = [occurrence for occurrence in all_occurrences if str(occurrence.z3_variable) == z3_variable_name][0]
+			return occurrence
+		except:
+			return None
 
-# class ReversedPropertyEntry:
-# 	def __init__(self, iri: URIRef, type: str, relation_type: str, variable: ArithRef | BoolRef):
-# 		self.iri = iri
-# 		self.type = type
-# 		self.relation_type = relation_type
-# 		self.variable = variable
 
 class PropertyDictionary:
 	def __init__(self):
@@ -69,14 +64,6 @@ class PropertyDictionary:
 		property_occurence = PropertyOccurrence(iri, data_type, 0, 0)
 		self.required_properties[iri].add_occurrence(property_occurence)
 
-	# def addPropertyHappening(self, iri:URIRef, happening:int):
-	# 	self.provided_properties[str(iri)].states[happening] = {}
-
-	# def addPropertyEvent(self, property_occurrence: PropertyOccurrence):
-	# 	self.provided_properties[iriString].states[happening][event] = property_occurrence
-		
-	# 	self.reversed_provided_property_index.setdefault((happening,event), []).append(ReversedPropertyEntry(iri, type, relation_type, new_var))
-
 	def get_required_property_occurrence(self, iri: str) -> PropertyOccurrence:
 		if (not iri in self.required_properties):
 			raise KeyError(f"There is no required property with key {iri}.")
@@ -87,13 +74,6 @@ class PropertyDictionary:
 		if (not iri in self.provided_properties):
 			raise KeyError(f"There is no provided property with key {iri} at happening {happening} and event {event}.")
 		return self.provided_properties[iri].occurrences[happening][event]
-	
-	# def get_provided_properties_at_happening_and_event(self, happening: int, event:int) -> List[PropertyOccurrence]:
-	# 	selected_provided_properties = [property for property in self.provided_properties if ((property.happening == happening) and (property.event == event))]
-	# 	if (len(selected_provided_properties) == 0):
-	# 		raise KeyError(f"There is no provided property with at happening {happening} and event {event}.")
-	# 	return selected_provided_properties
-	
 
 	def get_property_occurence(self, iri: str, happening:int, event:int) -> PropertyOccurrence:
 		try:
@@ -123,3 +103,12 @@ class PropertyDictionary:
 	def get_property_relation_type(self, iri: str) -> str:
 		property = self.get_property(iri)
 		return property.relation_type
+	
+	def get_property_from_z3_variable(self, z3_variable: AstRef) -> PropertyOccurrence:
+		all_properties = {**self.required_properties, **self.provided_properties}
+		for property in all_properties.values():
+			property_occurrence = property.get_occurrence_by_z3_variable(str(z3_variable))
+			if property_occurrence is not None:
+				return property_occurrence
+		
+		raise KeyError(f"There is not a single property occurrence for the z3_variable {z3_variable}")

@@ -1,12 +1,12 @@
 from rdflib import Graph
-from dicts.CapabilityDictionary import CapabilityDictionary
-from dicts.PropertyDictionary import PropertyDictionary
 from typing import List
-from property_links import get_related_properties
 from z3 import Implies, Not, BoolRef, ArithRef
 
+from smt_planning.StateHandler import StateHandler
+from smt_planning.property_links import get_related_properties
 
-def getCapabilityEffects(graph: Graph, capability_dictionary: CapabilityDictionary, property_dictionary: PropertyDictionary, happenings: int, event_bound: int) -> List:
+
+def getCapabilityEffects(happenings: int, event_bound: int) -> List:
 	
 	# Effect 1. Fall Assurance mit statischem Value
 
@@ -28,7 +28,10 @@ def getCapabilityEffects(graph: Graph, capability_dictionary: CapabilityDictiona
 		OPTIONAL { ?id DINEN61360:Value ?val. }
 	} """
 
+	graph = StateHandler().get_graph()
 	results = graph.query(query_string)
+	property_dictionary = StateHandler().get_property_dictionary()
+	capability_dictionary = StateHandler().get_capability_dictionary()
 	effects = []
 	for happening in range(happenings):
 		for row in results:
@@ -44,7 +47,7 @@ def getCapabilityEffects(graph: Graph, capability_dictionary: CapabilityDictiona
 			else: 
 				# TODO: Constraint effect currently in capability_constraints. Needs to be changed  
 				pass
-			related_properties = get_related_properties(graph, property_dictionary, str(row.de))
+			related_properties = get_related_properties(str(row.de))
 			for related_property in related_properties:
 				# effect = generate_effect_constraint(current_capability, related_property, prop_type, relation, value)
 				property = property_dictionary.get_property_occurence(related_property.iri, happening, 1)

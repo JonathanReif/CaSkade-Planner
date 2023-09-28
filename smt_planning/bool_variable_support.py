@@ -1,12 +1,12 @@
-from collections import defaultdict
-from rdflib import Graph
-from dicts.PropertyDictionary import PropertyDictionary
 from typing import List
 from z3 import Implies, Not
 
-def getPropositionSupports(graph: Graph, property_dictionary: PropertyDictionary, happenings: int, event_bound: int) -> List:
+from smt_planning.StateHandler import StateHandler
+from smt_planning.dicts.PropertyDictionary import PropertyDictionary
+
+def getPropositionSupports(happenings: int, event_bound: int) -> List:
 	supports = []
-	
+	property_dictionary = StateHandler().get_property_dictionary()
 	properties = property_dictionary.provided_properties.values()
 
 	for happening in range(happenings)[1:]:

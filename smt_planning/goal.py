@@ -1,8 +1,10 @@
 from rdflib import Graph
 from z3 import Implies, Not
-from dicts.PropertyDictionary import PropertyDictionary
 
-def get_goal(graph:Graph, property_dictionary: PropertyDictionary, happenings):
+from smt_planning.StateHandler import StateHandler
+from smt_planning.dicts.PropertyDictionary import PropertyDictionary
+
+def get_goal(happenings):
 
 	query_string = """
 		PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
@@ -20,7 +22,9 @@ def get_goal(graph:Graph, property_dictionary: PropertyDictionary, happenings):
 				DINEN61360:Value ?val. 
 		} """
 
+	graph = StateHandler().get_graph()
 	results = graph.query(query_string)
+	property_dictionary = StateHandler().get_property_dictionary()
 	goals = []
 	for row in results:
 		property = property_dictionary.get_required_property_occurrence(str(row.de)).z3_variable					

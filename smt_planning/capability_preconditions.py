@@ -1,11 +1,11 @@
 from rdflib import Graph
 from rdflib.query import ResultRow
 from typing import List
-from dicts.CapabilityDictionary import CapabilityDictionary
-from dicts.PropertyDictionary import PropertyDictionary
 from z3 import Implies, BoolRef, Not
 
-def getCapabilityPreconditions(graph: Graph, capabilityDictionary: CapabilityDictionary, propertyDictionary: PropertyDictionary, happenings: int, eventBound: int) -> List[BoolRef]:
+from smt_planning.StateHandler import StateHandler
+
+def getCapabilityPreconditions(happenings: int, eventBound: int) -> List[BoolRef]:
 
 	# Get all resource properties for capability precondition that has to be compared with input information property (Requirement). 
 	queryString = """
@@ -26,16 +26,19 @@ def getCapabilityPreconditions(graph: Graph, capabilityDictionary: CapabilityDic
 	} 
 	"""
 	
+	graph = StateHandler().get_graph()
 	results = graph.query(queryString)
+	property_dictionary = StateHandler().get_property_dictionary()
+	capability_dictionary = StateHandler().get_capability_dictionary()
 	preconditions = []
 	for happening in range(happenings):
 		for row in results:
-			currentCap = capabilityDictionary.get_capability_occurrence(str(row.cap), happening).z3_variable
-			currentProp = propertyDictionary.get_provided_property_occurrence(str(row.de), happening, 0).z3_variable						
+			currentCap = capability_dictionary.get_capability_occurrence(str(row.cap), happening).z3_variable
+			currentProp = property_dictionary.get_provided_property_occurrence(str(row.de), happening, 0).z3_variable						
 			relation = str(row.log)																			
 			value = str(row.val)																			
 
-			prop_type = propertyDictionary.get_property_data_type(str(row.de)) 
+			prop_type = property_dictionary.get_property_data_type(str(row.de)) 
 			if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
 
 				match relation:
