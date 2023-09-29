@@ -154,8 +154,8 @@ def cask_to_smt(ontology_file: str, max_happenings: int, problem_location: str, 
 			result = PlanningResult(model, problem_location, result_location)
 
 			# Write the model to a JSON file
-			with open('result_location', 'w') as json_file:
-				json.dump(result, json_file, default=lambda o: o.__dict__, indent=4)
+			with open(result_location, 'w') as json_file:
+				json.dump(result, json_file, default=lambda o: o.as_dict(), indent=4)
 			return result 
 
 

@@ -1,14 +1,30 @@
 
 from typing import List, Dict
-from z3 import ModelRef
+from z3 import ModelRef, RatNumRef, IntNumRef, BoolRef
 
 from smt_planning.StateHandler import StateHandler
 from smt_planning.dicts.PropertyDictionary import Property
 
 class PropertyAppearance:
-	def __init__(self, property: Property, value: int | str) -> None:
+	def __init__(self, property: Property, value: RatNumRef | BoolRef | IntNumRef) -> None:
 		self.property = property
-		self.value = value
+		# Value has to be cast manually using z3's functions
+		if type(value).__name__ == 'RatNumRef':
+			self.value = float(value.as_decimal(5))
+		elif type(value).__name__ == 'BoolRef':
+			self.value = bool(str(value))
+		elif type(value).__name__ == 'IntNumRef':
+			self.value = int(str(value))
+		else:
+			raise NameError(f"No cast operation for type {type(value).__name__} of variabel {value} defined")
+
+	def as_dict(self) -> Dict[str, object]:
+		val = self.value
+		dict = {
+			"property_iri": self.property.iri,
+			"value": self.value
+		}
+		return dict
 
 
 class CapabilityAppearance:
@@ -28,6 +44,14 @@ class CapabilityAppearance:
 			self.add_input(property_appearance)
 		if property_appearance.property.relation_type == "Output":
 			self.add_output(property_appearance)
+		
+	def as_dict(self) -> Dict[str, object]:
+		dict = {
+			"capability_iri": self.capability_iri,
+			"inputs": [input.as_dict() for input in self.inputs],
+			"outputs": [output.as_dict() for output in self.outputs]
+		}
+		return dict
 
 
 class PlanStep:
@@ -37,6 +61,13 @@ class PlanStep:
 
 	def add_capability_appearance(self, capability_appearance: CapabilityAppearance):
 		self.capability_appearances.append(capability_appearance)
+
+	def as_dict(self) -> Dict[str, object]:
+		dict = {
+			"duration": self.duration,
+			"capability_appearances": [capability_appearance.as_dict() for capability_appearance in self.capability_appearances]
+		}
+		return dict
 
 
 class Plan:
@@ -56,6 +87,8 @@ class Plan:
 	def insert_step(self, index: int, capability_appearances: List[CapabilityAppearance]):
 		plan_step = PlanStep(capability_appearances)
 		self.plan_steps.insert(index, plan_step)
+		# Update plan length
+		self.plan_length = len(self.plan_steps)
 	
 	def add_property_appearance(self, index: int, property_appearance: PropertyAppearance):
 		property = property_appearance.property
@@ -67,6 +100,17 @@ class Plan:
 			capability_appearances = [capability_appearance for capability_appearance in step.capability_appearances if capability_appearance.capability_iri == capability_iri]
 			if capability_appearances:
 				capability_appearances[0].add_property_appearance(property_appearance)
+
+		# Update plan length
+		self.plan_length = len(self.plan_steps)
+	
+	def as_dict(self) -> Dict[str, object]:
+		dict = {
+			"plan_steps": [plan_step.as_dict() for plan_step in self.plan_steps],
+			"plan_length":  self.plan_length,
+			"total_duration": self.total_duration
+		}
+		return dict
 
 
 class PlanningResult:
@@ -107,3 +151,11 @@ class PlanningResult:
 				plan.add_property_appearance(happening, property_appearance)
 
 		return plan
+	
+	def as_dict(self) -> Dict[str, object]:
+		dict = {
+			"smt_problem_location": self.smt_problem_location,
+			"smt_result_location": self.smt_result_location,
+			"plan": self.plan.as_dict()
+		}
+		return dict
