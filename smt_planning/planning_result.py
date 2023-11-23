@@ -1,5 +1,6 @@
 
-from typing import List, Dict
+import json
+from typing import List, Dict, Set
 from z3 import ModelRef, RatNumRef, IntNumRef, BoolRef
 
 from smt_planning.StateHandler import StateHandler
@@ -10,7 +11,7 @@ class PropertyAppearance:
 		self.property = property
 		# Value has to be cast manually using z3's functions
 		if type(value).__name__ == 'RatNumRef':
-			self.value = float(value.as_decimal(5))
+			self.value = float(value.as_decimal(20))
 		elif type(value).__name__ == 'BoolRef':
 			self.value = bool(str(value))
 		elif type(value).__name__ == 'IntNumRef':
@@ -25,19 +26,30 @@ class PropertyAppearance:
 			"value": self.value
 		}
 		return dict
+	
+	def __eq__(self, other):
+		print(f"comparing {self.property.iri} with {other.property.iri}")
+		if isinstance(other, PropertyAppearance):
+			print("is correct instance")
+			return ((self.property.iri == other.property.iri))
+		else:
+			return False
+		
+	def __hash__(self):
+		return hash(self.property.iri)
 
 
 class CapabilityAppearance:
 	def __init__(self, capability_iri: str):
 		self.capability_iri = capability_iri
-		self.inputs: List[PropertyAppearance] = []
-		self.outputs: List[PropertyAppearance] = []
+		self.inputs: Set[PropertyAppearance] = set()
+		self.outputs: Set[PropertyAppearance] = set()
 
 	def add_input(self, input: PropertyAppearance):
-		self.inputs.append(input)
+		self.inputs.add(input)
 	
 	def add_output(self, output: PropertyAppearance):
-		self.outputs.append(output)
+		self.outputs.add(output)
 
 	def add_property_appearance(self, property_appearance: PropertyAppearance):
 		if property_appearance.property.relation_type == "Input":
@@ -65,7 +77,7 @@ class PlanStep:
 	def as_dict(self) -> Dict[str, object]:
 		dict = {
 			"duration": self.duration,
-			"capability_appearances": [capability_appearance.as_dict() for capability_appearance in self.capability_appearances]
+			"capability_applications": [capability_appearance.as_dict() for capability_appearance in self.capability_appearances]
 		}
 		return dict
 
@@ -114,18 +126,24 @@ class Plan:
 
 
 class PlanningResult:
-	def __init__(self, model: ModelRef, smt_problem_location: str, smt_result_location: str):
-		self.plan = self.derive_plan_from_model(model)
+	def __init__(self, model: ModelRef, smt_problem_location: str, smt_result_location: str, smt_model_location:str):
 		self.smt_problem_location = smt_problem_location
 		self.smt_result_location = smt_result_location
+		self.smt_model_location = smt_model_location
+		self.plan = self.derive_plan_from_model(model)
 
 	def derive_plan_from_model(self, model: ModelRef) -> Plan:
+		model_dict = {}
+		for var in model:
+			model_dict[str(var)] = str(model[var])
+		with open(self.smt_model_location, 'w') as file:
+			json.dump(model_dict, file, indent=4)
 		property_dictionary = StateHandler().get_property_dictionary()
 		capability_dictionary = StateHandler().get_capability_dictionary()
 
 		# Loop over all the vars and sort everything out (try to find the corresponding property or capability):
 		plan = Plan([])
-		property_appearance_store: Dict[int, List[PropertyAppearance]] = {} 
+		property_appearance_store: Dict[int, List[PropertyAppearance]] = {} 	# store is a dict with happenings as a key
 		for variable in model:
 			variable_value = model[variable]
 			# Filter out these pesty comments
@@ -141,7 +159,7 @@ class PlanningResult:
 				property_occurrence = property_dictionary.get_property_from_z3_variable(variable) # type: ignore
 				property = property_dictionary.get_property(property_occurrence.iri)
 				happening = property_occurrence.happening
-				property_appearance = PropertyAppearance(property, variable_value )
+				property_appearance = PropertyAppearance(property, variable_value)
 				property_appearance_store.setdefault(happening, []).append(property_appearance)
 
 		for property_appearance_item in property_appearance_store.items():
