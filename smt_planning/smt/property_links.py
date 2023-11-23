@@ -4,7 +4,7 @@ from rdflib import Graph, Variable
 from rdflib.term import Identifier 
 from z3 import BoolRef
 
-from smt_planning.StateHandler import StateHandler
+from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.dicts.PropertyDictionary import Property
 
 

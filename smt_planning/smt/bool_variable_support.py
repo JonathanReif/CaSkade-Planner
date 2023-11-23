@@ -1,7 +1,7 @@
 from typing import List
 from z3 import Implies, Not
 
-from smt_planning.StateHandler import StateHandler
+from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.dicts.PropertyDictionary import PropertyDictionary
 
 def getPropositionSupports(happenings: int, event_bound: int) -> List:

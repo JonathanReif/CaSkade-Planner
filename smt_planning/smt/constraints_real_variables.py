@@ -2,10 +2,10 @@ from rdflib import Graph, URIRef
 from z3 import Implies, Not, And
 from typing import List
 
-from smt_planning.StateHandler import StateHandler
+from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.dicts.CapabilityDictionary import Capability
-from smt_planning.property_links import get_related_properties
-from smt_planning.capability_links import get_related_capabilities
+from smt_planning.smt.property_links import get_related_properties
+from smt_planning.smt.capability_links import get_related_capabilities
 
 def get_variable_constraints(happenings: int, event_bound: int) -> List:
 

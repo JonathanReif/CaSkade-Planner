@@ -15,8 +15,8 @@ class StateHandler:
 			cls.__graph = None
 			cls.__property_dictionary = None
 			cls.__capability_dictionary = None
-			from smt_planning.capability_links import CapabilityPairCache
-			from smt_planning.property_links import PropertyPairCache
+			from smt_planning.smt.capability_links import CapabilityPairCache
+			from smt_planning.smt.property_links import PropertyPairCache
 			cls.__property_pair_cache = CapabilityPairCache
 			cls.__capability_pair_cache = PropertyPairCache
 			# Put any initialization here.

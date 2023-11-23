@@ -1,7 +1,7 @@
 from typing import List
 from rdflib import Graph
 
-from smt_planning.StateHandler import StateHandler
+from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.openmath.parse_openmath import from_open_math_in_graph
 
 def getCapabilityConstraints(happenings: int, event_bound: int) -> List[str]:

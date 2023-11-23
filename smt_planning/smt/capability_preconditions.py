@@ -3,7 +3,7 @@ from rdflib.query import ResultRow
 from typing import List
 from z3 import Implies, BoolRef, Not
 
-from smt_planning.StateHandler import StateHandler
+from smt_planning.smt.StateHandler import StateHandler
 
 def getCapabilityPreconditions(happenings: int, eventBound: int) -> List[BoolRef]:
 

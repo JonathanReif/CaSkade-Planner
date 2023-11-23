@@ -1,7 +1,7 @@
 from typing import List
 
 from smt_planning.dicts.PropertyDictionary import PropertyDictionary
-from smt_planning.StateHandler import StateHandler
+from smt_planning.smt.StateHandler import StateHandler
 
 
 def get_real_variable_continuous_changes(happenings: int, event_bound: int) -> List:

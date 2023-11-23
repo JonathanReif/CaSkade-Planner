@@ -3,21 +3,21 @@ import time
 
 from rdflib import Graph
 from z3 import Solver, sat, unsat, Bool
-from smt_planning.StateHandler import StateHandler
+from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.dicts.PropertyDictionary import PropertyDictionary
 from smt_planning.dicts.CapabilityDictionary import CapabilityDictionary
-from smt_planning.variable_declaration import getAllProperties, get_provided_capabilities
-from smt_planning.capability_preconditions import getCapabilityPreconditions
-from smt_planning.capability_effects import getCapabilityEffects
-from smt_planning.capability_constraints import getCapabilityConstraints
-from smt_planning.bool_variable_support import getPropositionSupports
-from smt_planning.constraints_bools import get_bool_constraints
-from smt_planning.constraints_real_variables import get_variable_constraints
-from smt_planning.property_links import get_property_cross_relations
-from smt_planning.init import get_init
-from smt_planning.goal import get_goal
-from smt_planning.real_variable_contin_change import get_real_variable_continuous_changes
-from smt_planning.planning_result import PlanningResult
+from smt_planning.smt.variable_declaration import getAllProperties, get_provided_capabilities
+from smt_planning.smt.capability_preconditions import getCapabilityPreconditions
+from smt_planning.smt.capability_effects import getCapabilityEffects
+from smt_planning.smt.capability_constraints import getCapabilityConstraints
+from smt_planning.smt.bool_variable_support import getPropositionSupports
+from smt_planning.smt.constraints_bools import get_bool_constraints
+from smt_planning.smt.constraints_real_variables import get_variable_constraints
+from smt_planning.smt.property_links import get_property_cross_relations
+from smt_planning.smt.init import get_init
+from smt_planning.smt.goal import get_goal
+from smt_planning.smt.real_variable_contin_change import get_real_variable_continuous_changes
+from smt_planning.smt.planning_result import PlanningResult
 
 
 def add_comment(solver: Solver, comment_text: str):
@@ -27,7 +27,7 @@ def add_comment(solver: Solver, comment_text: str):
 	comment = Bool(f"## {comment_text} ##")
 	solver.add(comment)
 
-def cask_to_smt(ontology_file: str, max_happenings: int, problem_location: str, result_location:str, model_location: str):
+def cask_to_smt(ontology_file: str, max_happenings: int = 5, problem_location: str = "problem.smt" , result_location:str = "result.json", model_location: str = "model.json"):
 
 	start_time = time.time()
 	state_handler = StateHandler()

@@ -1,6 +1,6 @@
 import os
-from smt_planning.cask_to_smt import cask_to_smt
-from smt_planning.planning_result import PlanningResult
+from smt_planning.smt.cask_to_smt import cask_to_smt
+from smt_planning.smt.planning_result import PlanningResult
 
 class TestOneCap:
 	

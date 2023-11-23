@@ -3,10 +3,10 @@ from typing import List, Mapping
 from rdflib import Graph, Variable
 from rdflib.term import Identifier 
 
-from smt_planning.StateHandler import StateHandler
+from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.dicts.PropertyDictionary import Property
 from smt_planning.dicts.CapabilityDictionary import Capability
-from smt_planning.property_links import different_capability, same_type_description, subtype_matches
+from smt_planning.smt.property_links import different_capability, same_type_description, subtype_matches
 
 class CapabilityPair:
 	def __init__(self, capability_a: Capability, capability_b: Capability, property: Property) -> None:

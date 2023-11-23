@@ -2,8 +2,8 @@ from rdflib import Graph
 from typing import List
 from z3 import Implies, Not, BoolRef, ArithRef
 
-from smt_planning.StateHandler import StateHandler
-from smt_planning.property_links import get_related_properties
+from smt_planning.smt.StateHandler import StateHandler
+from smt_planning.smt.property_links import get_related_properties
 
 
 def getCapabilityEffects(happenings: int, event_bound: int) -> List:

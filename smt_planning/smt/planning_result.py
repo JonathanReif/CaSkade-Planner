@@ -3,7 +3,7 @@ import json
 from typing import List, Dict, Set
 from z3 import ModelRef, RatNumRef, IntNumRef, BoolRef
 
-from smt_planning.StateHandler import StateHandler
+from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.dicts.PropertyDictionary import Property
 
 class PropertyAppearance:

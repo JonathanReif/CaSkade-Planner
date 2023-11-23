@@ -1,6 +1,6 @@
 from z3 import Not
 
-from smt_planning.StateHandler import StateHandler
+from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.dicts.PropertyDictionary import PropertyDictionary
 
 def get_init():
