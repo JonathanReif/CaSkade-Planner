@@ -27,7 +27,7 @@ def add_comment(solver: Solver, comment_text: str):
 	comment = Bool(f"## {comment_text} ##")
 	solver.add(comment)
 
-def cask_to_smt(ontology_file: str, max_happenings: int, problem_location: str, result_location:str):
+def cask_to_smt(ontology_file: str, max_happenings: int, problem_location: str, result_location:str, model_location: str):
 
 	start_time = time.time()
 	state_handler = StateHandler()
@@ -151,7 +151,7 @@ def cask_to_smt(ontology_file: str, max_happenings: int, problem_location: str, 
 			print(f"No solution with {happenings} happening(s) found.")
 		else:
 			model = solver.model()
-			result = PlanningResult(model, problem_location, result_location)
+			result = PlanningResult(model, problem_location, result_location, model_location)
 
 			# Write the model to a JSON file
 			with open(result_location, 'w') as json_file:
@@ -160,8 +160,9 @@ def cask_to_smt(ontology_file: str, max_happenings: int, problem_location: str, 
 
 
 if __name__ == '__main__': 
-	ontology_file = 'ontology.ttl'
+	ontology_file = 'ex_two_caps.ttl'
 	max_happenings = 3
 	problem_location = "problem.smt"
 	result_location = 'plan.json'
-	cask_to_smt(ontology_file, max_happenings, problem_location, result_location)
+	model_location = 'model.json'
+	cask_to_smt(ontology_file, max_happenings, problem_location, result_location, model_location)
