@@ -10,6 +10,8 @@ packages = [{include = "smt_planning"}]
 python = "^3.10"
 rdflib = "^7.0.0"
 z3-solver = "^4.12.2.0"
+flask = "^3.0.0"
+flask-cors = "^4.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.2"
