@@ -7,13 +7,14 @@ from smt_planning.StateHandler import StateHandler
 from smt_planning.dicts.PropertyDictionary import Property
 
 class PropertyAppearance:
-	def __init__(self, property: Property, value: RatNumRef | BoolRef | IntNumRef) -> None:
+	def __init__(self, property: Property, event: int, value: RatNumRef | BoolRef | IntNumRef) -> None:
 		self.property = property
+		self.event = event
 		# Value has to be cast manually using z3's functions
 		if type(value).__name__ == 'RatNumRef':
 			self.value = float(value.as_decimal(20))
 		elif type(value).__name__ == 'BoolRef':
-			self.value = bool(str(value))
+			self.value = value.__bool__()
 		elif type(value).__name__ == 'IntNumRef':
 			self.value = int(str(value))
 		else:
@@ -46,9 +47,15 @@ class CapabilityAppearance:
 		self.outputs: Set[PropertyAppearance] = set()
 
 	def add_input(self, input: PropertyAppearance):
+		print(f"adding input {input.property.iri} with event {input.event} and value {input.value}")
+		if input.event != 0:
+			print("passed check")
+			return
 		self.inputs.add(input)
 	
 	def add_output(self, output: PropertyAppearance):
+		if output.event != 1:
+			return
 		self.outputs.add(output)
 
 	def add_property_appearance(self, property_appearance: PropertyAppearance):
@@ -67,8 +74,9 @@ class CapabilityAppearance:
 
 
 class PlanStep:
-	def __init__(self,capability_appearances: List[CapabilityAppearance]):
+	def __init__(self, capability_appearances: List[CapabilityAppearance], index: int):
 		self.capability_appearances = capability_appearances
+		self.step_number= index
 		self.duration = 0
 
 	def add_capability_appearance(self, capability_appearance: CapabilityAppearance):
@@ -77,6 +85,7 @@ class PlanStep:
 	def as_dict(self) -> Dict[str, object]:
 		dict = {
 			"duration": self.duration,
+			"step_number": self.step_number,
 			"capability_applications": [capability_appearance.as_dict() for capability_appearance in self.capability_appearances]
 		}
 		return dict
@@ -93,11 +102,11 @@ class Plan:
 		if index in self.plan_steps:
 			self.plan_steps[index].add_capability_appearance(capability_appearance)
 		else:
-			plan_step = PlanStep([capability_appearance])
+			plan_step = PlanStep([capability_appearance], index)
 			self.plan_steps.insert(index, plan_step)
 
 	def insert_step(self, index: int, capability_appearances: List[CapabilityAppearance]):
-		plan_step = PlanStep(capability_appearances)
+		plan_step = PlanStep(capability_appearances, index)
 		self.plan_steps.insert(index, plan_step)
 		# Update plan length
 		self.plan_length = len(self.plan_steps)
@@ -159,7 +168,9 @@ class PlanningResult:
 				property_occurrence = property_dictionary.get_property_from_z3_variable(variable) # type: ignore
 				property = property_dictionary.get_property(property_occurrence.iri)
 				happening = property_occurrence.happening
-				property_appearance = PropertyAppearance(property, variable_value)
+				event = property_occurrence.event
+				property_occurrence.iri
+				property_appearance = PropertyAppearance(property, event, variable_value)
 				property_appearance_store.setdefault(happening, []).append(property_appearance)
 
 		for property_appearance_item in property_appearance_store.items():
