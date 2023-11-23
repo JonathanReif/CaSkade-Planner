@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 from flask_cors import CORS
 import zlib
 
-from smt_planning.smt.cask_to_smt import cask_to_smt
+from smt_planning.smt.cask_to_smt import CaskadePlanner
 
 UPLOAD_FOLDER = tempfile.gettempdir()
 ALLOWED_EXTENSIONS = {'txt', 'ttl', 'xml', 'owl', 'json'}
@@ -27,6 +27,8 @@ def allowed_file(filename):
 @app.post('/plan') # type: ignore
 def generate_and_solve_plan():
 	mode = request.args.get('mode')
+	filename = ""
+	planner = CaskadePlanner()
 	if mode == 'file':
 	
 		if 'ontology-file' not in request.files:
@@ -43,15 +45,18 @@ def generate_and_solve_plan():
 			filename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 			file.save(filename)
 		
-			max_happenings = 10
-			
-			result = cask_to_smt(filename, max_happenings)
-			os.remove(filename)
+			planner.with_file_query_handler(filename)
 	
 	if mode == 'sparql-endpoint':
-		endpoint_url = request.args.get('endpoint_url')
-		result = {}
-		result["url"] = endpoint_url
+		endpoint_url = request.args.get('endpoint-url')
+		print(endpoint_url)
+		planner.with_endpoint_query_handler(endpoint_url)
+
+	max_happenings = 10
+	result = planner.cask_to_smt(max_happenings)
+	
+	if mode =='file':
+		os.remove(filename)
 
 	return result.as_dict()
 

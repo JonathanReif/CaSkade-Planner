@@ -3,12 +3,12 @@ from z3 import Not
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.dicts.PropertyDictionary import PropertyDictionary
 
-def get_init():
+def get_init(query_handler):
 	
 	'''
 	Get initial state properties by checking the values of all Actual_Value instances
 	'''
-	sparql_string = """
+	query_string = """
 		PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
 		PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
 		PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
@@ -22,8 +22,7 @@ def get_init():
 		} """
 
 	# Inits 
-	graph = StateHandler().get_graph()
-	results = graph.query(sparql_string)
+	results = query_handler.query(query_string)
 	property_dictionary = StateHandler().get_property_dictionary()
 	inits = []
 	for row in results:

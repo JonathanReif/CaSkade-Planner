@@ -4,7 +4,7 @@ from z3 import Implies, Not
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.dicts.PropertyDictionary import PropertyDictionary
 
-def get_goal(happenings):
+def get_goal(happenings:int, query_handler):
 
 	query_string = """
 		PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
@@ -22,8 +22,7 @@ def get_goal(happenings):
 				DINEN61360:Value ?val. 
 		} """
 
-	graph = StateHandler().get_graph()
-	results = graph.query(query_string)
+	results = query_handler.query(query_string)
 	property_dictionary = StateHandler().get_property_dictionary()
 	goals = []
 	for row in results:

@@ -29,9 +29,7 @@ class PropertyAppearance:
 		return dict
 	
 	def __eq__(self, other):
-		print(f"comparing {self.property.iri} with {other.property.iri}")
 		if isinstance(other, PropertyAppearance):
-			print("is correct instance")
 			return ((self.property.iri == other.property.iri))
 		else:
 			return False
@@ -47,9 +45,7 @@ class CapabilityAppearance:
 		self.outputs: Set[PropertyAppearance] = set()
 
 	def add_input(self, input: PropertyAppearance):
-		print(f"adding input {input.property.iri} with event {input.event} and value {input.value}")
 		if input.event != 0:
-			print("passed check")
 			return
 		self.inputs.add(input)
 	

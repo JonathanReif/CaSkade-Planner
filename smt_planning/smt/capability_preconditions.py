@@ -5,10 +5,10 @@ from z3 import Implies, BoolRef, Not
 
 from smt_planning.smt.StateHandler import StateHandler
 
-def getCapabilityPreconditions(happenings: int, eventBound: int) -> List[BoolRef]:
+def getCapabilityPreconditions(happenings: int, eventBound: int, query_handler) -> List[BoolRef]:
 
 	# Get all resource properties for capability precondition that has to be compared with input information property (Requirement). 
-	queryString = """
+	query_string = """
 	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
 	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
 	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
@@ -26,8 +26,7 @@ def getCapabilityPreconditions(happenings: int, eventBound: int) -> List[BoolRef
 	} 
 	"""
 	
-	graph = StateHandler().get_graph()
-	results = graph.query(queryString)
+	results = query_handler.query(query_string)
 	property_dictionary = StateHandler().get_property_dictionary()
 	capability_dictionary = StateHandler().get_capability_dictionary()
 	preconditions = []

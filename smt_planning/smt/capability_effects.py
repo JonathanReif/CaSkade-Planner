@@ -6,7 +6,7 @@ from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.smt.property_links import get_related_properties
 
 
-def getCapabilityEffects(happenings: int, event_bound: int) -> List:
+def getCapabilityEffects(happenings: int, event_bound: int, query_handler) -> List:
 	
 	# Effect 1. Fall Assurance mit statischem Value
 
@@ -28,8 +28,7 @@ def getCapabilityEffects(happenings: int, event_bound: int) -> List:
 		OPTIONAL { ?id DINEN61360:Value ?val. }
 	} """
 
-	graph = StateHandler().get_graph()
-	results = graph.query(query_string)
+	results = query_handler.query(query_string)
 	property_dictionary = StateHandler().get_property_dictionary()
 	capability_dictionary = StateHandler().get_capability_dictionary()
 	effects = []

@@ -5,12 +5,12 @@ from smt_planning.dicts.CapabilityDictionary import CapabilityDictionary, Capabi
 from smt_planning.dicts.PropertyDictionary import PropertyDictionary
 
 
-def getAllProperties(happenings:int, eventBound:int) -> PropertyDictionary :
+def getAllProperties(happenings:int, eventBound:int, query_handler) -> PropertyDictionary :
 	
 	# Names need to be a combination of the thing that has a property (ID) with the corresponding type description. 
 	# Thing and type description together define a certain property in a context.
 	# rdflib is not capable of inferencing 
-	queryString = """
+	query_string = """
 	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
 	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
@@ -29,8 +29,7 @@ def getAllProperties(happenings:int, eventBound:int) -> PropertyDictionary :
 			BIND(STRAFTER(STR(?relation), "has") AS ?relationType)
 	} GROUP BY ?de ?capType ?dataType ?relationType
 	"""
-	graph = StateHandler().get_graph()
-	results = graph.query(queryString)
+	results = query_handler.query(query_string)
 	properties = PropertyDictionary()
 	for row in results:
 		caps = set(row.caps.split(","))
@@ -50,8 +49,8 @@ def getAllProperties(happenings:int, eventBound:int) -> PropertyDictionary :
 	return properties
 
 
-def get_provided_capabilities(happenings:int) -> CapabilityDictionary :
-	queryString = """
+def get_provided_capabilities(happenings:int, query_handler) -> CapabilityDictionary :
+	query_string = """
 	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
 	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
@@ -64,8 +63,7 @@ def get_provided_capabilities(happenings:int) -> CapabilityDictionary :
 		?de DINEN61360:has_Instance_Description ?id.
 	}
 	"""
-	graph = StateHandler().get_graph()
-	results = graph.query(queryString)
+	results = query_handler.query(query_string)
 	property_dictionary = StateHandler().get_property_dictionary()
 	capability_dictionary = CapabilityDictionary()
 
@@ -75,7 +73,7 @@ def get_provided_capabilities(happenings:int) -> CapabilityDictionary :
 		inputs = [str(row.de) for row in results if (str(row.cap) == cap)]
 		input_properties = [property_dictionary.get_property(input) for input in inputs]
 		# Outputs need to have their effect attached and are more tricky
-		outputs = get_output_influences_of_capability(graph, cap)
+		outputs = get_output_influences_of_capability(cap, query_handler)
 		for happening in range(happenings): 
 			capability_dictionary.add_capability_occurrence(cap, "http://www.w3id.org/hsu-aut/cask#ProvidedCapability", happening, input_properties, outputs)
 
@@ -83,10 +81,10 @@ def get_provided_capabilities(happenings:int) -> CapabilityDictionary :
 
 
 # TODO: Can both functions be done with one query?
-def get_output_influences_of_capability(graph:Graph, capability_iri: str) -> List[CapabilityPropertyInfluence] :
+def get_output_influences_of_capability(capability_iri: str, query_handler) -> List[CapabilityPropertyInfluence] :
 	'''Get all provided capabilities'''
 
-	queryString = """
+	query_string = """
 	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
 	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
@@ -127,8 +125,8 @@ def get_output_influences_of_capability(graph:Graph, capability_iri: str) -> Lis
 									OM:operator OM-Relation1:eq.
 		}
 	} """
-	queryString = queryString.replace("{capability_iri}", capability_iri)
-	results = graph.query(queryString)
+	query_string = query_string.replace('{capability_iri}', capability_iri)
+	results = query_handler.query(query_string)
 	property_dictionary = StateHandler().get_property_dictionary()
 	influences: List[CapabilityPropertyInfluence] = []
 	for row in results: 

@@ -8,7 +8,7 @@ from smt_planning.openmath.operator_dictionary import OperatorDictionary
 APPLICATION = Variable("application")
 ARG = Variable("arg")
 
-def from_open_math_in_graph(store: Graph, rootApplicationIri: str, happening: int, event: int) -> str:
+def from_open_math_in_graph( query_handler, rootApplicationIri: str, happening: int, event: int) -> str:
 	# Converts OpenMath contained in a Graph into a textual, human-readable formula
 
 	# Query to get OpenMath applications with operators and variables. Works also for nested applications. Positions stores arguments position, 
@@ -39,7 +39,7 @@ def from_open_math_in_graph(store: Graph, rootApplicationIri: str, happening: in
 	"""
 	
 	# Fire query and get results as an array
-	queryResults = QueryCache.query(store, queryString)
+	queryResults = QueryCache.query(query_handler, queryString)
 	
 	# Get root application to start the whole recursive parsing procedure
 	rootApplication = getRootApplication(queryResults.bindings, rootApplicationIri)
@@ -150,8 +150,8 @@ class QueryCache:
 	query_result = None
 
 	@staticmethod
-	def query(graph: Graph, query_string: str):
+	def query(query_handler, query_string: str):
 		if(QueryCache.query_result is None):
-			QueryCache.query_result = graph.query(query_string)			
+			QueryCache.query_result = query_handler.query(query_string)		
 
 		return QueryCache.query_result

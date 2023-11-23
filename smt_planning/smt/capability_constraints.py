@@ -4,7 +4,7 @@ from rdflib import Graph
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.openmath.parse_openmath import from_open_math_in_graph
 
-def getCapabilityConstraints(happenings: int, event_bound: int) -> List[str]:
+def getCapabilityConstraints(happenings: int, event_bound: int, query_handler) -> List[str]:
 	# Get all capability constraint IRIs and check whether its a constraint on an input or output
 	query_string = """
 	PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -27,8 +27,7 @@ def getCapabilityConstraints(happenings: int, event_bound: int) -> List[str]:
 	}
 	"""
 	
-	graph = StateHandler().get_graph()
-	results = graph.query(query_string)
+	results = query_handler.query(query_string)
 	input_constraints: List[ConstraintInfo] = []
 	output_constraints: List[ConstraintInfo] = []
 	for row in results:
@@ -44,13 +43,13 @@ def getCapabilityConstraints(happenings: int, event_bound: int) -> List[str]:
 	for happening in range(happenings):
 		for constraint_info in input_constraints:
 			current_capability = capability_dictionary.get_capability_occurrence(constraint_info.cap, happening).z3_variable	
-			infix_constraint = from_open_math_in_graph(graph, constraint_info.constraintIri, happening, 0)							
+			infix_constraint = from_open_math_in_graph(query_handler, constraint_info.constraintIri, happening, 0)							
 			prefix_expression = infix_to_prefix(infix_constraint)
 			assertion = f"(assert (=> {(current_capability.sexpr())} ({prefix_expression})))"
 			constraint_assertions.append(assertion)
 		for constraint_info in output_constraints:
 			current_capability = capability_dictionary.get_capability_occurrence(constraint_info.cap, happening).z3_variable	
-			infix_constraint = from_open_math_in_graph(graph, constraint_info.constraintIri, happening, 1)							
+			infix_constraint = from_open_math_in_graph(query_handler, constraint_info.constraintIri, happening, 1)							
 			prefix_expression = infix_to_prefix(infix_constraint)
 			assertion = f"(assert (=> {(current_capability.sexpr())} ({prefix_expression})))"
 			constraint_assertions.append(assertion)
