@@ -1,5 +1,6 @@
 
 import json
+from datetime import datetime
 from typing import List, Dict, Set
 from z3 import ModelRef, RatNumRef, IntNumRef, BoolRef
 
@@ -131,18 +132,11 @@ class Plan:
 
 
 class PlanningResult:
-	def __init__(self, model: ModelRef, smt_problem_location: str, smt_result_location: str, smt_model_location:str):
-		self.smt_problem_location = smt_problem_location
-		self.smt_result_location = smt_result_location
-		self.smt_model_location = smt_model_location
+	def __init__(self, model: ModelRef):
+		self.time_created = datetime.now()
 		self.plan = self.derive_plan_from_model(model)
 
 	def derive_plan_from_model(self, model: ModelRef) -> Plan:
-		model_dict = {}
-		for var in model:
-			model_dict[str(var)] = str(model[var])
-		with open(self.smt_model_location, 'w') as file:
-			json.dump(model_dict, file, indent=4)
 		property_dictionary = StateHandler().get_property_dictionary()
 		capability_dictionary = StateHandler().get_capability_dictionary()
 
@@ -179,8 +173,7 @@ class PlanningResult:
 	
 	def as_dict(self) -> Dict[str, object]:
 		dict = {
-			"smt_problem_location": self.smt_problem_location,
-			"smt_result_location": self.smt_result_location,
+			"time-created": str(self.time_created),
 			"plan": self.plan.as_dict()
 		}
 		return dict
