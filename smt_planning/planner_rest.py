@@ -23,42 +23,51 @@ def allowed_file(filename):
 			filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+def setup_planner_with_file(files):
+	if 'ontology-file' not in files:
+		flash('No file part')
+		return redirect(request.url)
+	
+	file = files['ontology-file']
+	# If the user does not select a file, the browser submits an
+	# empty file without a filename.
+	if file.filename == '':
+		flash('No selected file')
+		return redirect(request.url)
+	if file and allowed_file(file.filename):
+		filename = secure_filename(file.filename)
+		filename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+		file.save(filename)
+
+		planner = CaskadePlanner()
+		planner.with_file_query_handler(filename)
+		return planner
+
+
 # Wait for POST requests with a query param ?mode to /plan
 @app.post('/plan') # type: ignore
 def generate_and_solve_plan():
 	mode = request.args.get('mode')
-	filename = ""
-	planner = CaskadePlanner()
+	planner: CaskadePlanner
+	
 	if mode == 'file':
-	
-		if 'ontology-file' not in request.files:
-			flash('No file part')
-			return redirect(request.url)
-		file = request.files['ontology-file']
-		# If the user does not select a file, the browser submits an
-		# empty file without a filename.
-		if file.filename == '':
-			flash('No selected file')
-			return redirect(request.url)
-		if file and allowed_file(file.filename):
-			filename = secure_filename(file.filename)
-			filename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-			file.save(filename)
+		try:
+			planner = setup_planner_with_file(request.files) # type: ignore
+		except:
+			print("Error during file upload")
 		
-			planner.with_file_query_handler(filename)
-	
 	if mode == 'sparql-endpoint':
 		endpoint_url = request.args.get('endpoint-url')
+		planner = CaskadePlanner()
 		planner.with_endpoint_query_handler(endpoint_url)
 
-	max_happenings = 10
+	max_happenings = request.args.get('max-happenings',type=int)
 	result = planner.cask_to_smt(max_happenings)
 	
-	if mode =='file':
-		os.remove(filename)
-
 	return result.as_dict()
 
+def run():
+	app.run()
 
 if __name__ == '__main__': 
-	app.run()
+	run()

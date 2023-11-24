@@ -36,7 +36,11 @@ class CaskadePlanner:
 		comment = Bool(f"## {comment_text} ##")
 		solver.add(comment)
 
-	def cask_to_smt(self, max_happenings: int = 5, problem_location = None, model_location = None, plan_location = None):
+	def cask_to_smt(self, max_happenings = 5, problem_location = None, model_location = None, plan_location = None):
+
+		# In case None gets passed as a max_happening, set back to default value of 5
+		if max_happenings == None:
+			max_happenings = 5
 
 		start_time = time.time()
 		state_handler = StateHandler()
