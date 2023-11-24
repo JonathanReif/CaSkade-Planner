@@ -5,7 +5,7 @@ from smt_planning.dicts.CapabilityDictionary import CapabilityDictionary, Capabi
 from smt_planning.dicts.PropertyDictionary import PropertyDictionary
 
 
-def getAllProperties(happenings:int, eventBound:int, query_handler) -> PropertyDictionary :
+def getAllProperties(happenings:int, eventBound:int) -> PropertyDictionary :
 	
 	# Names need to be a combination of the thing that has a property (ID) with the corresponding type description. 
 	# Thing and type description together define a certain property in a context.
@@ -29,27 +29,28 @@ def getAllProperties(happenings:int, eventBound:int, query_handler) -> PropertyD
 			BIND(STRAFTER(STR(?relation), "has") AS ?relationType)
 	} GROUP BY ?de ?capType ?dataType ?relationType
 	"""
+	query_handler = StateHandler().get_query_handler()
 	results = query_handler.query(query_string)
 	properties = PropertyDictionary()
 	for row in results:
-		caps = set(row.caps.split(","))
+		caps = set(row['caps'].split(","))
 		
-		if str(row.capType) == "http://www.w3id.org/hsu-aut/cask#RequiredCapability":
-			properties.add_required_property_occurence(str(row.de), str(row.dataType), str(row.relationType), caps)  
+		if str(row['capType']) == "http://www.w3id.org/hsu-aut/cask#RequiredCapability":
+			properties.add_required_property_occurence(str(row['de']), str(row['dataType']), str(row['relationType']), caps)  
 			continue
 
 		
-		# properties.add_provided_property(str(row.de), str(row.dataType), str(row.relationType), happening, event, caps)  
+		# properties.add_provided_property(str(row['de']), str(row['dataType']), str(row['relationType']), happening, event, caps)  
 		for happening in range(happenings):
-			# properties.addPropertyHappening(row.de, happening) 
+			# properties.addPropertyHappening(row['de'], happening) 
 			for event in range(eventBound):
-				properties.add_provided_property_occurence(str(row.de), str(row.dataType), str(row.relationType), happening, event, caps)  
-				# property_occurence = PropertyOccurrence(str(row.de), str(row.dataType), str(row.relationType), happening, event, caps)
+				properties.add_provided_property_occurence(str(row['de']), str(row['dataType']), str(row['relationType']), happening, event, caps)  
+				# property_occurence = PropertyOccurrence(str(row['de']), str(row['dataType']), str(row['relationType']), happening, event, caps)
 				# properties.addPropertyEvent(property_occurence) 
 	return properties
 
 
-def get_provided_capabilities(happenings:int, query_handler) -> CapabilityDictionary :
+def get_provided_capabilities(happenings:int) -> CapabilityDictionary :
 	query_string = """
 	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
@@ -63,17 +64,18 @@ def get_provided_capabilities(happenings:int, query_handler) -> CapabilityDictio
 		?de DINEN61360:has_Instance_Description ?id.
 	}
 	"""
+	query_handler = StateHandler().get_query_handler()
 	results = query_handler.query(query_string)
 	property_dictionary = StateHandler().get_property_dictionary()
 	capability_dictionary = CapabilityDictionary()
 
-	caps = set([str(row.cap) for row in results])
+	caps = set([str(row['cap']) for row in results])
 	for cap in caps:
 		# Input properties can be retrieved from query
-		inputs = [str(row.de) for row in results if (str(row.cap) == cap)]
+		inputs = [str(row['de']) for row in results if (str(row['cap']) == cap)]
 		input_properties = [property_dictionary.get_property(input) for input in inputs]
 		# Outputs need to have their effect attached and are more tricky
-		outputs = get_output_influences_of_capability(cap, query_handler)
+		outputs = get_output_influences_of_capability(cap)
 		for happening in range(happenings): 
 			capability_dictionary.add_capability_occurrence(cap, "http://www.w3id.org/hsu-aut/cask#ProvidedCapability", happening, input_properties, outputs)
 
@@ -81,7 +83,7 @@ def get_provided_capabilities(happenings:int, query_handler) -> CapabilityDictio
 
 
 # TODO: Can both functions be done with one query?
-def get_output_influences_of_capability(capability_iri: str, query_handler) -> List[CapabilityPropertyInfluence] :
+def get_output_influences_of_capability(capability_iri: str) -> List[CapabilityPropertyInfluence] :
 	'''Get all provided capabilities'''
 
 	query_string = """
@@ -126,31 +128,32 @@ def get_output_influences_of_capability(capability_iri: str, query_handler) -> L
 		}
 	} """
 	query_string = query_string.replace('{capability_iri}', capability_iri)
+	query_handler = StateHandler().get_query_handler()
 	results = query_handler.query(query_string)
 	property_dictionary = StateHandler().get_property_dictionary()
 	influences: List[CapabilityPropertyInfluence] = []
 	for row in results: 
 		# for happening in range(happenings): 
-		# capDict.add_CapabilityOccurrence(str(row.cap), "http://www.w3id.org/hsu-aut/cask#ProvidedCapability", happening, [], [])
-		property_iri = str(row.output_de)
+		# capDict.add_CapabilityOccurrence(str(row['cap']), "http://www.w3id.org/hsu-aut/cask#ProvidedCapability", happening, [], [])
+		property_iri = str(row['output_de'])
 		prop = property_dictionary.get_property(property_iri)
-		if(not row.equalConstraint and not row.outputValue and not row.inputValue):
+		if(not row.get('equalConstraint') and not row.get('outputValue') and not row.get('inputValue')):
 			continue
-		if(row.equalConstraint):
-			if(row.inputExpressionGoal):
+		if(row.get('equalConstraint')):
+			if(row.get('inputExpressionGoal')):
 				# Case of requirements or actual values. In this case, prop has a constant value and output is set to equal
 				effect = PropertyChange.NoChange
 			else:
 				# Case of no expression goal, i.e., free parameter. In this case, prop is changed to the free parameter
 				effect = PropertyChange.ChangeByExpression
 		else:
-			if (row.outputValue and row.outputValue.eq(row.inputValue)):
+			if (row.get('outputValue') and row.get('outputValue').eq(row.get('inputValue'))):
 				# Simple case: both input and output have the same static value
 				effect = PropertyChange.NoChange
-			elif (row.outputValue and not row.outputValue.eq(row.inputValue)):
-				if str(row.outputValue).lower() == "false":
+			elif (row.get('outputValue') and not row.get('outputValue').eq(row.get('inputValue'))):
+				if str(row.get('outputValue')).lower() == "false":
 					effect = PropertyChange.SetFalse
-				elif str(row.outputValue).lower() == "true":
+				elif str(row.get('outputValue')).lower() == "true":
 					effect = PropertyChange.SetTrue
 				else:
 					# Numeric change

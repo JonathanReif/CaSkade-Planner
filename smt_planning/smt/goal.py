@@ -4,7 +4,7 @@ from z3 import Implies, Not
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.dicts.PropertyDictionary import PropertyDictionary
 
-def get_goal(happenings:int, query_handler):
+def get_goal(happenings:int):
 
 	query_string = """
 		PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
@@ -22,15 +22,16 @@ def get_goal(happenings:int, query_handler):
 				DINEN61360:Value ?val. 
 		} """
 
+	query_handler = StateHandler().get_query_handler()
 	results = query_handler.query(query_string)
 	property_dictionary = StateHandler().get_property_dictionary()
 	goals = []
 	for row in results:
-		property = property_dictionary.get_required_property_occurrence(str(row.de)).z3_variable					
-		relation = str(row.log)															
-		value = str(row.val)                                                            
+		property = property_dictionary.get_required_property_occurrence(str(row['de'])).z3_variable					
+		relation = str(row['log'])															
+		value = str(row['val'])                                                            
 		
-		prop_type = property_dictionary.get_property_data_type(str(row.de)) 
+		prop_type = property_dictionary.get_property_data_type(str(row['de'])) 
 		if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
 
 			match relation:														    

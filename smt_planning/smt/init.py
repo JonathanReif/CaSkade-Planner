@@ -26,11 +26,11 @@ def get_init(query_handler):
 	property_dictionary = StateHandler().get_property_dictionary()
 	inits = []
 	for row in results:
-		property = property_dictionary.get_property_occurence(str(row.de), 0, 0).z3_variable					
-		relation = str(row.log)															
-		value = str(row.val)														    
+		property = property_dictionary.get_property_occurence(str(row['de']), 0, 0).z3_variable					
+		relation = str(row['log'])															
+		value = str(row['val'])														    
 		
-		prop_type = property_dictionary.get_property_data_type(str(row.de)) 
+		prop_type = property_dictionary.get_property_data_type(str(row['de'])) 
 		if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
 
 			match relation:

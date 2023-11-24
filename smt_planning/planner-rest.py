@@ -49,7 +49,6 @@ def generate_and_solve_plan():
 	
 	if mode == 'sparql-endpoint':
 		endpoint_url = request.args.get('endpoint-url')
-		print(endpoint_url)
 		planner.with_endpoint_query_handler(endpoint_url)
 
 	max_happenings = 10

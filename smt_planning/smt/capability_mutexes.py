@@ -19,7 +19,7 @@ def get_capability_mutexes(graph: Graph, capability_dictionary: CapabilityDictio
     constraints = []
 
     for row in result: 
-        caps = set(row.caps.split(", "))
+        caps = set(row['caps'].split(", "))
         capabilities: List[Capability] = []
         for cap in caps:
             capability = capability_dictionary.get_capability(cap)

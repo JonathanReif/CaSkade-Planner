@@ -73,9 +73,8 @@ def find_capability_pairs() -> List[CapabilityPair]:
 		}
 	} """
 
-
-	graph = StateHandler().get_graph()
-	result = graph.query(query_string)
+	query_handler = StateHandler().get_query_handler()
+	result = query_handler.query(query_string)
 	# Creates a list of pairs of related capabilites, i.e. a capability with a different data_element that is still implicitly connected and thus must be linked in SMT
 	# Requirement for a related capability:
 	# Property of Output must have same type description and either both properties dont have a product subtype or both have the same subtype

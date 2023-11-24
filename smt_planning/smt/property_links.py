@@ -8,6 +8,12 @@ from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.dicts.PropertyDictionary import Property
 
 
+# Define some variables to get values from SPARQL results
+td_variable = Variable("td")
+de_variable = Variable("de")
+cap_variable = Variable("cap")
+inout_subtype_variable = Variable("inOutSubType")
+
 class PropertyPair:
 	def __init__(self, property_a: Property, property_b: Property) -> None:
 		self.property_a = property_a
@@ -93,9 +99,9 @@ def get_inputs_of_required_cap(graph: Graph):
 		?input VDI3682:isCharacterizedBy ?id.
 	}
 	"""
-	
-	result = graph.query(query_string)
-	input_iris = [binding.get('de') for binding in result.bindings]
+	query_handler = StateHandler().get_query_handler()
+	result = query_handler.query(query_string)
+	input_iris = [binding.get(de_variable) for binding in result.bindings]
 	return input_iris
 
 
@@ -117,8 +123,9 @@ def get_outputs_of_required_cap(graph: Graph):
 	}
 	"""
 	
-	result = graph.query(query_string)
-	output_iris = [binding.get('de') for binding in result.bindings]
+	query_handler = StateHandler().get_query_handler()
+	result = query_handler.query(query_string)
+	output_iris = [binding.get(de_variable) for binding in result.bindings]
 	return output_iris
 
 
@@ -196,8 +203,8 @@ def find_property_pairs() -> List[PropertyPair]:
 		}
 	}
 	"""
-	graph = StateHandler().get_graph()
-	result = graph.query(query_string)
+	query_handler = StateHandler().get_query_handler()
+	result = query_handler.query(query_string)
 	# Creates a list of pairs of related properties, i.e. a properties with a different data_element that is still implicitly connected and thus must be linked in SMT
 	# Requirement for a related property:
 	# Must belong to different capability, must have same type description and either both properties dont have a product subtype or both have the same subtype
@@ -206,8 +213,8 @@ def find_property_pairs() -> List[PropertyPair]:
 	for binding in result.bindings:
 		related_bindings = list(filter(lambda x: is_related_property_binding(binding, x), result.bindings))
 		for related_binding in related_bindings:
-			property_a = property_dictionary.get_property(str(binding.get("de")))
-			property_b = property_dictionary.get_property(str(related_binding.get("de")))
+			property_a = property_dictionary.get_property(str(binding.get(de_variable)))
+			property_b = property_dictionary.get_property(str(related_binding.get(de_variable)))
 			pair = PropertyPair(property_a, property_b)
 			existing_pair = next(filter(lambda x: is_existing(pair, x), related_property_pairs), None)
 			self_pair = is_self_pair(pair) 
@@ -224,15 +231,15 @@ def is_related_property_binding(binding: Mapping[Variable, Identifier], other_bi
 
 def different_capability(binding: Mapping[Variable, Identifier], other_binding: Mapping[Variable, Identifier]) -> bool:
 	# Checks wheter two result bindings belong to different capabilities
-	return (str(binding.get("cap")) != str(other_binding.get("cap")))
+	return (str(binding.get(cap_variable)) != str(other_binding.get(cap_variable)))
 
 
 def same_type_description(binding: Mapping[Variable, Identifier], other_binding: Mapping[Variable, Identifier]) -> bool:
 	# Checks whether two result bindings refer to the same type description
-	return (str(binding.get("td")) == str(other_binding.get("td")))
+	return (str(binding.get(td_variable)) == str(other_binding.get(td_variable)))
 
 
 def subtype_matches(binding: Mapping[Variable, Identifier], other_binding: Mapping[Variable, Identifier]) -> bool:
 	# Checks whether the product subtype of two result bindings is identical
-	return (str(binding.get("inOutSubType")) == str(other_binding.get("inOutSubType")))
+	return (str(binding.get(inout_subtype_variable)) == str(other_binding.get(inout_subtype_variable)))
 

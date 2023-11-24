@@ -6,7 +6,7 @@ from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.smt.property_links import get_related_properties
 
 
-def getCapabilityEffects(happenings: int, event_bound: int, query_handler) -> List:
+def getCapabilityEffects(happenings: int, event_bound: int) -> List:
 	
 	# Effect 1. Fall Assurance mit statischem Value
 
@@ -28,25 +28,26 @@ def getCapabilityEffects(happenings: int, event_bound: int, query_handler) -> Li
 		OPTIONAL { ?id DINEN61360:Value ?val. }
 	} """
 
+	query_handler = StateHandler().get_query_handler()
 	results = query_handler.query(query_string)
 	property_dictionary = StateHandler().get_property_dictionary()
 	capability_dictionary = StateHandler().get_capability_dictionary()
 	effects = []
 	for happening in range(happenings):
 		for row in results:
-			current_capability = capability_dictionary.get_capability_occurrence(str(row.cap), happening).z3_variable
-			effect_property = property_dictionary.get_provided_property_occurrence(str(row.de), happening, 1).z3_variable
-			relation = str(row.log)																						
+			current_capability = capability_dictionary.get_capability_occurrence(str(row['cap']), happening).z3_variable
+			effect_property = property_dictionary.get_provided_property_occurrence(str(row['de']), happening, 1).z3_variable
+			relation = str(row['log'])																						
 			# Case 1: Constant effect 																					
-			if row.val: 																								
-				value = str(row.val)																							
-				prop_type = property_dictionary.get_property_data_type(str(row.de)) 												
+			if row['val']: 																								
+				value = str(row['val'])																							
+				prop_type = property_dictionary.get_property_data_type(str(row['de'])) 												
 				effect = generate_effect_constraint(current_capability, effect_property, prop_type, relation, value)	
 				effects.append(effect)
 			else: 
 				# TODO: Constraint effect currently in capability_constraints. Needs to be changed  
 				pass
-			related_properties = get_related_properties(str(row.de))
+			related_properties = get_related_properties(str(row['de']))
 			for related_property in related_properties:
 				# effect = generate_effect_constraint(current_capability, related_property, prop_type, relation, value)
 				property = property_dictionary.get_property_occurence(related_property.iri, happening, 1)

@@ -19,7 +19,6 @@ class StateHandler:
 			from smt_planning.smt.property_links import PropertyPairCache
 			cls.__property_pair_cache = CapabilityPairCache
 			cls.__capability_pair_cache = PropertyPairCache
-			# Put any initialization here.
 		return cls._instance
 
 	def set_graph(self, graph: Graph):
@@ -27,6 +26,12 @@ class StateHandler:
 	
 	def get_graph(self) -> Graph:
 		return self.__graph
+	
+	def set_query_handler(self, query_handler) -> None:
+		self.query_handler = query_handler
+
+	def get_query_handler(self):
+		return self.query_handler
 
 	def set_property_dictionary(self, property_dictionary: PropertyDictionary):
 		self.__property_dictionary = property_dictionary

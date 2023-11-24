@@ -1,4 +1,6 @@
-from rdflib import Graph
+from typing import TypedDict, Union
+from rdflib import Graph, URIRef, Literal, Variable
+from rdflib.query import Result, ResultRow
 import json
 import requests
 from smt_planning.smt.StateHandler import StateHandler
@@ -37,11 +39,55 @@ class SparqlEndpointQueryHandler:
 
 		# Check if the request was successful
 		if response.status_code == 200:
-			# Process the results
-			print("Query successful. Here are the results:")
-			print(response.text)
-			response_object = json.loads(response.text)
-			return response_object.get('results').get('bindings')
+			# Process the results and transform bindings to be compliant with rdflib Result
+			data = json.loads(response.text)
+			bindings = data['results']['bindings']
+			labels = [Variable(label) for label in data['head']['vars']]  # Creating Variable instances for each label
+			rows = []
+			for b in bindings:
+				row = {}
+				for label in labels:
+					label_str = str(label)
+					if label_str in b:
+						# Creating URIRef or Literal based on the type
+						value = URIRef(b[label_str]['value']) if b[label_str]['type'] == 'uri' else Literal(b[label_str]['value'])
+						row[label] = value
+					else:
+						# row[label] = None
+						continue
+				rows.append(row)
+
+			# Creating an rdflib Result object
+			result = Result('SELECT')
+			result.vars = labels  # The variables selected in the SPARQL query
+			result.bindings = rows  # The rows of results
+
+			return result
 		else:
 			print("Query failed. Status code:", response.status_code)
 			return
+
+
+class ResultElement(TypedDict):
+    value: str | int | bool
+    type: str
+
+class EndpointQueryResult:
+	def __init__(self, iri: str, resElement: ResultElement) -> None:
+		self.iri = iri
+		self.value = resElement["value"]
+		self.type = resElement["type"]
+		pass
+
+	def __eq__(self, other):
+		if isinstance(other, EndpointQueryResult):
+			return ((self.value == other.value))
+		else:
+			return False
+		
+	def __hash__(self):
+		return hash(self.iri)
+	
+	def __str__(self) -> str:
+		return str(self.value)
+

@@ -5,7 +5,7 @@ from z3 import Implies, BoolRef, Not
 
 from smt_planning.smt.StateHandler import StateHandler
 
-def getCapabilityPreconditions(happenings: int, eventBound: int, query_handler) -> List[BoolRef]:
+def getCapabilityPreconditions(happenings: int, eventBound: int) -> List[BoolRef]:
 
 	# Get all resource properties for capability precondition that has to be compared with input information property (Requirement). 
 	query_string = """
@@ -26,18 +26,19 @@ def getCapabilityPreconditions(happenings: int, eventBound: int, query_handler) 
 	} 
 	"""
 	
+	query_handler = StateHandler().get_query_handler()
 	results = query_handler.query(query_string)
 	property_dictionary = StateHandler().get_property_dictionary()
 	capability_dictionary = StateHandler().get_capability_dictionary()
 	preconditions = []
 	for happening in range(happenings):
 		for row in results:
-			currentCap = capability_dictionary.get_capability_occurrence(str(row.cap), happening).z3_variable
-			currentProp = property_dictionary.get_provided_property_occurrence(str(row.de), happening, 0).z3_variable						
-			relation = str(row.log)																			
-			value = str(row.val)																			
+			currentCap = capability_dictionary.get_capability_occurrence(str(row['cap']), happening).z3_variable
+			currentProp = property_dictionary.get_provided_property_occurrence(str(row['de']), happening, 0).z3_variable						
+			relation = str(row['log'])																			
+			value = str(row['val'])																			
 
-			prop_type = property_dictionary.get_property_data_type(str(row.de)) 
+			prop_type = property_dictionary.get_property_data_type(str(row['de'])) 
 			if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
 
 				match relation:

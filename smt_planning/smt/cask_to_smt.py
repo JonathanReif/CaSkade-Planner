@@ -40,7 +40,7 @@ class CaskadePlanner:
 
 		start_time = time.time()
 		state_handler = StateHandler()
-
+		state_handler.set_query_handler(self.query_handler)
 
 		happenings = 0
 		# Fixed upper bound for number of events in one happening. Currently no events, so we just have the start and end of a happening
@@ -57,11 +57,11 @@ class CaskadePlanner:
 
 			# ------------------------------Variable Declaration------------------------------------------ 	
 			# Get all properties connected to provided capabilities as inputs or outputs
-			property_dictionary = getAllProperties(happenings, event_bound, self.query_handler)
+			property_dictionary = getAllProperties(happenings, event_bound)
 			state_handler.set_property_dictionary(property_dictionary)
 
 			# Get provided capabilities and transform to boolean SMT variables
-			capability_dictionary = get_provided_capabilities(happenings, self.query_handler)
+			capability_dictionary = get_provided_capabilities(happenings)
 			state_handler.set_capability_dictionary(capability_dictionary)
 
 			# ------------------------Constraint Proposition (H1 + H2) --> bool properties------------------
@@ -79,13 +79,13 @@ class CaskadePlanner:
 
 			# ----------------- Capability Precondition ------------------------------------------------------
 			self.add_comment(solver, "Start of preconditions")
-			preconditions = getCapabilityPreconditions(happenings, event_bound, self.query_handler)
+			preconditions = getCapabilityPreconditions(happenings, event_bound)
 			for precondition in preconditions:
 				solver.add(precondition)
 
 			# --------------------------------------- Capability Effect ---------------------------------------
 			self.add_comment(solver, "Start of effects")
-			effects = getCapabilityEffects(happenings, event_bound, self.query_handler)
+			effects = getCapabilityEffects(happenings, event_bound)
 			for effect in effects:
 				solver.add(effect)
 
@@ -95,7 +95,7 @@ class CaskadePlanner:
 			self.add_comment(solver, "Start of capability constraints")
 			current_solver_string = solver.to_smt2()
 			solver = Solver()
-			constraints = getCapabilityConstraints(happenings, event_bound, self.query_handler)
+			constraints = getCapabilityConstraints(happenings, event_bound)
 			for constraint in constraints:
 				current_solver_string += f"\n{constraint}" 
 
@@ -112,7 +112,7 @@ class CaskadePlanner:
 
 			# ---------------------- Goal ------------------------------------------------- 
 			self.add_comment(solver, "Start of goal")
-			goals = get_goal(happenings, self.query_handler)
+			goals = get_goal(happenings)
 			for goal in goals:
 				solver.add(goal)
 

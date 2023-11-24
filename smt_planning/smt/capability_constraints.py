@@ -4,7 +4,7 @@ from rdflib import Graph
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.openmath.parse_openmath import from_open_math_in_graph
 
-def getCapabilityConstraints(happenings: int, event_bound: int, query_handler) -> List[str]:
+def getCapabilityConstraints(happenings: int, event_bound: int) -> List[str]:
 	# Get all capability constraint IRIs and check whether its a constraint on an input or output
 	query_string = """
 	PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -26,17 +26,17 @@ def getCapabilityConstraints(happenings: int, event_bound: int, query_handler) -
 		}
 	}
 	"""
-	
+	query_handler = StateHandler().get_query_handler()
 	results = query_handler.query(query_string)
 	input_constraints: List[ConstraintInfo] = []
 	output_constraints: List[ConstraintInfo] = []
 	for row in results:
 		# As soon as an outputArgument is present, the constraint is considered an output constraint
-		if row.outputArgument:																
-			output_constraints.append(ConstraintInfo(str(row.cap), str(row.constraint)))	
+		if row['outputArgument']:																
+			output_constraints.append(ConstraintInfo(str(row['cap']), str(row['constraint'])))	
 		# If a row only has an inputArgument, the constraint is considered an input constraint
-		if (row.inputArgument and not row.outputArgument):									 
-			input_constraints.append(ConstraintInfo(str(row.cap), str(row.constraint)))		
+		if (row['inputArgument'] and not row['outputArgument']):									 
+			input_constraints.append(ConstraintInfo(str(row['cap']), str(row['constraint'])))		
 
 	capability_dictionary = StateHandler().get_capability_dictionary()
 	constraint_assertions = []
