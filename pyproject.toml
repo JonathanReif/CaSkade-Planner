@@ -7,7 +7,8 @@ readme = "README.md"
 packages = [{include = "smt_planning"}]
 
 [tool.poetry.scripts]
-caskade-planner = "smt_planning.planner_cli:run"
+caskade-planner-cli = "smt_planning.planner_cli:run"
+caskade-planner-api = "smt_planning.planner_rest:run"
 
 [tool.poetry.dependencies]
 python = "^3.10"
