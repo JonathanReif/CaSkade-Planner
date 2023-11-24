@@ -36,7 +36,7 @@ class CaskadePlanner:
 		comment = Bool(f"## {comment_text} ##")
 		solver.add(comment)
 
-	def cask_to_smt(self, max_happenings: int = 5, problem_location: str = "problem.smt" , result_location:str = "result.json", model_location: str = "model.json"):
+	def cask_to_smt(self, max_happenings: int = 5, problem_location = None, model_location = None, plan_location = None):
 
 		start_time = time.time()
 		state_handler = StateHandler()
@@ -137,13 +137,7 @@ class CaskadePlanner:
 				solver.add(cross_relation)
 
 			end_time = time.time()
-			print(f"Time for generating SMT: {end_time - start_time}")
-
-			# smtlib code  
-			# print(solver.to_smt2())
-			with open(problem_location, 'w') as file:
-				file.write(solver.to_smt2())
-			
+			print(f"Time for generating SMT: {end_time - start_time}")	
 
 			# Check satisfiability and get the model
 			solver_result = solver.check()
@@ -154,20 +148,25 @@ class CaskadePlanner:
 				print(f"No solution with {happenings} happening(s) found.")
 			else:
 				model = solver.model()
-				result = PlanningResult(model, problem_location, result_location, model_location)
+				plan = PlanningResult(model)
 
-				# Write the model to a JSON file
-				with open(result_location, 'w') as json_file:
-					json.dump(result, json_file, default=lambda o: o.as_dict(), indent=4)
-				return result 
+				if problem_location:
+					# if problem_location is passed, store problem
+					with open(problem_location, 'w') as file:
+						file.write(solver.to_smt2())
+
+				if model_location:
+					# if model_location is passed, store model untransformed
+					model_dict = {}
+					for var in model:
+						model_dict[str(var)] = str(model[var])
+					with open(model_location, 'w') as file:
+						json.dump(model_dict, file, indent=4)
+
+				if plan_location:
+					# if plan_location is passed, store model after transformation to better JSON
+					with open(plan_location, 'w') as json_file:
+						json.dump(plan, json_file, default=lambda o: o.as_dict(), indent=4)
 
 
-if __name__ == '__main__': 
-	ontology_file = 'ex_two_caps.ttl'
-	max_happenings = 3
-	problem_location = "problem.smt"
-	result_location = 'plan.json'
-	model_location = 'model.json'
-	planner = CaskadePlanner()
-	planner.with_file_query_handler(ontology_file)
-	planner.cask_to_smt(max_happenings, problem_location, result_location, model_location)
+				return plan 
