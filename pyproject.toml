@@ -6,12 +6,17 @@ authors = ["Luis Miguel Vieira da Silva <miguel.vieira@hsu-hh.de>", "Aljosha Koe
 readme = "README.md"
 packages = [{include = "smt_planning"}]
 
+[tool.poetry.scripts]
+caskade-planner = "smt_planning.planner_cli:run"
+
 [tool.poetry.dependencies]
 python = "^3.10"
 rdflib = "^7.0.0"
 z3-solver = "^4.12.2.0"
 flask = "^3.0.0"
 flask-cors = "^4.0.0"
+requests = "^2.31.0"
+typer = "^0.9.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.2"
