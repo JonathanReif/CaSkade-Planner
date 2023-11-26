@@ -96,11 +96,13 @@ class Plan:
 		self.total_duration = sum(step_durations)
 	
 	def insert_capability_appearance(self, index: int, capability_appearance: CapabilityAppearance):
-		if index in self.plan_steps:
-			self.plan_steps[index].add_capability_appearance(capability_appearance)
+
+		found_step = next((step for step in self.plan_steps if step.step_number == index), None)
+		if found_step: 
+			found_step.add_capability_appearance(capability_appearance)
 		else:
 			plan_step = PlanStep([capability_appearance], index)
-			self.plan_steps.insert(index, plan_step)
+			self.plan_steps.append(plan_step)
 
 	def insert_step(self, index: int, capability_appearances: List[CapabilityAppearance]):
 		plan_step = PlanStep(capability_appearances, index)
@@ -113,7 +115,7 @@ class Plan:
 		capability_iris = property.capability_iris
 		
 		for capability_iri in capability_iris:
-			step = self.plan_steps[index]
+			step = next((step for step in self.plan_steps if step.step_number == index), None)
 			# Find the correct capability and add. Assumption: Every capability can only appear once per step - that should make sense
 			capability_appearances = [capability_appearance for capability_appearance in step.capability_appearances if capability_appearance.capability_iri == capability_iri]
 			if capability_appearances:
@@ -169,6 +171,8 @@ class PlanningResult:
 			for property_appearance in property_appearances:
 				plan.add_property_appearance(happening, property_appearance)
 
+
+		plan.plan_steps = sorted(plan.plan_steps, key=lambda x: x.step_number)
 		return plan
 	
 	def as_dict(self) -> Dict[str, object]:
