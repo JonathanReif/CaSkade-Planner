@@ -1,10 +1,9 @@
 import os
 import tempfile
 from flask import Flask
-from flask import request, flash, redirect, url_for
+from flask import request, flash, redirect
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
-import zlib
 
 from smt_planning.smt.cask_to_smt import CaskadePlanner
 
