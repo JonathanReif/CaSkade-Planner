@@ -42,9 +42,6 @@ def setup_planner_with_file(files):
 		planner.with_file_query_handler(filename)
 		return planner
 
-@app.route('/') # type: ignore
-def hello():
-    return "Welcome to CaSkade Planner!"
 
 # Wait for POST requests with a query param ?mode to /plan
 @app.post('/plan') # type: ignore
