@@ -1,7 +1,6 @@
 import os
 import tempfile
-from flask import Flask
-from flask import request, flash, redirect, url_for
+from flask import Flask, Response, request, flash, redirect, url_for
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
 import zlib
@@ -43,6 +42,10 @@ def setup_planner_with_file(files):
 		planner.with_file_query_handler(filename)
 		return planner
 
+
+@app.get('/ping')
+def ping():
+	return Response(status=204)
 
 # Wait for POST requests with a query param ?mode to /plan
 @app.post('/plan') # type: ignore
