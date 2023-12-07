@@ -173,7 +173,7 @@ class PlanningResult:
 	
 	def as_dict(self) -> Dict[str, object]:
 		dict = {
-			"time-created": str(self.time_created),
+			"time_created": str(self.time_created),
 			"plan": self.plan.as_dict()
 		}
 		return dict
