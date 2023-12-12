@@ -2,10 +2,8 @@ import json
 import time
 
 
-from z3 import Solver, sat, unsat, Bool
+from z3 import Solver, unsat, Bool
 from smt_planning.smt.StateHandler import StateHandler
-from smt_planning.dicts.PropertyDictionary import PropertyDictionary
-from smt_planning.dicts.CapabilityDictionary import CapabilityDictionary
 from smt_planning.smt.variable_declaration import getAllProperties, get_provided_capabilities
 from smt_planning.smt.capability_preconditions import getCapabilityPreconditions
 from smt_planning.smt.capability_effects import getCapabilityEffects
@@ -17,6 +15,7 @@ from smt_planning.smt.property_links import get_property_cross_relations
 from smt_planning.smt.init import get_init
 from smt_planning.smt.goal import get_goal
 from smt_planning.smt.real_variable_contin_change import get_real_variable_continuous_changes
+from smt_planning.smt.geofence import get_geofence_constraints
 from smt_planning.smt.planning_result import PlanningResult
 from smt_planning.smt.query_handlers import FileQueryHandler, SparqlEndpointQueryHandler
 
@@ -139,6 +138,12 @@ class CaskadePlanner:
 			property_cross_relations = get_property_cross_relations(happenings, event_bound)
 			for cross_relation in property_cross_relations:
 				solver.add(cross_relation)
+
+			# ----------------- Geofence constraints (new) -----------------
+			self.add_comment(solver, "Start of geofence constraints")
+			geofence_constraints = get_geofence_constraints(happenings, event_bound)
+			for geofence_constraint in geofence_constraints:
+				solver.add(geofence_constraint)
 
 			end_time = time.time()
 			print(f"Time for generating SMT: {end_time - start_time}")	
