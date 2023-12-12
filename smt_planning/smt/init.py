@@ -19,6 +19,13 @@ def get_init(query_handler):
 			?id DINEN61360:Expression_Goal "Actual_Value";
 				DINEN61360:Logic_Interpretation ?log;
 				DINEN61360:Value ?val. 
+			?de DINEN61360:has_Instance_Description ?id2. 
+			?cap a ?capType; 
+				^CSS:requiresCapability ?process.
+			values ?capType { CaSk:ProvidedCapability CaSk:RequiredCapability }.	
+			?process ?relation ?inout.
+			VALUES ?relation {VDI3682:hasInput VDI3682:hasOutput}.
+			?inout VDI3682:isCharacterizedBy ?id2.
 		} """
 
 	# Inits 

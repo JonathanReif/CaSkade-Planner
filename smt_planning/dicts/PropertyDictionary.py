@@ -2,7 +2,7 @@ from typing import Dict, Set, List, Tuple
 from z3 import *
 
 class PropertyOccurrence:
-	def __init__(self, iri: str, data_type: str, happening: int, event: int,):
+	def __init__(self, iri: str, data_type: str, happening: int, event: int):
 		self.iri = iri
 		self.happening = happening
 		self.event = event
