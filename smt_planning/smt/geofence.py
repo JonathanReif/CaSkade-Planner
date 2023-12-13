@@ -27,7 +27,7 @@ class Geofence:
         self.iri = iri
         self.points: Dict[str, Point] = {} 
 
-    def add_point(self, point_iri: str, latitude: float = None, longitude: float = None):
+    def add_point(self, point_iri: str, latitude: float = None, longitude: float = None):                           # type: ignore
         point = Point(point_iri)
         point = self.points.setdefault(point.iri, point)
         if latitude is not None:
@@ -66,7 +66,7 @@ class RobotGeofenceDictionary:
     def add_robot(self, robot_iri: str):
         self.robots[robot_iri] = Robot(robot_iri)
 
-    def add_geofence_point(self, robot_iri: str, point_iri: str, latitude: float = None, longitude: float = None):
+    def add_geofence_point(self, robot_iri: str, point_iri: str, latitude: float = None, longitude: float = None):  # type: ignore
         self.robots[robot_iri].geofence.add_point(point_iri, latitude, longitude)
 
 #     def getGeofenceByIri(self, iri: URIRef) -> BoolRef:
@@ -157,13 +157,13 @@ def get_geofence_constraints(happenings: int, event_bound: int) -> List:
                     
                     # Check if the ray crosses this edge
                     cross_condition = And(
-                        z3_variable_longitude > min(p1y, p2y),
-                        z3_variable_longitude <= max(p1y, p2y),
-                        z3_variable_latitude <= max(p1x, p2x),
+                        z3_variable_longitude > min(p1y, p2y),                                                          # type: ignore
+                        z3_variable_longitude <= max(p1y, p2y),                                                         # type: ignore
+                        z3_variable_latitude <= max(p1x, p2x),                                                          # type: ignore
                         p1y != p2y,
                         Or(
                             p1x == p2x,
-                            z3_variable_latitude <= (z3_variable_longitude - p1y) * (p2x - p1x) / (p2y - p1y) + p1x
+                            z3_variable_latitude <= (z3_variable_longitude - p1y) * (p2x - p1x) / (p2y - p1y) + p1x     # type: ignore
                         )
                     )
 
