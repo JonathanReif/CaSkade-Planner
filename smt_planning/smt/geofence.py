@@ -115,6 +115,12 @@ def get_geofence_constraints(happenings: int, event_bound: int) -> List:
     gf_dict = RobotGeofenceDictionary()
     
     robots = set([str(row['robot']) for row in results_geofence])
+
+    # Check if geofence information is available
+    if not robots: 
+        print("No geofence information found.")
+        return geofence_constraints
+
     for robot in robots:
         gf_dict.add_robot(robot)
         for row in results_geofence: 
