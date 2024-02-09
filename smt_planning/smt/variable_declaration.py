@@ -100,6 +100,8 @@ def get_output_influences_of_capability(capability_iri: str) -> List[CapabilityP
 		?cap a CaSk:ProvidedCapability;
 			^CSS:requiresCapability ?process.	
 		?process VDI3682:hasInput ?input.
+		?input a ?inputStateClass. 
+		?inputStateClass rdfs:subClassOf* VDI3682:State.
 		?input VDI3682:isCharacterizedBy ?input_id.
 		?input_de DINEN61360:has_Instance_Description ?input_id;
 			DINEN61360:has_Type_Description ?td.
@@ -113,6 +115,8 @@ def get_output_influences_of_capability(capability_iri: str) -> List[CapabilityP
 		}
 		
 		?process VDI3682:hasOutput ?output.
+		?output a ?outputStateClass. 
+		?outputStateClass rdfs:subClassOf* VDI3682:State.
 		?output VDI3682:isCharacterizedBy ?output_id.
 		?output_de DINEN61360:has_Instance_Description ?output_id;
 			DINEN61360:has_Type_Description ?td.
@@ -140,7 +144,10 @@ def get_output_influences_of_capability(capability_iri: str) -> List[CapabilityP
 		if(not row.get('equalConstraint') and not row.get('outputValue') and not row.get('inputValue')):
 			continue
 		if(row.get('equalConstraint')):
-			if(row.get('inputExpressionGoal')):
+			if(not row.get('inputStateClass').eq(row.get('outputStateClass'))):
+				# equalConstraint but with different product type / information in output it is a property change
+				effect = PropertyChange.ChangeByExpression
+			elif(row.get('inputExpressionGoal')):
 				# Case of requirements or actual values. In this case, prop has a constant value and output is set to equal
 				effect = PropertyChange.NoChange
 			else:
