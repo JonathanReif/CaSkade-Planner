@@ -1,5 +1,4 @@
-from rdflib import Graph
-from z3 import BoolRef, Implies, Not, Or
+from z3 import Implies, Not, Or
 from typing import List
 
 from smt_planning.smt.StateHandler import StateHandler
@@ -8,10 +7,10 @@ from smt_planning.smt.property_links import get_related_properties
 from smt_planning.smt.capability_links import get_related_capabilities
 
 def get_bool_constraints(happenings: int, event_bound: int) -> List:
-		
-	graph = StateHandler().get_graph()
-	property_dictionary = StateHandler().get_property_dictionary()
-	capability_dictionary = StateHandler().get_capability_dictionary()
+
+	stateHandler = StateHandler()	
+	property_dictionary = stateHandler.get_property_dictionary()
+	capability_dictionary = stateHandler.get_capability_dictionary()
 	
 	constraints = []
 	properties = property_dictionary.provided_properties.values()

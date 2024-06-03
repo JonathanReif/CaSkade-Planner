@@ -13,7 +13,11 @@ class PropertyAppearance:
 		self.event = event
 		# Value has to be cast manually using z3's functions
 		if type(value).__name__ == 'RatNumRef':
-			self.value = float(value.as_decimal(20))
+			decimal_value = value.as_decimal(20) # type: ignore
+			# Remove the question mark at the end of the decimal value, which indicates an approximation
+			if decimal_value[-1] == '?':
+				decimal_value = decimal_value[:-1]
+			self.value = float(decimal_value)
 		elif type(value).__name__ == 'BoolRef':
 			self.value = value.__bool__()
 		elif type(value).__name__ == 'IntNumRef':
@@ -117,7 +121,7 @@ class Plan:
 		for capability_iri in capability_iris:
 			step = next((step for step in self.plan_steps if step.step_number == index), None)
 			# Find the correct capability and add. Assumption: Every capability can only appear once per step - that should make sense
-			capability_appearances = [capability_appearance for capability_appearance in step.capability_appearances if capability_appearance.capability_iri == capability_iri]
+			capability_appearances = [capability_appearance for capability_appearance in step.capability_appearances if capability_appearance.capability_iri == capability_iri] # type: ignore
 			if capability_appearances:
 				capability_appearances[0].add_property_appearance(property_appearance)
 
@@ -161,8 +165,7 @@ class PlanningResult:
 				property = property_dictionary.get_property(property_occurrence.iri)
 				happening = property_occurrence.happening
 				event = property_occurrence.event
-				property_occurrence.iri
-				property_appearance = PropertyAppearance(property, event, variable_value)
+				property_appearance = PropertyAppearance(property, event, variable_value) # type: ignore
 				property_appearance_store.setdefault(happening, []).append(property_appearance)
 
 		for property_appearance_item in property_appearance_store.items():

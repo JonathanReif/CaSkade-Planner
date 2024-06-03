@@ -1,4 +1,3 @@
-from typing import List
 from rdflib import Graph
 
 from smt_planning.dicts.CapabilityDictionary import CapabilityDictionary

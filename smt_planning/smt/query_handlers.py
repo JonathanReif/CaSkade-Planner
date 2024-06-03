@@ -6,7 +6,7 @@ import requests
 from smt_planning.smt.StateHandler import StateHandler
 
 class FileQueryHandler:
-	def __init__(self, filename) -> None:
+	def __init__(self, filename: str) -> None:
 		# Create a Graph
 		state_handler = StateHandler()
 		graph = Graph()

@@ -1,5 +1,5 @@
-from typing import Dict, Set, List, Tuple
-from z3 import *
+from typing import Dict, Set, List
+from z3 import Real, Bool, Int, AstRef
 
 class PropertyOccurrence:
 	def __init__(self, iri: str, data_type: str, happening: int, event: int):

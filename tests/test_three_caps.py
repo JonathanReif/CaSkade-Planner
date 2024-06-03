@@ -55,10 +55,10 @@ class TestThreeCaps:
 
 		for property in expected_plan.plan.plan_steps[2].capability_appearances[0].outputs:
 			if property_longitude == property.property.iri:
-				assert property.value == 10.11102, "Longitude after transport should be 10.1102"
+				assert property.value == 10.11102, "Longitude after transport should be 10.11102"
 				property_longitude_transport_output = True
 			elif property_item_longitude == property.property.iri:
-				assert property.value == 10.11102, "Longitude of item after transport should be 10.1102"
+				assert property.value == 10.11102, "Longitude of item after transport should be 10.11102"
 				property_item_longitude_output = True
 			elif property_latitude == property.property.iri:
 				assert property.value == 53.5672, "Latitude after transport should be 53.5672"

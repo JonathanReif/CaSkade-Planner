@@ -17,13 +17,14 @@ from smt_planning.smt.property_links import get_property_cross_relations
 from smt_planning.smt.init import get_init
 from smt_planning.smt.goal import get_goal
 from smt_planning.smt.real_variable_contin_change import get_real_variable_continuous_changes
+from smt_planning.smt.capability_mutexes import get_capability_mutexes
 from smt_planning.smt.planning_result import PlanningResult
 from smt_planning.smt.query_handlers import FileQueryHandler, SparqlEndpointQueryHandler
 
 
 class CaskadePlanner:
 
-	def with_file_query_handler(self, filename):
+	def with_file_query_handler(self, filename: str):
 		self.query_handler = FileQueryHandler(filename)
 
 	def with_endpoint_query_handler(self, endpoint_url):
@@ -36,11 +37,7 @@ class CaskadePlanner:
 		comment = Bool(f"## {comment_text} ##")
 		solver.add(comment)
 
-	def cask_to_smt(self, max_happenings = 5, problem_location = None, model_location = None, plan_location = None):
-
-		# In case None gets passed as a max_happening, set back to default value of 5
-		if max_happenings == None:
-			max_happenings = 5
+	def cask_to_smt(self, max_happenings: int = 5, problem_location = None, model_location = None, plan_location = None):
 
 		start_time = time.time()
 		state_handler = StateHandler()
@@ -106,7 +103,10 @@ class CaskadePlanner:
 			solver.from_string(current_solver_string)
 
 			# ---------------- Constraints Capability mutexes (H14) -----------------------------------------
-
+			# self.add_comment(solver, "Start of capability mutexes")
+			# capability_mutexes = get_capability_mutexes(happenings)
+			# for capability_mutex in capability_mutexes:
+			# 	solver.add(capability_mutex)		
 
 			# ---------------- Init  --------------------------------------------------------
 			self.add_comment(solver, "Start of init")

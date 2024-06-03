@@ -1,4 +1,3 @@
-from rdflib import Graph
 from typing import List
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.dicts.CapabilityDictionary import CapabilityDictionary, CapabilityPropertyInfluence, PropertyChange
