@@ -48,6 +48,8 @@ class CaskadePlanner:
 		event_bound = 2
 		solver_result = unsat
 
+		# needs to be reset for new planning request, otherwise it will keep the old data annd not be able to solve or solve the problem incorrectly
+		QueryCache.reset()
 		while (happenings <= max_happenings and solver_result == unsat):
 			# SMT Solver
 			solver = Solver()

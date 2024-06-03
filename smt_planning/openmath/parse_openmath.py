@@ -155,3 +155,7 @@ class QueryCache:
 			QueryCache.query_result = query_handler.query(query_string)		
 
 		return QueryCache.query_result
+	
+	@staticmethod
+	def reset():
+		QueryCache.query_result = None
