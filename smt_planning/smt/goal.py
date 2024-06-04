@@ -1,10 +1,8 @@
-from rdflib import Graph
-from z3 import Implies, Not
+from z3 import Not
 
 from smt_planning.smt.StateHandler import StateHandler
-from smt_planning.dicts.PropertyDictionary import PropertyDictionary
 
-def get_goal(happenings:int):
+def get_goal():
 
 	query_string = """
 		PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
@@ -24,6 +22,9 @@ def get_goal(happenings:int):
 
 	query_handler = StateHandler().get_query_handler()
 	results = query_handler.query(query_string)
+	return results
+
+def goal_smt(results):
 	property_dictionary = StateHandler().get_property_dictionary()
 	goals = []
 	for row in results:
@@ -36,17 +37,17 @@ def get_goal(happenings:int):
 
 			match relation:														    
 				case "<":
-					goal = property < value
+					goal = property < value # type: ignore
 				case "<=":
-					goal = property <= value
+					goal = property <= value # type: ignore
 				case "=":
 					goal = property == value
 				case "!=":
 					goal = property != value
 				case ">=":
-					goal = property >= value
+					goal = property >= value # type: ignore
 				case ">":
-					goal = property > value
+					goal = property > value # type: ignore
 				case _:
 					raise RuntimeError("Incorrent logical relation")
 			goals.append(goal)

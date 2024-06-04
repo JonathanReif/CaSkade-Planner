@@ -1,9 +1,8 @@
 from z3 import Not
 
 from smt_planning.smt.StateHandler import StateHandler
-from smt_planning.dicts.PropertyDictionary import PropertyDictionary
 
-def get_init(query_handler):
+def get_init():
 	
 	'''
 	Get initial state properties by checking the values of all Actual_Value instances
@@ -28,8 +27,11 @@ def get_init(query_handler):
 			?inout VDI3682:isCharacterizedBy ?id2.
 		} """
 
-	# Inits 
+	query_handler = StateHandler().get_query_handler()
 	results = query_handler.query(query_string)
+	return results
+
+def init_smt(results):
 	property_dictionary = StateHandler().get_property_dictionary()
 	inits = []
 	for row in results:
@@ -42,17 +44,17 @@ def get_init(query_handler):
 
 			match relation:
 				case "<":
-					init = property < value
+					init = property < value # type: ignore
 				case "<=":
-					init = property <= value
+					init = property <= value # type: ignore
 				case "=":
-					init = property == value
+					init = property == value 
 				case "!=":
-					init = property != value
+					init = property != value 
 				case ">=":
-					init = property >= value
+					init = property >= value # type: ignore
 				case ">":
-					init = property > value
+					init = property > value # type: ignore
 				case _:
 					raise RuntimeError("Incorrent logical relation")
 			inits.append(init)

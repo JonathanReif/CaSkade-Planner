@@ -6,7 +6,7 @@ from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.smt.property_links import get_related_properties
 
 
-def getCapabilityEffects(happenings: int, event_bound: int) -> List:
+def get_capability_effects():
 	
 	# Effect 1. Fall Assurance mit statischem Value
 
@@ -30,6 +30,9 @@ def getCapabilityEffects(happenings: int, event_bound: int) -> List:
 
 	query_handler = StateHandler().get_query_handler()
 	results = query_handler.query(query_string)
+	return results
+
+def capability_effects_smt(happenings: int, event_bound: int, results) -> List[BoolRef]:
 	property_dictionary = StateHandler().get_property_dictionary()
 	capability_dictionary = StateHandler().get_capability_dictionary()
 	effects = []
@@ -56,22 +59,22 @@ def getCapabilityEffects(happenings: int, event_bound: int) -> List:
 				
 	return effects
 
-def generate_effect_constraint(capability: BoolRef, property: BoolRef | ArithRef, prop_type: str, relation: str, value: str) -> BoolRef :	
+def generate_effect_constraint(capability: BoolRef, property: BoolRef | ArithRef, prop_type: str, relation: str, value: str) -> BoolRef:	
 	
 	if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
 		match relation:
 			case "<":
-				effect = Implies(capability, property < value)									
+				effect = Implies(capability, property < value)									 # type: ignore
 			case "<=":
-				effect = Implies(capability, property <= value)									
+				effect = Implies(capability, property <= value)									# type: ignore
 			case "=":
 				effect = Implies(capability, property == value)									
 			case "!=":
 				effect = Implies(capability, property != value)									
 			case ">=":
-				effect = Implies(capability, property >= value)									
+				effect = Implies(capability, property >= value)									# type: ignore
 			case ">":
-				effect = Implies(capability, property > value)									
+				effect = Implies(capability, property > value)									# type: ignore
 			case _:
 				raise RuntimeError("Incorrect logical relation")
 		return effect
