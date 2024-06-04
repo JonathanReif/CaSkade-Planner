@@ -2,6 +2,7 @@ from rdflib import Graph
 
 from smt_planning.dicts.CapabilityDictionary import CapabilityDictionary
 from smt_planning.dicts.PropertyDictionary import PropertyDictionary
+from smt_planning.ontology_handling.query_handlers import QueryHandler
 
 # Singleton class
 class StateHandler:
@@ -20,16 +21,16 @@ class StateHandler:
 			cls.__capability_pair_cache = PropertyPairCache
 		return cls._instance
 
-	def set_graph(self, graph: Graph):
+	def set_graph(self, graph: Graph) -> None:
 		self.__graph = graph
 	
 	def get_graph(self) -> Graph:
 		return self.__graph
 	
-	def set_query_handler(self, query_handler) -> None:
+	def set_query_handler(self, query_handler: QueryHandler) -> None:
 		self.query_handler = query_handler
 
-	def get_query_handler(self):
+	def get_query_handler(self) -> QueryHandler:
 		return self.query_handler
 
 	def set_property_dictionary(self, property_dictionary: PropertyDictionary):
@@ -44,6 +45,6 @@ class StateHandler:
 	def get_capability_dictionary(self) -> CapabilityDictionary:
 		return self.__capability_dictionary
 	
-	def reset_caches(self):
+	def reset_caches(self) -> None:
 		self.__property_pair_cache.reset()
 		self.__capability_pair_cache.reset()
