@@ -1,6 +1,7 @@
 from typing import Dict, Set, List
 from z3 import Real, Bool, Int, AstRef
 
+# data_type is some instance of http://www.hsu-ifa.de/ontologies/DINEN61360#Simple_Data_Type
 class PropertyOccurrence:
 	def __init__(self, iri: str, data_type: str, happening: int, event: int):
 		self.iri = iri
@@ -18,7 +19,11 @@ class PropertyOccurrence:
 				# Base case if no type given: Create a real
 				self.z3_variable = Real(z3_variable_name)
 
-# TODO: Comment what this exactly is in the ontology(DE, ID, ..)?
+'''
+iri is the IRI of the data element
+data_type is some instance of http://www.hsu-ifa.de/ontologies/DINEN61360#Simple_Data_Type
+relation_type is the relation type of the property, i.e., "hasInput" or "hasOutput"
+'''
 class Property:
 	def __init__(self, iri: str, data_type: str, relation_type: str, capability_iris: Set[str]):
 		self.iri = iri
@@ -44,21 +49,32 @@ class Property:
 		except:
 			return None
 
+# InstanceDescription of a DataElement with DINEN61360:Expression_Goal "Requirement"
+class Precondition():
+	def __init__(self, iri: str, cap_iri: str, logical_interpretation: str, value: str):
+		self.iri = iri
+		self.cap_iri = cap_iri
+		self.logical_relation = logical_interpretation
+		self.value = value
 
 class PropertyDictionary:
 	def __init__(self):
 		self.provided_properties: Dict[str, Property] = {}
-		# self.provided_properties: List[PropertyOccurrence] = []
 		self.required_properties: Dict[str, Property] = {}
-		# self.reversed_provided_property_index: Dict[Tuple, List[ReversedPropertyEntry]] = dict()
+		self.preconditions: Dict[str, Precondition] = {}
 
-	def add_provided_property_occurence(self, iri: str, data_type: str, relation_type: str, happening: int, event: int, capability_iris: Set[str]):
+	def add_provided_property(self, iri: str, data_type: str, relation_type: str, capability_iris: Set[str], expression_goal: str = "", logical_interpretation: str = "", value: str = ""):
 		property = Property(iri, data_type, relation_type, capability_iris)
 		self.provided_properties.setdefault(iri, property)
-		property_occurence = PropertyOccurrence(iri, data_type, happening, event)
-		self.provided_properties[iri].add_occurrence(property_occurence)
 
-	def add_required_property_occurence(self, iri: str, data_type: str, relation_type: str, capability_iris: Set[str]):
+	def add_property_occurrences(self, happenings: int, event_bound: int) -> None:
+		for property in self.provided_properties.values():
+			for happening in range(happenings):
+				for event in range(event_bound):
+					property_occurrence = PropertyOccurrence(property.iri, property.data_type, happening, event)
+					property.add_occurrence(property_occurrence)
+
+	def add_required_property_occurence(self, iri: str, data_type: str, relation_type: str, capability_iris: Set[str]) -> None:
 		property = Property(iri, data_type, relation_type, capability_iris)
 		self.required_properties.setdefault(iri, property)
 		property_occurence = PropertyOccurrence(iri, data_type, 0, 0)
@@ -112,3 +128,11 @@ class PropertyDictionary:
 				return property_occurrence
 		
 		raise KeyError(f"There is not a single property occurrence for the z3_variable {z3_variable}")
+	
+	# TODO after combining query of precondition and property move this function to add provided property 
+	def add_precondition_property(self, iri: str, cap_iri: str, logical_interpretation: str, value: str):	
+		precondition = Precondition(iri, cap_iri, logical_interpretation, value)
+		self.preconditions.setdefault(iri, precondition)
+
+	def get_preconditions(self) -> Dict[str, Precondition]:
+		return self.preconditions

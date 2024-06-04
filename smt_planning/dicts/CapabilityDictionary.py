@@ -14,7 +14,7 @@ class PropertyChange(Enum):
 class CapabilityPropertyInfluence:
 	def __init__(self, property: Property, effect: PropertyChange):
 		self.property = property
-		self.effect= effect
+		self.effect = effect
 
 class CapabilityOccurrence:
 	def __init__(self, iri: str, happening: int):
@@ -23,6 +23,10 @@ class CapabilityOccurrence:
 		z3_variable_name = iri + "_" + str(happening)
 		self.z3_variable = Bool(z3_variable_name)
 
+'''
+capabiltiy_type: The type of the capability, e.g., CaSk:ProvidedCapability (TODO do we need type?)
+input_properties: The properties that are required for the capability to be executed
+'''
 class Capability:
 	def __init__(self, iri: str, capability_type: str, input_properties: List[Property], output_properties: List[CapabilityPropertyInfluence]):
 		self.iri = iri
@@ -70,11 +74,15 @@ class CapabilityDictionary:
 	def __init__(self):
 		self.capabilities: Dict[str, Capability] = {}
 
-	def add_capability_occurrence(self, iri: str, capability_type: str, happening: int, input_properties: List[Property], output_properties: List[CapabilityPropertyInfluence]):
+	def add_capability(self, iri: str, capability_type: str, input_properties: List[Property], output_properties: List[CapabilityPropertyInfluence]) -> None:
 		capability = Capability(iri, capability_type, input_properties, output_properties)
 		self.capabilities.setdefault(iri, capability)
-		capability_occurrence = CapabilityOccurrence(iri, happening)
-		self.capabilities[iri].add_occurrence(capability_occurrence)
+
+	def add_capability_occurrences(self, happenings: int) -> None:
+		for capability in self.capabilities.values():
+			for happening in range(happenings):
+				capability_occurrence = CapabilityOccurrence(capability.iri, happening)
+				capability.add_occurrence(capability_occurrence)
 
 	def get_capability(self, iri:str) -> Capability:
 		if (not iri in self.capabilities):
