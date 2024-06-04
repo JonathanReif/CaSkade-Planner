@@ -1,26 +1,25 @@
 import json 
 import time
 
-
-from z3 import Solver, sat, unsat, Bool
+from smt_planning.ontology_handling.query_handlers import FileQueryHandler, SparqlEndpointQueryHandler
+from z3 import Solver, unsat, Bool
 from smt_planning.smt.StateHandler import StateHandler
-from smt_planning.dicts.PropertyDictionary import PropertyDictionary
-from smt_planning.dicts.CapabilityDictionary import CapabilityDictionary
-from smt_planning.smt.variable_declaration import getAllProperties, get_provided_capabilities
-from smt_planning.smt.capability_preconditions import getCapabilityPreconditions
-from smt_planning.smt.capability_effects import getCapabilityEffects
-from smt_planning.smt.capability_constraints import getCapabilityConstraints
+from smt_planning.openmath.parse_openmath import QueryCache
+from smt_planning.ontology_handling.capability_and_property_query import get_all_properties, get_provided_capabilities
+from smt_planning.ontology_handling.precondition_query import get_capability_preconditions
+from smt_planning.smt.variable_declaration import create_property_dictionary_with_occurrences, create_capability_dictionary_with_occurrences
+from smt_planning.smt.capability_preconditions import capability_preconditions_smt
+from smt_planning.smt.capability_effects import get_capability_effects, capability_effects_smt
+from smt_planning.smt.capability_constraints import get_capability_constraints, capability_constraints_smt
 from smt_planning.smt.bool_variable_support import getPropositionSupports
 from smt_planning.smt.constraints_bools import get_bool_constraints
 from smt_planning.smt.constraints_real_variables import get_variable_constraints
 from smt_planning.smt.property_links import get_property_cross_relations
-from smt_planning.smt.init import get_init
-from smt_planning.smt.goal import get_goal
+from smt_planning.smt.init import get_init, init_smt
+from smt_planning.smt.goal import get_goal, goal_smt
 from smt_planning.smt.real_variable_contin_change import get_real_variable_continuous_changes
 from smt_planning.smt.capability_mutexes import get_capability_mutexes
 from smt_planning.smt.planning_result import PlanningResult
-from smt_planning.smt.query_handlers import FileQueryHandler, SparqlEndpointQueryHandler
-
 
 class CaskadePlanner:
 
@@ -50,6 +49,32 @@ class CaskadePlanner:
 
 		# needs to be reset for new planning request, otherwise it will keep the old data annd not be able to solve or solve the problem incorrectly
 		QueryCache.reset()
+		
+		# ------------------------------Variable Declaration------------------------------------------ 	
+		# Get all properties connected to provided capabilities as inputs or outputs
+		property_dictionary = get_all_properties()
+		state_handler.set_property_dictionary(property_dictionary)
+
+		# Get provided capabilities and transform to boolean SMT variables
+		capability_dictionary = get_provided_capabilities()
+		state_handler.set_capability_dictionary(capability_dictionary)
+
+		# ----------------- Capability Precondition ------------------------------------------------------
+		# Get preconditions
+		get_capability_preconditions()
+
+		# --------------------------------------- Capability Effect ---------------------------------------
+		effect_results = get_capability_effects()
+
+		# Capability Constraints
+		constraint_results = get_capability_constraints()
+
+		# ---------------- Init  --------------------------------------------------------
+		init_results = get_init()
+
+		# ---------------------- Goal ------------------------------------------------- 
+		goal_results = get_goal()
+
 		while (happenings <= max_happenings and solver_result == unsat):
 			# SMT Solver
 			solver = Solver()
@@ -60,12 +85,10 @@ class CaskadePlanner:
 
 			# ------------------------------Variable Declaration------------------------------------------ 	
 			# Get all properties connected to provided capabilities as inputs or outputs
-			property_dictionary = getAllProperties(happenings, event_bound)
-			state_handler.set_property_dictionary(property_dictionary)
+			create_property_dictionary_with_occurrences(happenings, event_bound)
 
 			# Get provided capabilities and transform to boolean SMT variables
-			capability_dictionary = get_provided_capabilities(happenings)
-			state_handler.set_capability_dictionary(capability_dictionary)
+			create_capability_dictionary_with_occurrences(happenings)
 
 			# ------------------------Constraint Proposition (H1 + H2) --> bool properties------------------
 			self.add_comment(solver, "Start of constraints proposition")
@@ -82,13 +105,13 @@ class CaskadePlanner:
 
 			# ----------------- Capability Precondition ------------------------------------------------------
 			self.add_comment(solver, "Start of preconditions")
-			preconditions = getCapabilityPreconditions(happenings, event_bound)
+			preconditions = capability_preconditions_smt(happenings, event_bound)
 			for precondition in preconditions:
 				solver.add(precondition)
 
 			# --------------------------------------- Capability Effect ---------------------------------------
 			self.add_comment(solver, "Start of effects")
-			effects = getCapabilityEffects(happenings, event_bound)
+			effects = capability_effects_smt(happenings, event_bound, effect_results)
 			for effect in effects:
 				solver.add(effect)
 
@@ -98,7 +121,7 @@ class CaskadePlanner:
 			self.add_comment(solver, "Start of capability constraints")
 			current_solver_string = solver.to_smt2()
 			solver = Solver()
-			constraints = getCapabilityConstraints(happenings, event_bound)
+			constraints = capability_constraints_smt(happenings, event_bound, constraint_results)
 			for constraint in constraints:
 				current_solver_string += f"\n{constraint}" 
 
@@ -112,13 +135,13 @@ class CaskadePlanner:
 
 			# ---------------- Init  --------------------------------------------------------
 			self.add_comment(solver, "Start of init")
-			inits = get_init(self.query_handler)
+			inits = init_smt(init_results)
 			for init in inits:
 				solver.add(init)												
 
 			# ---------------------- Goal ------------------------------------------------- 
 			self.add_comment(solver, "Start of goal")
-			goals = get_goal(happenings)
+			goals = goal_smt(goal_results)
 			for goal in goals:
 				solver.add(goal)
 
