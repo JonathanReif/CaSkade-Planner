@@ -161,11 +161,6 @@ class PropertyDictionary:
 	# 	precondition = Precondition(iri, cap_iri, logical_interpretation, value)
 	# 	self.preconditions.setdefault(iri, precondition)
 
-	# # TODO combine with precondition
-	# def add_effect_property(self, iri: str, cap_iri: str, logical_interpretation: str, value: str):    
-	# 	effect = Effect(iri, cap_iri, logical_interpretation, value)
-	# 	self.effects.setdefault(iri, effect)
-
 	def get_preconditions(self) -> Dict[str, Precondition]:
 		return self.preconditions
 	
