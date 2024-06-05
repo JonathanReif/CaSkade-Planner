@@ -6,10 +6,10 @@ from z3 import Solver, unsat, Bool
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.openmath.parse_openmath import QueryCache
 from smt_planning.ontology_handling.capability_and_property_query import get_all_properties, get_provided_capabilities
-from smt_planning.ontology_handling.precondition_query import get_capability_preconditions
+from smt_planning.ontology_handling.precondition_and_effect_query import get_capability_preconditions, get_capability_effects
 from smt_planning.smt.variable_declaration import create_property_dictionary_with_occurrences, create_capability_dictionary_with_occurrences
 from smt_planning.smt.capability_preconditions import capability_preconditions_smt
-from smt_planning.smt.capability_effects import get_capability_effects, capability_effects_smt
+from smt_planning.smt.capability_effects import capability_effects_smt
 from smt_planning.smt.capability_constraints import get_capability_constraints, capability_constraints_smt
 from smt_planning.smt.bool_variable_support import getPropositionSupports
 from smt_planning.smt.constraints_bools import get_bool_constraints
@@ -64,7 +64,7 @@ class CaskadePlanner:
 		get_capability_preconditions()
 
 		# --------------------------------------- Capability Effect ---------------------------------------
-		effect_results = get_capability_effects()
+		get_capability_effects()
 
 		# Capability Constraints
 		constraint_results = get_capability_constraints()
@@ -111,7 +111,7 @@ class CaskadePlanner:
 
 			# --------------------------------------- Capability Effect ---------------------------------------
 			self.add_comment(solver, "Start of effects")
-			effects = capability_effects_smt(happenings, event_bound, effect_results)
+			effects = capability_effects_smt(happenings, event_bound)
 			for effect in effects:
 				solver.add(effect)
 

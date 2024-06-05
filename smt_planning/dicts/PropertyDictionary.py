@@ -49,19 +49,30 @@ class Property:
 		except:
 			return None
 
-# InstanceDescription of a DataElement with DINEN61360:Expression_Goal "Requirement"
-class Precondition():
-	def __init__(self, iri: str, cap_iri: str, logical_interpretation: str, value: str):
+class InstanceDescription:
+	def __init__(self, iri: str, cap_iri: str, expr_goal: str, logical_interpretation: str, value: str):
 		self.iri = iri
 		self.cap_iri = cap_iri
-		self.logical_relation = logical_interpretation
+		self.expr_goal = expr_goal
+		self.logical_interpretation = logical_interpretation
 		self.value = value
+
+# InstanceDescription of a DataElement with DINEN61360:Expression_Goal "Requirement"
+class Precondition(InstanceDescription):
+	def __init__(self, iri: str, cap_iri: str, logical_interpretation: str, value: str) -> None:
+		super().__init__(iri, cap_iri, "Requirement", logical_interpretation, value)
+
+# InstanceDescription of a DataElement with DINEN61360:Expression_Goal "Assurance"
+class Effect(InstanceDescription):
+	def __init__(self, iri: str, cap_iri: str, logical_interpretation: str, value: str) -> None:
+		super().__init__(iri, cap_iri, "Assurance", logical_interpretation, value)
 
 class PropertyDictionary:
 	def __init__(self):
 		self.provided_properties: Dict[str, Property] = {}
 		self.required_properties: Dict[str, Property] = {}
 		self.preconditions: Dict[str, Precondition] = {}
+		self.effects: Dict[str, Effect] = {}
 
 	def add_provided_property(self, iri: str, data_type: str, relation_type: str, capability_iris: Set[str], expression_goal: str = "", logical_interpretation: str = "", value: str = ""):
 		property = Property(iri, data_type, relation_type, capability_iris)
@@ -129,10 +140,34 @@ class PropertyDictionary:
 		
 		raise KeyError(f"There is not a single property occurrence for the z3_variable {z3_variable}")
 	
-	# TODO after combining query of precondition and property move this function to add provided property 
-	def add_precondition_property(self, iri: str, cap_iri: str, logical_interpretation: str, value: str):	
-		precondition = Precondition(iri, cap_iri, logical_interpretation, value)
-		self.preconditions.setdefault(iri, precondition)
+	@staticmethod
+	def create_instance_description(iri: str, cap_iri: str, expr_goal: str, logical_interpretation: str, value: str):
+		if expr_goal == "Requirement":
+			return Precondition(iri, cap_iri, logical_interpretation, value)
+		elif expr_goal == "Assurance":
+			return Effect(iri, cap_iri, logical_interpretation, value)
+		else:
+			raise ValueError(f"InstanceDescription with Expression Goal {expr_goal} is not supported.")
+
+	def add_instance_description(self, iri: str, cap_iri: str, expr_goal: str, logical_interpretation: str, value: str):
+		instance_description = self.create_instance_description(iri, cap_iri, expr_goal, logical_interpretation, value)
+		if isinstance(instance_description, Precondition):
+			self.preconditions.setdefault(iri, instance_description)
+		elif isinstance(instance_description, Effect):
+			self.effects.setdefault(iri, instance_description)
+
+    # TODO after combining query of precondition and property move this function to add provided property 
+	# def add_precondition_property(self, iri: str, cap_iri: str, logical_interpretation: str, value: str):    
+	# 	precondition = Precondition(iri, cap_iri, logical_interpretation, value)
+	# 	self.preconditions.setdefault(iri, precondition)
+
+	# # TODO combine with precondition
+	# def add_effect_property(self, iri: str, cap_iri: str, logical_interpretation: str, value: str):    
+	# 	effect = Effect(iri, cap_iri, logical_interpretation, value)
+	# 	self.effects.setdefault(iri, effect)
 
 	def get_preconditions(self) -> Dict[str, Precondition]:
 		return self.preconditions
+	
+	def get_effects(self) -> Dict[str, Effect]:
+		return self.effects

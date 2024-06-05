@@ -9,31 +9,33 @@ def capability_preconditions_smt(happenings: int, event_bound: int) -> List[Bool
 	preconditions_smt = []
 	for happening in range(happenings):
 		for precondition in property_dictionary.get_preconditions().values():
+			property_iri = precondition.iri
 			currentCap = capability_dictionary.get_capability_occurrence(precondition.cap_iri, happening).z3_variable
-			currentProp = property_dictionary.get_provided_property_occurrence(precondition.iri, happening, 0).z3_variable																							
+			currentProp = property_dictionary.get_provided_property_occurrence(property_iri, happening, 0).z3_variable																							
 
-			prop_type = property_dictionary.get_property_data_type(precondition.iri) 
+			prop_type = property_dictionary.get_property_data_type(property_iri) 
+			value = precondition.value
 			if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
 
-				match precondition.logical_relation:
+				match precondition.logical_interpretation:
 					case "<":
-						precondition_smt = Implies(currentCap, currentProp < precondition.value) # type: ignore
+						precondition_smt = Implies(currentCap, currentProp < value) # type: ignore
 					case "<=":
-						precondition_smt = Implies(currentCap, currentProp <= precondition.value) # type: ignore
+						precondition_smt = Implies(currentCap, currentProp <= value) # type: ignore
 					case "=":
-						precondition_smt = Implies(currentCap, currentProp == precondition.value)
+						precondition_smt = Implies(currentCap, currentProp == value)
 					case "!=":
-						precondition_smt = Implies(currentCap, currentProp != precondition.value)
+						precondition_smt = Implies(currentCap, currentProp != value)
 					case ">=":
-						precondition_smt = Implies(currentCap, currentProp >= precondition.value) # type: ignore
+						precondition_smt = Implies(currentCap, currentProp >= value) # type: ignore
 					case ">":
-						precondition_smt = Implies(currentCap, currentProp > precondition.value) # type: ignore
+						precondition_smt = Implies(currentCap, currentProp > value) # type: ignore
 					case _:
 						raise RuntimeError("Incorrect logical relation")
 				
 				preconditions_smt.append(precondition_smt)
 			elif prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Boolean":
-				match precondition.value: 
+				match value: 
 					case 'true':
 						precondition_smt = Implies(currentCap, currentProp)
 					case 'false':
