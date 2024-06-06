@@ -54,6 +54,13 @@ class CapabilityType(Enum):
 	ProvidedCapability = 1
 	RequiredCapability = 2
 
+'''
+iri is the IRI of the data element
+cap_iri is the IRI of the capability
+expr_goal is the DINEN61360:Expression_Goal of the instance description
+logical_interpretation is the DINEN61360:Logical_Interpretation of the instance description
+value is the DINEN61360:Value of the instance description
+'''
 class InstanceDescription:
 	def __init__(self, iri: str, cap_iri: str, expr_goal: str, logical_interpretation: str, value: str):
 		self.iri = iri

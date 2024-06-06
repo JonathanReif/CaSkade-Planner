@@ -48,25 +48,24 @@ class CaskadePlanner:
 		event_bound = 2
 		solver_result = unsat
 
-		# needs to be reset for new planning request, otherwise it will keep the old data annd not be able to solve or solve the problem incorrectly
+		# needs to be reset for new planning request, otherwise it will keep the old data annd not be able to solve the problem at all or solve the problem incorrectly
 		QueryCache.reset()
-		
-		# ------------------------------Variable Declaration------------------------------------------ 	
+			
 		# Get all properties connected to provided capabilities as inputs or outputs
 		property_dictionary = get_all_properties()
 		state_handler.set_property_dictionary(property_dictionary)
 
-		# Get provided capabilities and transform to boolean SMT variables
+		# Get provided capabilities and their influence on output objects
 		capability_dictionary = get_provided_capabilities()
 		state_handler.set_capability_dictionary(capability_dictionary)
 
-		# ----------------- Capability Precondition and Effect ------------------------------------------------------
+		# Get all preconditions and effects of capabilities based on the instance descriptions
 		get_capability_preconditions_and_effects()
 
 		# Capability Constraints
 		constraint_results = get_capability_constraints()
 
-		# ---------------- Init and Goal  --------------------------------------------------------
+		# Get all inits and goals of planninb problem based on the instance descriptions
 		get_init_and_goal()
 
 		while (happenings <= max_happenings and solver_result == unsat):
@@ -95,7 +94,6 @@ class CaskadePlanner:
 			variable_constraints = get_variable_constraints(happenings, event_bound)
 			for variable_constraint in variable_constraints:
 				solver.add(variable_constraint)	
-
 
 			# ----------------- Capability Precondition ------------------------------------------------------
 			self.add_comment(solver, "Start of preconditions")
