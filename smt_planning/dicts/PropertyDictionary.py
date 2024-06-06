@@ -1,5 +1,6 @@
 from typing import Dict, Set, List
 from z3 import Real, Bool, Int, AstRef
+from enum import Enum
 
 # data_type is some instance of http://www.hsu-ifa.de/ontologies/DINEN61360#Simple_Data_Type
 class PropertyOccurrence:
@@ -48,6 +49,10 @@ class Property:
 			return occurrence
 		except:
 			return None
+		
+class CapabilityType(Enum):
+	ProvidedCapability = 1
+	RequiredCapability = 2
 
 class InstanceDescription:
 	def __init__(self, iri: str, cap_iri: str, expr_goal: str, logical_interpretation: str, value: str):
@@ -67,12 +72,22 @@ class Effect(InstanceDescription):
 	def __init__(self, iri: str, cap_iri: str, logical_interpretation: str, value: str) -> None:
 		super().__init__(iri, cap_iri, "Assurance", logical_interpretation, value)
 
+class Init(InstanceDescription):
+	def __init__(self, iri: str, cap_iri: str, logical_interpretation: str, value: str) -> None:
+		super().__init__(iri, cap_iri, "Actual_Value", logical_interpretation, value)
+
+class Goal(InstanceDescription):
+	def __init__(self, iri: str, cap_iri: str, logical_interpretation: str, value: str) -> None:
+		super().__init__(iri, cap_iri, "Requirement", logical_interpretation, value)
+
 class PropertyDictionary:
 	def __init__(self):
 		self.provided_properties: Dict[str, Property] = {}
 		self.required_properties: Dict[str, Property] = {}
 		self.preconditions: Dict[str, Precondition] = {}
 		self.effects: Dict[str, Effect] = {}
+		self.inits: Dict[str, Init] = {}
+		self.goals: Dict[str, Goal] = {}
 
 	def add_provided_property(self, iri: str, data_type: str, relation_type: str, capability_iris: Set[str], expression_goal: str = "", logical_interpretation: str = "", value: str = ""):
 		property = Property(iri, data_type, relation_type, capability_iris)
@@ -141,20 +156,28 @@ class PropertyDictionary:
 		raise KeyError(f"There is not a single property occurrence for the z3_variable {z3_variable}")
 	
 	@staticmethod
-	def create_instance_description(iri: str, cap_iri: str, expr_goal: str, logical_interpretation: str, value: str):
+	def create_instance_description(iri: str, cap_iri: str, cap_type: CapabilityType, expr_goal: str, logical_interpretation: str, value: str):
 		if expr_goal == "Requirement":
+			if cap_type == CapabilityType.RequiredCapability:
+				return Goal(iri, cap_iri, logical_interpretation, value)
 			return Precondition(iri, cap_iri, logical_interpretation, value)
 		elif expr_goal == "Assurance":
 			return Effect(iri, cap_iri, logical_interpretation, value)
+		elif expr_goal == "Actual_Value":
+			return Init(iri, cap_iri, logical_interpretation, value)
 		else:
 			raise ValueError(f"InstanceDescription with Expression Goal {expr_goal} is not supported.")
 
-	def add_instance_description(self, iri: str, cap_iri: str, expr_goal: str, logical_interpretation: str, value: str):
-		instance_description = self.create_instance_description(iri, cap_iri, expr_goal, logical_interpretation, value)
+	def add_instance_description(self, iri: str, cap_iri: str, cap_type: CapabilityType, expr_goal: str, logical_interpretation: str, value: str):
+		instance_description = self.create_instance_description(iri, cap_iri, cap_type, expr_goal, logical_interpretation, value)
 		if isinstance(instance_description, Precondition):
 			self.preconditions.setdefault(iri, instance_description)
 		elif isinstance(instance_description, Effect):
 			self.effects.setdefault(iri, instance_description)
+		elif isinstance(instance_description, Init):
+			self.inits.setdefault(iri, instance_description)
+		elif isinstance(instance_description, Goal):
+			self.goals.setdefault(iri, instance_description)
 
     # TODO after combining query of precondition and property move this function to add provided property 
 	# def add_precondition_property(self, iri: str, cap_iri: str, logical_interpretation: str, value: str):    
@@ -166,3 +189,9 @@ class PropertyDictionary:
 	
 	def get_effects(self) -> Dict[str, Effect]:
 		return self.effects
+	
+	def get_inits(self) -> Dict[str, Init]:
+		return self.inits
+	
+	def get_goals(self) -> Dict[str, Goal]:
+		return self.goals

@@ -59,12 +59,8 @@ class CaskadePlanner:
 		capability_dictionary = get_provided_capabilities()
 		state_handler.set_capability_dictionary(capability_dictionary)
 
-		# ----------------- Capability Precondition ------------------------------------------------------
-		# Get preconditions
+		# ----------------- Capability Precondition and Effect ------------------------------------------------------
 		get_capability_preconditions_and_effects()
-
-		# --------------------------------------- Capability Effect ---------------------------------------
-		# get_capability_effects()
 
 		# Capability Constraints
 		constraint_results = get_capability_constraints()
