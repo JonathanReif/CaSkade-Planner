@@ -7,6 +7,7 @@ from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.openmath.parse_openmath import QueryCache
 from smt_planning.ontology_handling.capability_and_property_query import get_all_properties, get_provided_capabilities
 from smt_planning.ontology_handling.precondition_and_effect_query import get_capability_preconditions_and_effects
+from smt_planning.ontology_handling.init_and_goal_query import get_init_and_goal
 from smt_planning.smt.variable_declaration import create_property_dictionary_with_occurrences, create_capability_dictionary_with_occurrences
 from smt_planning.smt.capability_preconditions import capability_preconditions_smt
 from smt_planning.smt.capability_effects import capability_effects_smt
@@ -15,8 +16,8 @@ from smt_planning.smt.bool_variable_support import getPropositionSupports
 from smt_planning.smt.constraints_bools import get_bool_constraints
 from smt_planning.smt.constraints_real_variables import get_variable_constraints
 from smt_planning.smt.property_links import get_property_cross_relations
-from smt_planning.smt.init import get_init, init_smt
-from smt_planning.smt.goal import get_goal, goal_smt
+from smt_planning.smt.init import init_smt
+from smt_planning.smt.goal import goal_smt
 from smt_planning.smt.real_variable_contin_change import get_real_variable_continuous_changes
 from smt_planning.smt.capability_mutexes import get_capability_mutexes
 from smt_planning.smt.planning_result import PlanningResult
@@ -65,11 +66,8 @@ class CaskadePlanner:
 		# Capability Constraints
 		constraint_results = get_capability_constraints()
 
-		# ---------------- Init  --------------------------------------------------------
-		init_results = get_init()
-
-		# ---------------------- Goal ------------------------------------------------- 
-		goal_results = get_goal()
+		# ---------------- Init and Goal  --------------------------------------------------------
+		get_init_and_goal()
 
 		while (happenings <= max_happenings and solver_result == unsat):
 			# SMT Solver
@@ -131,13 +129,13 @@ class CaskadePlanner:
 
 			# ---------------- Init  --------------------------------------------------------
 			self.add_comment(solver, "Start of init")
-			inits = init_smt(init_results)
+			inits = init_smt()
 			for init in inits:
 				solver.add(init)												
 
 			# ---------------------- Goal ------------------------------------------------- 
 			self.add_comment(solver, "Start of goal")
-			goals = goal_smt(goal_results)
+			goals = goal_smt()
 			for goal in goals:
 				solver.add(goal)
 
