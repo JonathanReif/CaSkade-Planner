@@ -1,7 +1,8 @@
 import os
 import tempfile
-from flask import Flask, Response, request, flash, redirect
+from flask import Flask, Response, request, jsonify
 from werkzeug.utils import secure_filename
+from werkzeug.datastructures import ImmutableMultiDict, FileStorage
 from flask_cors import CORS
 
 from smt_planning.smt.cask_to_smt import CaskadePlanner
@@ -16,22 +17,21 @@ app.secret_key = 'the random string'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
-def allowed_file(filename):
+def allowed_file(filename: str) -> bool:
 	return '.' in filename and \
 			filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-def setup_planner_with_file(files):
+def setup_planner_with_file(files: ImmutableMultiDict[str, FileStorage]) -> CaskadePlanner | tuple[Response, int]:
 	if 'ontology-file' not in files:
-		flash('No file part')
-		return redirect(request.url)
+		return jsonify({'error': 'No file part'}), 400
 	
 	file = files['ontology-file']
 	# If the user does not select a file, the browser submits an
 	# empty file without a filename.
-	if file.filename == '':
-		flash('No selected file')
-		return redirect(request.url)
+	if file.filename == '' or not file.filename:
+		return jsonify({'error': 'No selected file'}), 400
+	
 	if file and allowed_file(file.filename):
 		filename = secure_filename(file.filename)
 		filename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
@@ -40,6 +40,8 @@ def setup_planner_with_file(files):
 		planner = CaskadePlanner()
 		planner.with_file_query_handler(filename)
 		return planner
+	else: 
+		return jsonify({'error': 'File type not allowed'}), 400
 
 
 @app.get('/ping')
@@ -50,22 +52,28 @@ def ping():
 @app.post('/plan') # type: ignore
 def generate_and_solve_plan():
 	mode = request.args.get('mode')
-	planner: CaskadePlanner
 	
 	if mode == 'file':
-		try:
-			planner = setup_planner_with_file(request.files) # type: ignore
-		except:
-			print("Error during file upload")
+		planner = setup_planner_with_file(request.files) # type: ignore
+		# If the planner is a tuple, it contains an error response
+		if isinstance(planner, tuple):
+			return planner
 		
-	if mode == 'sparql-endpoint':
+	elif mode == 'sparql-endpoint':
 		endpoint_url = request.args.get('endpoint-url')
+		if not endpoint_url:
+			return jsonify({'error': 'No endpoint-url provided'}), 400
 		planner = CaskadePlanner()
 		planner.with_endpoint_query_handler(endpoint_url)
 
 	max_happenings = request.args.get('max-happenings',type=int)
-	result = planner.cask_to_smt(max_happenings)
 	
+	# In case None gets passed as a max_happening, set back to default value of 5
+	if max_happenings == None:
+		max_happenings = 5
+	result = planner.cask_to_smt(max_happenings)
+	if result == None:
+		return jsonify({'error': 'No plan found'}), 404
 	return result.as_dict()
 
 def run():

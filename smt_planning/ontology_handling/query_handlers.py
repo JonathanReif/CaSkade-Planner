@@ -1,13 +1,20 @@
-from typing import TypedDict, Union
+from typing import TypedDict
 from rdflib import Graph, URIRef, Literal, Variable
-from rdflib.query import Result, ResultRow
+from rdflib.query import Result
 import json
 import requests
-from smt_planning.smt.StateHandler import StateHandler
+from abc import ABC, abstractmethod
 
-class FileQueryHandler:
-	def __init__(self, filename) -> None:
+class QueryHandler(ABC):
+
+	@abstractmethod
+	def query(self, query_string: str) -> Result:
+		pass
+
+class FileQueryHandler(QueryHandler):
+	def __init__(self, filename: str) -> None:
 		# Create a Graph
+		from smt_planning.smt.StateHandler import StateHandler
 		state_handler = StateHandler()
 		graph = Graph()
 		state_handler.set_graph(graph)
@@ -15,14 +22,15 @@ class FileQueryHandler:
 		# Parse in an RDF file hosted beside this file
 		graph.parse(filename, format="turtle")
 	
-	def query(self, query_string: str):
+	def query(self, query_string: str) -> Result:
+		from smt_planning.smt.StateHandler import StateHandler
 		graph = StateHandler().get_graph()
 		results = graph.query(query_string)
 		return results
 	
 
 
-class SparqlEndpointQueryHandler:
+class SparqlEndpointQueryHandler(QueryHandler):
 	def __init__(self, endpoint_url) -> None:
 		self.endpoint_url = endpoint_url
 		# Define the headers
@@ -32,7 +40,7 @@ class SparqlEndpointQueryHandler:
 		}
 	
 
-	def query(self, query_string: str):
+	def query(self, query_string: str) -> Result:
 
 		# Send the request
 		response = requests.post(self.endpoint_url, data=query_string, headers=self.headers)
@@ -64,8 +72,8 @@ class SparqlEndpointQueryHandler:
 
 			return result
 		else:
-			print("Query failed. Status code:", response.status_code)
-			return
+			# print("Query failed. Status code:", response.status_code)
+			raise Exception("Query failed. Status code:", response.status_code)
 
 
 class ResultElement(TypedDict):
@@ -79,13 +87,13 @@ class EndpointQueryResult:
 		self.type = resElement["type"]
 		pass
 
-	def __eq__(self, other):
+	def __eq__(self, other) -> bool:
 		if isinstance(other, EndpointQueryResult):
 			return ((self.value == other.value))
 		else:
 			return False
 		
-	def __hash__(self):
+	def __hash__(self) -> int:
 		return hash(self.iri)
 	
 	def __str__(self) -> str:

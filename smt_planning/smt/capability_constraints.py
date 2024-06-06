@@ -4,7 +4,7 @@ from rdflib import Graph
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.openmath.parse_openmath import from_open_math_in_graph
 
-def getCapabilityConstraints(happenings: int, event_bound: int) -> List[str]:
+def get_capability_constraints():
 	# Get all capability constraint IRIs and check whether its a constraint on an input or output
 	query_string = """
 	PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -28,6 +28,10 @@ def getCapabilityConstraints(happenings: int, event_bound: int) -> List[str]:
 	"""
 	query_handler = StateHandler().get_query_handler()
 	results = query_handler.query(query_string)
+	return results
+
+def capability_constraints_smt(happenings: int, event_bound: int, results) -> List[str]:
+	query_handler = StateHandler().get_query_handler()
 	input_constraints: List[ConstraintInfo] = []
 	output_constraints: List[ConstraintInfo] = []
 	for row in results:
