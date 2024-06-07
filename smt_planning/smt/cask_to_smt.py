@@ -8,6 +8,7 @@ from smt_planning.openmath.parse_openmath import QueryCache
 from smt_planning.ontology_handling.capability_and_property_query import get_all_properties, get_provided_capabilities
 from smt_planning.ontology_handling.precondition_and_effect_query import get_capability_preconditions_and_effects
 from smt_planning.ontology_handling.init_and_goal_query import get_init_and_goal
+from smt_planning.ontology_handling.geofence_query import get_geofence_constraints
 from smt_planning.smt.variable_declaration import create_property_dictionary_with_occurrences, create_capability_dictionary_with_occurrences
 from smt_planning.smt.capability_preconditions import capability_preconditions_smt
 from smt_planning.smt.capability_effects import capability_effects_smt
@@ -19,8 +20,9 @@ from smt_planning.smt.property_links import get_property_cross_relations
 from smt_planning.smt.init import init_smt
 from smt_planning.smt.goal import goal_smt
 from smt_planning.smt.real_variable_contin_change import get_real_variable_continuous_changes
+from smt_planning.smt.robots_same_position import robot_positions_smt
 from smt_planning.smt.capability_mutexes import get_capability_mutexes
-from smt_planning.smt.geofence import get_geofence_constraints
+from smt_planning.smt.geofence import geofence_smt
 from smt_planning.smt.planning_result import PlanningResult
 
 class CaskadePlanner:
@@ -68,6 +70,10 @@ class CaskadePlanner:
 
 		# Get all inits and goals of planninb problem based on the instance descriptions
 		get_init_and_goal()
+
+		# Get geofence constraints
+		geofence_dictionary = get_geofence_constraints()
+		state_handler.set_geofence_dictionary(geofence_dictionary)
 
 		while (happenings <= max_happenings and solver_result == unsat):
 			# SMT Solver
@@ -160,9 +166,15 @@ class CaskadePlanner:
 
 			# ----------------- Geofence constraints (new) -----------------
 			self.add_comment(solver, "Start of geofence constraints")
-			geofence_constraints = get_geofence_constraints(happenings, event_bound)
+			geofence_constraints = geofence_smt(happenings, event_bound)
 			for geofence_constraint in geofence_constraints:
 				solver.add(geofence_constraint)
+
+			# # ----------------- Robots are not allowed to be at same position (new) -----------------
+			# self.add_comment(solver, "Start of robots not at same position constraints")
+			# robots_not_same_position_constraints = get_robot_positions(happenings, event_bound)
+			# for robots_not_same_position_constraint in robots_not_same_position_constraints:
+			# 	solver.add(robots_not_same_position_constraint)
 
 			end_time = time.time()
 			print(f"Time for generating SMT: {end_time - start_time}")	
