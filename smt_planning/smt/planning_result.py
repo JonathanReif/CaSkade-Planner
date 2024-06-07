@@ -169,8 +169,8 @@ class PlanningResult:
 					property_occurrence.iri
 					property_appearance = PropertyAppearance(property, event, variable_value)
 					property_appearance_store.setdefault(happening, []).append(property_appearance)
-			except:
-				continue
+			except KeyError:
+				print(f"Could not find a property or capability for variable {variable} in the model.")
 
 		for property_appearance_item in property_appearance_store.items():
 			happening = property_appearance_item[0]

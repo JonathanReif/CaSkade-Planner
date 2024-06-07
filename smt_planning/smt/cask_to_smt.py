@@ -170,9 +170,9 @@ class CaskadePlanner:
 			for geofence_constraint in geofence_constraints:
 				solver.add(geofence_constraint)
 
-			# # ----------------- Robots are not allowed to be at same position (new) -----------------
+			# ----------------- Robots are not allowed to be at same position (new) -----------------
 			# self.add_comment(solver, "Start of robots not at same position constraints")
-			# robots_not_same_position_constraints = get_robot_positions(happenings, event_bound)
+			# robots_not_same_position_constraints = robot_positions_smt(happenings, event_bound)
 			# for robots_not_same_position_constraint in robots_not_same_position_constraints:
 			# 	solver.add(robots_not_same_position_constraint)
 
