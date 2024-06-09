@@ -1,6 +1,6 @@
 from typing import List
 
-from smt_planning.dicts.PropertyDictionary import PropertyDictionary
+from smt_planning.dicts.PropertyDictionary import PropertyDictionary, FreeVariable
 from smt_planning.smt.StateHandler import StateHandler
 
 
@@ -13,6 +13,17 @@ def get_real_variable_continuous_changes(happenings: int, event_bound: int) -> L
 	for happening in range(happenings)[1:]:
 		for property in properties:
 			if property.data_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
+				free_variable = True
+				for instance in property.instances.values():
+					if isinstance(instance, FreeVariable):
+						continue
+					else:
+						free_variable = False
+						break
+				else: 
+					free_variable = False
+				if free_variable:
+					continue
 				property_current_happening_start = property.occurrences[happening][0].z3_variable
 				property_last_happening_end = property.occurrences[happening-1][event_bound-1].z3_variable
 				

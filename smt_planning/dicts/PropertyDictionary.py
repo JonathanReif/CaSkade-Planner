@@ -20,39 +20,15 @@ class PropertyOccurrence:
 				# Base case if no type given: Create a real
 				self.z3_variable = Real(z3_variable_name)
 
-'''
-iri is the IRI of the data element
-data_type is some instance of http://www.hsu-ifa.de/ontologies/DINEN61360#Simple_Data_Type
-relation_type is the relation type of the property, i.e., "hasInput" or "hasOutput"
-'''
-class Property:
-	def __init__(self, iri: str, data_type: str, relation_type: str, capability_iris: Set[str]):
-		self.iri = iri
-		self.data_type = data_type
-		self.relation_type = relation_type
-		self.capability_iris = capability_iris
-		self.occurrences: Dict[int, Dict[int, PropertyOccurrence]] = {}
-
-	def add_occurrence(self, occurrence: PropertyOccurrence):
-		happening = occurrence.happening
-		event = occurrence.event
-		self.occurrences.setdefault(happening, {}).setdefault(event, occurrence)
-
-	def get_occurrence_by_z3_variable(self, z3_variable_name: str) -> PropertyOccurrence | None:
-		# Filters occurrences for the given z3_variable. There should only be one result
-		happening_occurrences = [occ for occ in self.occurrences.values()]
-		all_occurrences_2d = [list(occ.values()) for occ in happening_occurrences]
-		all_occurrences: List[PropertyOccurrence] = []
-		[all_occurrences.extend(occ) for occ in all_occurrences_2d]
-		try:
-			occurrence = [occurrence for occurrence in all_occurrences if str(occurrence.z3_variable) == z3_variable_name][0]
-			return occurrence
-		except:
-			return None
-		
 class CapabilityType(Enum):
 	ProvidedCapability = 1
 	RequiredCapability = 2
+
+class ExpressionGoal(Enum):
+	Free_Variable = 0
+	Requirement = 1
+	Assurance = 2
+	Actual_Value = 3
 
 '''
 iri is the IRI of the data element
@@ -86,6 +62,44 @@ class Init(InstanceDescription):
 class Goal(InstanceDescription):
 	def __init__(self, iri: str, cap_iri: str, logical_interpretation: str, value: str) -> None:
 		super().__init__(iri, cap_iri, "Requirement", logical_interpretation, value)
+
+class FreeVariable(InstanceDescription):
+	def __init__(self, iri: str, cap_iri: str, logical_interpretation: str) -> None:
+		super().__init__(iri, cap_iri, "Free_Variable", logical_interpretation, "")
+
+'''
+iri is the IRI of the data element
+data_type is some instance of http://www.hsu-ifa.de/ontologies/DINEN61360#Simple_Data_Type
+relation_type is the relation type of the property, i.e., "hasInput" or "hasOutput"
+'''
+class Property:
+	def __init__(self, iri: str, data_type: str, relation_type: str, capability_iris: Set[str]):
+		self.iri = iri
+		self.data_type = data_type
+		self.relation_type = relation_type
+		self.capability_iris = capability_iris
+		self.occurrences: Dict[int, Dict[int, PropertyOccurrence]] = {}
+		self.instances: Dict[str, InstanceDescription] = {}
+
+	def add_occurrence(self, occurrence: PropertyOccurrence):
+		happening = occurrence.happening
+		event = occurrence.event
+		self.occurrences.setdefault(happening, {}).setdefault(event, occurrence)
+
+	def get_occurrence_by_z3_variable(self, z3_variable_name: str) -> PropertyOccurrence | None:
+		# Filters occurrences for the given z3_variable. There should only be one result
+		happening_occurrences = [occ for occ in self.occurrences.values()]
+		all_occurrences_2d = [list(occ.values()) for occ in happening_occurrences]
+		all_occurrences: List[PropertyOccurrence] = []
+		[all_occurrences.extend(occ) for occ in all_occurrences_2d]
+		try:
+			occurrence = [occurrence for occurrence in all_occurrences if str(occurrence.z3_variable) == z3_variable_name][0]
+			return occurrence
+		except:
+			return None
+		
+	def add_instance(self, instance: InstanceDescription):
+		self.instances.setdefault(instance.iri, instance)
 
 class PropertyDictionary:
 	def __init__(self):
@@ -164,19 +178,23 @@ class PropertyDictionary:
 	
 	@staticmethod
 	def create_instance_description(iri: str, cap_iri: str, cap_type: CapabilityType, expr_goal: str, logical_interpretation: str, value: str):
-		if expr_goal == "Requirement":
+		if expr_goal == "None":
+			return FreeVariable(iri, cap_iri, logical_interpretation)
+		elif expr_goal == "Requirement" and value != "None":
 			if cap_type == CapabilityType.RequiredCapability:
 				return Goal(iri, cap_iri, logical_interpretation, value)
 			return Precondition(iri, cap_iri, logical_interpretation, value)
-		elif expr_goal == "Assurance":
+		elif expr_goal == "Assurance" and value != "None":
 			return Effect(iri, cap_iri, logical_interpretation, value)
-		elif expr_goal == "Actual_Value":
+		elif expr_goal == "Actual_Value" and value != "None":
 			return Init(iri, cap_iri, logical_interpretation, value)
 		else:
-			raise ValueError(f"InstanceDescription with Expression Goal {expr_goal} is not supported.")
+			print(f"InstanceDescription with Expression Goal {expr_goal}, logic interpretation {logical_interpretation} and value {value} are capability constraints.")
 
 	def add_instance_description(self, iri: str, cap_iri: str, cap_type: CapabilityType, expr_goal: str, logical_interpretation: str, value: str):
 		instance_description = self.create_instance_description(iri, cap_iri, cap_type, expr_goal, logical_interpretation, value)
+		if instance_description is None:
+			return
 		if isinstance(instance_description, Precondition):
 			self.preconditions.setdefault(iri, instance_description)
 		elif isinstance(instance_description, Effect):
@@ -185,6 +203,7 @@ class PropertyDictionary:
 			self.inits.setdefault(iri, instance_description)
 		elif isinstance(instance_description, Goal):
 			self.goals.setdefault(iri, instance_description)
+		self.get_property(iri).add_instance(instance_description)
 
     # TODO after combining query of precondition and property move this function to add provided property 
 	# def add_precondition_property(self, iri: str, cap_iri: str, logical_interpretation: str, value: str):    
