@@ -184,7 +184,7 @@ class PropertyDictionary:
 			if cap_type == CapabilityType.RequiredCapability:
 				return Goal(iri, cap_iri, logical_interpretation, value)
 			return Precondition(iri, cap_iri, logical_interpretation, value)
-		elif expr_goal == "Assurance" and value != "None":
+		elif expr_goal == "Assurance":
 			return Effect(iri, cap_iri, logical_interpretation, value)
 		elif expr_goal == "Actual_Value" and value != "None":
 			return Init(iri, cap_iri, logical_interpretation, value)
