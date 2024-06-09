@@ -147,7 +147,7 @@ def get_related_properties(property_iri:str) -> List[Property]:
 			related_property = property_dictionary.get_provided_property(related_property.iri)
 			result_related_properties.append(related_property)
 		except KeyError: 
-			print(f"There is no provided property with key {related_property}.")
+			print(f"There is no provided property with key {related_property.iri}.")
 
 	return result_related_properties
 
