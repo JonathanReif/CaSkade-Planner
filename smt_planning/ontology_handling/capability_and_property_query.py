@@ -1,7 +1,7 @@
 from typing import List
 
 from smt_planning.smt.StateHandler import StateHandler
-from smt_planning.dicts.PropertyDictionary import PropertyDictionary
+from smt_planning.dicts.PropertyDictionary import PropertyDictionary, CapabilityType
 from smt_planning.dicts.CapabilityDictionary import CapabilityDictionary, CapabilityPropertyInfluence, PropertyChange
 
 def get_all_properties() -> PropertyDictionary:
@@ -15,18 +15,28 @@ def get_all_properties() -> PropertyDictionary:
 	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
 	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
 	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-	SELECT ?de (GROUP_CONCAT(?cap; SEPARATOR=",") AS ?caps) ?capType ?dataType ?relationType WHERE { 
-			?cap a ?capType;
-				^CSS:requiresCapability ?process.
-			values ?capType { CaSk:ProvidedCapability CaSk:RequiredCapability }. 	
-			?process ?relation ?inout.
-			VALUES ?relation {VDI3682:hasInput VDI3682:hasOutput}.
-			?inout VDI3682:isCharacterizedBy ?id.
-			?de DINEN61360:has_Instance_Description ?id.
-			?id a ?dataType.
-			?dataType rdfs:subClassOf DINEN61360:Simple_Data_Type.
-			BIND(STRAFTER(STR(?relation), "has") AS ?relationType)
-	} GROUP BY ?de ?capType ?dataType ?relationType
+	SELECT ?de (GROUP_CONCAT(?cap; SEPARATOR=",") AS ?caps) ?capType ?dataType ?relationType ?expr_goal ?log ?val WHERE { 
+		?cap a ?capType;
+			^CSS:requiresCapability ?process.
+		values ?capType { CaSk:ProvidedCapability CaSk:RequiredCapability }. 	
+		?process ?relation ?inout.
+		VALUES ?relation {VDI3682:hasInput VDI3682:hasOutput}.
+		?inout VDI3682:isCharacterizedBy ?id.
+		?de DINEN61360:has_Instance_Description ?id.
+		?id a ?dataType.
+		?dataType rdfs:subClassOf DINEN61360:Simple_Data_Type.
+		BIND(STRAFTER(STR(?relation), "has") AS ?relationType)
+		OPTIONAL {
+			?id DINEN61360:Expression_Goal ?expr_goal. 
+		}
+		OPTIONAL {
+			?id DINEN61360:Logic_Interpretation ?log .
+		}
+		OPTIONAL {
+			?id DINEN61360:Value ?val.
+		}  
+	
+	} GROUP BY ?de ?capType ?dataType ?relationType ?expr_goal ?log ?val
 	"""
 	query_handler = StateHandler().get_query_handler()
 	results = query_handler.query(query_string)
@@ -39,9 +49,11 @@ def get_all_properties() -> PropertyDictionary:
 		if str(row['capType']) == "http://www.w3id.org/hsu-aut/cask#RequiredCapability":
 			# directly with occurrence because properties of required capabilities only have one occurrence
 			properties.add_required_property_occurence(str(row['de']), str(row['dataType']), str(row['relationType']), caps)  
+			properties.add_instance_description(str(row['de']), str(row['caps']), CapabilityType.RequiredCapability, str(row['expr_goal']), str(row['log']), str(row['val']))
 			continue
 
 		properties.add_provided_property(str(row['de']), str(row['dataType']), str(row['relationType']), caps)  
+		properties.add_instance_description(str(row['de']), str(row['caps']), CapabilityType.ProvidedCapability, str(row['expr_goal']), str(row['log']), str(row['val'])) 
 	return properties
 
 def get_provided_capabilities() -> CapabilityDictionary:
