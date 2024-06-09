@@ -171,10 +171,10 @@ class CaskadePlanner:
 				solver.add(geofence_constraint)
 
 			# ----------------- Robots are not allowed to be at same position (new) -----------------
-			# self.add_comment(solver, "Start of robots not at same position constraints")
-			# robots_not_same_position_constraints = robot_positions_smt(happenings, event_bound)
-			# for robots_not_same_position_constraint in robots_not_same_position_constraints:
-			# 	solver.add(robots_not_same_position_constraint)
+			self.add_comment(solver, "Start of robots not at same position constraints")
+			robots_not_same_position_constraints = robot_positions_smt(happenings, event_bound)
+			for robots_not_same_position_constraint in robots_not_same_position_constraints:
+				solver.add(robots_not_same_position_constraint)
 
 			end_time = time.time()
 			print(f"Time for generating SMT: {end_time - start_time}")	
