@@ -7,7 +7,7 @@ from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.openmath.parse_openmath import QueryCache
 from smt_planning.ontology_handling.capability_and_property_query import get_all_properties, get_provided_capabilities
 from smt_planning.ontology_handling.precondition_and_effect_query import get_capability_preconditions_and_effects
-from smt_planning.ontology_handling.init_and_goal_query import get_init_and_goal
+from smt_planning.ontology_handling.init_and_goal_query import get_init_and_goal, get_init
 from smt_planning.smt.variable_declaration import create_property_dictionary_with_occurrences, create_capability_dictionary_with_occurrences
 from smt_planning.smt.capability_preconditions import capability_preconditions_smt
 from smt_planning.smt.capability_effects import capability_effects_smt
@@ -60,13 +60,13 @@ class CaskadePlanner:
 		state_handler.set_capability_dictionary(capability_dictionary)
 
 		# Get all preconditions and effects of capabilities based on the instance descriptions
-		get_capability_preconditions_and_effects()
+		#get_capability_preconditions_and_effects()
 
 		# Capability Constraints
 		constraint_results = get_capability_constraints()
 
 		# Get all inits and goals of planninb problem based on the instance descriptions
-		get_init_and_goal()
+		get_init()
 
 		while (happenings <= max_happenings and solver_result == unsat):
 			# SMT Solver
