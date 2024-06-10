@@ -6,12 +6,12 @@ from z3 import Solver, unsat, Bool
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.openmath.parse_openmath import QueryCache
 from smt_planning.ontology_handling.capability_and_property_query import get_all_properties, get_provided_capabilities
-from smt_planning.ontology_handling.precondition_and_effect_query import get_capability_preconditions_and_effects
-from smt_planning.ontology_handling.init_and_goal_query import get_init_and_goal, get_init
+from smt_planning.ontology_handling.init_query import get_init
+from smt_planning.ontology_handling.capability_constraints_query import get_capability_constraints
 from smt_planning.smt.variable_declaration import create_property_dictionary_with_occurrences, create_capability_dictionary_with_occurrences
 from smt_planning.smt.capability_preconditions import capability_preconditions_smt
 from smt_planning.smt.capability_effects import capability_effects_smt
-from smt_planning.smt.capability_constraints import get_capability_constraints, capability_constraints_smt
+from smt_planning.smt.capability_constraints import capability_constraints_smt
 from smt_planning.smt.bool_variable_support import getPropositionSupports
 from smt_planning.smt.constraints_bools import get_bool_constraints
 from smt_planning.smt.constraints_real_variables import get_variable_constraints
@@ -51,7 +51,7 @@ class CaskadePlanner:
 		# needs to be reset for new planning request, otherwise it will keep the old data annd not be able to solve the problem at all or solve the problem incorrectly
 		QueryCache.reset()
 			
-		# Get all properties connected to provided capabilities as inputs or outputs
+		# Get all properties connected to provided capabilities as inputs or outputs as well as all instance descriptions 
 		property_dictionary = get_all_properties()
 		state_handler.set_property_dictionary(property_dictionary)
 
@@ -59,11 +59,8 @@ class CaskadePlanner:
 		capability_dictionary = get_provided_capabilities()
 		state_handler.set_capability_dictionary(capability_dictionary)
 
-		# Get all preconditions and effects of capabilities based on the instance descriptions
-		#get_capability_preconditions_and_effects()
-
 		# Capability Constraints
-		constraint_results = get_capability_constraints()
+		get_capability_constraints()
 
 		# Get all inits and goals of planninb problem based on the instance descriptions
 		get_init()
@@ -113,17 +110,17 @@ class CaskadePlanner:
 			self.add_comment(solver, "Start of capability constraints")
 			current_solver_string = solver.to_smt2()
 			solver = Solver()
-			constraints = capability_constraints_smt(happenings, event_bound, constraint_results)
+			constraints = capability_constraints_smt(happenings, event_bound)
 			for constraint in constraints:
 				current_solver_string += f"\n{constraint}" 
 
 			solver.from_string(current_solver_string)
 
 			# ---------------- Constraints Capability mutexes (H14) -----------------------------------------
-			# self.add_comment(solver, "Start of capability mutexes")
-			# capability_mutexes = get_capability_mutexes(happenings)
-			# for capability_mutex in capability_mutexes:
-			# 	solver.add(capability_mutex)		
+			self.add_comment(solver, "Start of capability mutexes")
+			capability_mutexes = get_capability_mutexes(happenings)
+			for capability_mutex in capability_mutexes:
+				solver.add(capability_mutex)		
 
 			# ---------------- Init  --------------------------------------------------------
 			self.add_comment(solver, "Start of init")
@@ -136,8 +133,6 @@ class CaskadePlanner:
 			goals = goal_smt()
 			for goal in goals:
 				solver.add(goal)
-
-			# Product Goal (aus Req Cap)
 
 			# ------------------- Proposition support (P5 + P6) ----------------------------
 			self.add_comment(solver, "Start of proposition support")
