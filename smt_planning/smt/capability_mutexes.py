@@ -1,31 +1,23 @@
-from rdflib import Graph
 from z3 import Not, Or
 import itertools
-from typing import List
-from smt_planning.dicts.CapabilityDictionary import CapabilityDictionary, Capability
+from typing import List, Dict
+from smt_planning.smt.StateHandler import StateHandler
+from smt_planning.dicts.CapabilityDictionary import Capability
 
-def get_capability_mutexes(graph: Graph, capability_dictionary: CapabilityDictionary, happenings):
+def get_capability_mutexes(happenings: int):
 
-    query_string = """
-        PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
-        PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
-
-        SELECT ?res (GROUP_CONCAT(?cap; separator=", ") as ?caps) WHERE {  
-            ?res CSS:providesCapability ?cap. 
-            ?cap a CaSk:ProvidedCapability.
-        } GROUP BY ?res """
-    result = graph.query(query_string)
+    capability_dictionary = StateHandler().get_capability_dictionary()
 
     constraints = []
 
-    for row in result: 
-        caps = set(row['caps'].split(", "))
-        capabilities: List[Capability] = []
-        for cap in caps:
-            capability = capability_dictionary.get_capability(cap)
-            capabilities.append(capability)
+    resource_cap_combination: Dict[str, List[Capability]] = {}
 
-        combinations = list(itertools.combinations(capabilities, 2))
+    for cap in capability_dictionary.capabilities.values(): 
+        resource_cap_combination.setdefault(cap.resource, [])
+        resource_cap_combination[cap.resource].append(cap)
+
+    for resource in resource_cap_combination.keys():
+        combinations = list(itertools.combinations(resource_cap_combination[resource], 2))
 
         for happening in range(happenings):
             for combination in combinations:

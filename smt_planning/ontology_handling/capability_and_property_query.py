@@ -49,11 +49,13 @@ def get_all_properties() -> PropertyDictionary:
 		if str(row['capType']) == "http://www.w3id.org/hsu-aut/cask#RequiredCapability":
 			# directly with occurrence because properties of required capabilities only have one occurrence
 			properties.add_required_property_occurence(str(row['de']), str(row['dataType']), str(row['relationType']), caps)  
-			properties.add_instance_description(str(row['de']), str(row['caps']), CapabilityType.RequiredCapability, str(row['expr_goal']), str(row['log']), str(row['val']))
+			for cap in caps: 
+				properties.add_instance_description(str(row['de']), cap, CapabilityType.RequiredCapability, str(row['expr_goal']), str(row['log']), str(row['val']))
 			continue
 
 		properties.add_provided_property(str(row['de']), str(row['dataType']), str(row['relationType']), caps)  
-		properties.add_instance_description(str(row['de']), str(row['caps']), CapabilityType.ProvidedCapability, str(row['expr_goal']), str(row['log']), str(row['val'])) 
+		for cap in caps: 
+			properties.add_instance_description(str(row['de']), cap, CapabilityType.ProvidedCapability, str(row['expr_goal']), str(row['log']), str(row['val'])) 
 	return properties
 
 def get_provided_capabilities() -> CapabilityDictionary:
@@ -62,12 +64,13 @@ def get_provided_capabilities() -> CapabilityDictionary:
 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
 	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
 	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
-	SELECT DISTINCT ?cap ?de WHERE { 
+	SELECT DISTINCT ?cap ?de ?res WHERE { 
 		?cap a CaSk:ProvidedCapability;
 			^CSS:requiresCapability ?process.
 		?process VDI3682:hasInput ?input.
 		?input VDI3682:isCharacterizedBy ?id.
 		?de DINEN61360:has_Instance_Description ?id.
+		?res CSS:providesCapability ?cap.
 	}
 	"""
 	query_handler = StateHandler().get_query_handler()
@@ -83,7 +86,10 @@ def get_provided_capabilities() -> CapabilityDictionary:
 		input_properties = [property_dictionary.get_provided_property(input) for input in inputs]
 		# Outputs need to have their effect attached and are more tricky
 		outputs = get_output_influences_of_capability(cap)
-		capability_dictionary.add_capability(cap, "http://www.w3id.org/hsu-aut/cask#ProvidedCapability", input_properties, outputs)
+		resource = next((str(row['res']) for row in results if str(row['cap']) == cap), None)
+		if resource is None:
+			raise ValueError("Resource not found for capability")
+		capability_dictionary.add_capability(cap, "http://www.w3id.org/hsu-aut/cask#ProvidedCapability", input_properties, outputs, resource)
 
 	return capability_dictionary
 
