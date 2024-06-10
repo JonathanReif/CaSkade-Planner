@@ -1,6 +1,5 @@
 from typing import Dict, List
-from z3 import Bool, BoolRef, AstRef
-from rdflib import URIRef
+from z3 import Bool, AstRef
 from smt_planning.dicts.PropertyDictionary import Property
 from enum import Enum
 

@@ -45,15 +45,16 @@ def get_property_cross_relations(happenings: int, event_bound: int) -> List[Bool
 
 	# 1: Relate inits. We need to get inputs of the required capability and make sure related properties are bound to the values of these properties.
 	# Both requirements and assurances need to be bound because otherwise assurance would be "floating" and could be set to goal without respecting caps
-	required_input_properties = get_inputs_of_required_cap(graph)
-	for required_input_prop_iri in required_input_properties:
-		related_properties = get_partners(str(required_input_prop_iri), related_property_pairs)
+	for required_prop in property_dictionary.required_properties.values():
+		if required_prop.relation_type != "Input":
+			continue
+		related_properties = get_partners(str(required_prop.iri), related_property_pairs)
 		for related_property in related_properties:
 			# related_property_relation_type = property_dictionary.get_relation_type_of_property(related_property_iri)
 			# if related_property_relation_type != "Input":
 			# 	continue
 
-			required_input_prop = property_dictionary.get_required_property_occurrence(str(required_input_prop_iri)).z3_variable
+			required_input_prop = property_dictionary.get_required_property_occurrence(str(required_prop.iri)).z3_variable
 			try: 
 				related_property = property_dictionary.get_provided_property_occurrence(str(related_property.iri), 0, 0).z3_variable
 				relation_constraint = (required_input_prop == related_property)
@@ -63,15 +64,16 @@ def get_property_cross_relations(happenings: int, event_bound: int) -> List[Bool
 
 	# 2: Relate goals. We need to get all outputs of the required capability and make sure that related output properties are bound to the valu of these outputs
 	# Only constrain output properties because we are only interested in the final output. The input depends on the capability and must not be "over-constrained"
-	required_output_properties = get_outputs_of_required_cap(graph)
-	for required_output_prop_iri in required_output_properties:
-		related_properties = get_partners(str(required_output_prop_iri), related_property_pairs)
+	for required_prop in property_dictionary.required_properties.values():
+		if required_prop.relation_type != "Output":
+			continue
+		related_properties = get_partners(str(required_prop.iri), related_property_pairs)
 		for related_property in related_properties:
 			related_property_relation_type = property_dictionary.get_property_relation_type(related_property.iri)
 			if related_property_relation_type != "Output":
 				continue
 
-			required_output_prop = property_dictionary.get_required_property_occurrence(str(required_output_prop_iri)).z3_variable
+			required_output_prop = property_dictionary.get_required_property_occurrence(str(required_prop.iri)).z3_variable
 			try:
 				related_property = property_dictionary.get_provided_property_occurrence(str(related_property.iri), happenings-1, 1).z3_variable
 				relation_constraint = (required_output_prop == related_property)
@@ -81,54 +83,6 @@ def get_property_cross_relations(happenings: int, event_bound: int) -> List[Bool
 
 
 	return relation_constraints
-
-def get_inputs_of_required_cap(graph: Graph):
-	query_string = """
-	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
-	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
-	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
-	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
-	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-	SELECT ?cap ?input ?de WHERE {
-		?cap a CaSk:RequiredCapability;
-			^CSS:requiresCapability ?process.
-		?process VDI3682:hasInput ?input.
-		?de a DINEN61360:Data_Element.
-		?de DINEN61360:has_Type_Description ?td;
-			DINEN61360:has_Instance_Description ?id.
-		?input VDI3682:isCharacterizedBy ?id.
-	}
-	"""
-	query_handler = StateHandler().get_query_handler()
-	result = query_handler.query(query_string)
-	input_iris = [binding.get(de_variable) for binding in result.bindings]
-	return input_iris
-
-
-def get_outputs_of_required_cap(graph: Graph):
-	query_string = """
-	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
-	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
-	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
-	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
-	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-	SELECT ?cap ?output ?de WHERE {
-		?cap a CaSk:RequiredCapability;
-			^CSS:requiresCapability ?process.
-		?process VDI3682:hasOutput ?output.
-		?de a DINEN61360:Data_Element.
-		?de DINEN61360:has_Type_Description ?td;
-			DINEN61360:has_Instance_Description ?id.
-		?output VDI3682:isCharacterizedBy ?id.
-	}
-	"""
-	
-	query_handler = StateHandler().get_query_handler()
-	result = query_handler.query(query_string)
-	output_iris = [binding.get(de_variable) for binding in result.bindings]
-	return output_iris
-
-
 
 def get_related_properties(property_iri:str) -> List[Property]:
 
