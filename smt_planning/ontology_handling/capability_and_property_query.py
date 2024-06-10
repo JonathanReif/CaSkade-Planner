@@ -49,13 +49,11 @@ def get_all_properties() -> PropertyDictionary:
 		if str(row['capType']) == "http://www.w3id.org/hsu-aut/cask#RequiredCapability":
 			# directly with occurrence because properties of required capabilities only have one occurrence
 			properties.add_required_property_occurence(str(row['de']), str(row['dataType']), str(row['relationType']), caps)  
-			for cap in caps:
-				properties.add_instance_description(str(row['de']), cap, CapabilityType.RequiredCapability, str(row['expr_goal']), str(row['log']), str(row['val']))
+			properties.add_instance_description(str(row['de']), str(row['caps']), CapabilityType.RequiredCapability, str(row['expr_goal']), str(row['log']), str(row['val']))
 			continue
 
 		properties.add_provided_property(str(row['de']), str(row['dataType']), str(row['relationType']), caps)  
-		for cap in caps:
-			properties.add_instance_description(str(row['de']), cap, CapabilityType.ProvidedCapability, str(row['expr_goal']), str(row['log']), str(row['val'])) 
+		properties.add_instance_description(str(row['de']), str(row['caps']), CapabilityType.ProvidedCapability, str(row['expr_goal']), str(row['log']), str(row['val'])) 
 	return properties
 
 def get_provided_capabilities() -> CapabilityDictionary:
