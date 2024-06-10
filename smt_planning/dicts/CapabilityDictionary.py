@@ -28,12 +28,13 @@ capabiltiy_type: The type of the capability, e.g., CaSk:ProvidedCapability (TODO
 input_properties: The properties that are required for the capability to be executed
 '''
 class Capability:
-	def __init__(self, iri: str, capability_type: str, input_properties: List[Property], output_properties: List[CapabilityPropertyInfluence]):
+	def __init__(self, iri: str, capability_type: str, input_properties: List[Property], output_properties: List[CapabilityPropertyInfluence], resource: str):
 		self.iri = iri
 		self.capability_type = capability_type
 		self.input_properties = input_properties
 		self.output_properties = output_properties
 		self.occurrences: Dict[int, CapabilityOccurrence] = {}
+		self.resource = resource
 
 	def add_occurrence(self, occurrence: CapabilityOccurrence):
 		happening = occurrence.happening
@@ -69,13 +70,19 @@ class Capability:
 		
 		return None
 
+class ConstraintInfo():
+	def __init__(self, cap: str, constraintIri: str):
+		self.cap = cap
+		self.constraintIri = constraintIri
 
 class CapabilityDictionary:
 	def __init__(self):
 		self.capabilities: Dict[str, Capability] = {}
+		self.input_capability_constraints: List[ConstraintInfo] = []
+		self.output_capability_constraints: List[ConstraintInfo] = []
 
-	def add_capability(self, iri: str, capability_type: str, input_properties: List[Property], output_properties: List[CapabilityPropertyInfluence]) -> None:
-		capability = Capability(iri, capability_type, input_properties, output_properties)
+	def add_capability(self, iri: str, capability_type: str, input_properties: List[Property], output_properties: List[CapabilityPropertyInfluence], resource:str) -> None:
+		capability = Capability(iri, capability_type, input_properties, output_properties, resource)
 		self.capabilities.setdefault(iri, capability)
 
 	def add_capability_occurrences(self, happenings: int) -> None:
@@ -100,4 +107,15 @@ class CapabilityDictionary:
 				return capability_occurrence
 			
 		raise KeyError(f"There is not a single capability occurrence for the z3_variable {z3_variable}")
+	
+	def add_capability_constraint(self, cap: str, constraintIri: str, input: bool = False) -> None:
+		if input: 
+			self.input_capability_constraints.append(ConstraintInfo(cap, constraintIri))
+		else: 
+			self.output_capability_constraints.append(ConstraintInfo(cap, constraintIri))
+
+	def set_input_capability_constraints(self, input_constraints: List[ConstraintInfo]) -> None:
+		self.input_capability_constraints = input_constraints
 		
+	def set_output_capability_constraints(self, output_constraints: List[ConstraintInfo]) -> None:
+		self.output_capability_constraints = output_constraints
