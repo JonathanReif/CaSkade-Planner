@@ -163,10 +163,10 @@ def get_output_influences_of_capability(capability_iri: str) -> List[CapabilityP
 				# Case of no expression goal, i.e., free parameter. In this case, prop is changed to the free parameter
 				effect = PropertyChange.ChangeByExpression
 		else:
-			if (row.get('outputValue') and row.get('outputValue').eq(row.get('inputValue'))):
+			if (row.get('outputValue') and row.get('outputValue') == (row.get('inputValue'))):
 				# Simple case: both input and output have the same static value
 				effect = PropertyChange.NoChange
-			elif (row.get('outputValue') and not row.get('outputValue').eq(row.get('inputValue'))):
+			elif (row.get('outputValue') and not row.get('outputValue') == (row.get('inputValue'))):
 				if str(row.get('outputValue')).lower() == "false":
 					effect = PropertyChange.SetFalse
 				elif str(row.get('outputValue')).lower() == "true":
