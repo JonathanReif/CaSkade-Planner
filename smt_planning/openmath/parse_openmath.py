@@ -1,7 +1,6 @@
-from rdflib import Graph, Variable
+from rdflib import Variable
 from rdflib.term import Identifier
-from rdflib.query import Result
-from typing import Mapping, Callable, MutableSequence, List
+from typing import Mapping, Callable, MutableSequence
 from smt_planning.openmath.math_symbol_information import MathSymbolInformation
 from smt_planning.openmath.operator_dictionary import OperatorDictionary
 
@@ -21,21 +20,21 @@ def from_open_math_in_graph( query_handler, rootApplicationIri: str, happening: 
 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
 	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
-	
-	SELECT ?application (count(?argumentList)-1 as ?position) ?operator ?argName ?argType ?arg WHERE {
+	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
+	SELECT ?application (count(?argumentList)-1 as ?position) ?operator (COALESCE(?argDE, ?arg) AS ?argName) ?argType ?arg WHERE {
 		?application a OM:Application, CSS:CapabilityConstraint.
 		?application OM:arguments/rdf:rest* ?argumentList;
-			OM:operator ?operator.
+										OM:operator ?operator.
 
 		?argumentList rdf:rest*/rdf:first ?arg.
 		?arg a ?argType.
 		?argType rdfs:subClassOf OM:Object.
 		OPTIONAL {
 			#?arg OM:name ?argName.
-			?argName DINEN61360:has_Instance_Description ?arg.
+			?argDE DINEN61360:has_Instance_Description ?arg.
 		}
 	}
-	GROUP BY ?application ?argName ?operator ?argType ?arg
+	GROUP BY ?application ?argDE ?operator ?argType ?arg
 	"""
 	
 	# Fire query and get results as an array

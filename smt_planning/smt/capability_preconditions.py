@@ -15,7 +15,7 @@ def capability_preconditions_smt(happenings: int, event_bound: int) -> List[Bool
 
 			prop_type = property_dictionary.get_property_data_type(property_iri) 
 			value = precondition.value
-			if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
+			if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real" or prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Integer":
 
 				match precondition.logical_interpretation:
 					case "<":

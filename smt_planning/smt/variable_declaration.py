@@ -1,5 +1,6 @@
 from smt_planning.smt.StateHandler import StateHandler
-
+from z3 import BoolRef
+from typing import List
 
 def create_property_dictionary_with_occurrences(happenings:int, event_bound:int) -> None:
 	stateHandler = StateHandler()	
@@ -10,3 +11,16 @@ def create_capability_dictionary_with_occurrences(happenings:int) -> None:
 	capability_dictionary = StateHandler().get_capability_dictionary()
 	capability_dictionary.add_capability_occurrences(happenings)
 	
+def create_resource_ids(happenings:int, event_bound:int) -> List[BoolRef]:
+	capability_dictionary = StateHandler().get_capability_dictionary()
+	capability_dictionary.add_resource_occurences(happenings, event_bound)
+
+	resources = capability_dictionary.get_all_resources()
+	resources_smt: List[BoolRef] = []
+	for resource in resources: 
+		for inner_dict in resource.occurrences.values():
+			for occurrence in inner_dict.values():
+				resource_smt = occurrence.z3_variable == resource.id
+				resources_smt.append(resource_smt) # type: ignore
+
+	return resources_smt

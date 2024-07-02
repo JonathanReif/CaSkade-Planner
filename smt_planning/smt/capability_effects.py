@@ -32,7 +32,7 @@ def capability_effects_smt(happenings: int, event_bound: int) -> List[BoolRef]:
 
 def generate_effect_constraint(capability: BoolRef, property: BoolRef | ArithRef, prop_type: str, relation: str, value: str) -> BoolRef | None:	
 	
-	if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
+	if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real" or prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Integer":
 		match relation:
 			case "<":
 				effect_smt = Implies(capability, property < value)									 # type: ignore

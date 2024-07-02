@@ -1,5 +1,5 @@
-from typing import Dict, List
-from z3 import Bool, AstRef
+from typing import Dict, List, Set
+from z3 import Bool, Int, AstRef
 from smt_planning.dicts.PropertyDictionary import Property
 from enum import Enum
 
@@ -22,6 +22,39 @@ class CapabilityOccurrence:
 		z3_variable_name = iri + "_" + str(happening)
 		self.z3_variable = Bool(z3_variable_name)
 
+class ResourceOccurence:
+	def __init__(self, iri: str, happening: int, event: int):
+		self.iri = iri
+		self.happening = happening
+		self.event = event
+		z3_variable_name = iri + "_" + str(happening) + "_" + str(event)
+		self.z3_variable = Int(z3_variable_name)
+
+class Resource: 
+	id: int = 0
+	def __init__(self, iri: str) -> None:
+		self.iri = iri
+		#self.z3_variable = Int(iri)
+		Resource.id += 1
+		self.id = Resource.id
+		self.occurrences: Dict[int, Dict[int, ResourceOccurence]] = {}
+
+	def __eq__(self, other) -> bool:
+		if not isinstance(other, Resource):
+			return False
+		return self.iri == other.iri
+	
+	def __hash__(self) -> int:
+		return hash(self.iri)
+	
+	def __repr__(self) -> str:
+		return f"Resource(iri={self.iri}"
+
+	def add_occurence(self, occurence: ResourceOccurence):
+		happening = occurence.happening
+		event = occurence.event
+		self.occurrences.setdefault(happening, {}).setdefault(event, occurence)
+
 '''
 capabiltiy_type: The type of the capability, e.g., CaSk:ProvidedCapability (TODO do we need type?)
 input_properties: The properties that are required for the capability to be executed
@@ -33,7 +66,7 @@ class Capability:
 		self.input_properties = input_properties
 		self.output_properties = output_properties
 		self.occurrences: Dict[int, CapabilityOccurrence] = {}
-		self.resource = resource
+		self.resource = Resource(resource)
 
 	def add_occurrence(self, occurrence: CapabilityOccurrence):
 		happening = occurrence.happening
@@ -118,3 +151,13 @@ class CapabilityDictionary:
 		
 	def set_output_capability_constraints(self, output_constraints: List[ConstraintInfo]) -> None:
 		self.output_capability_constraints = output_constraints
+
+	def add_resource_occurences(self, happenings: int, event_bound: int) -> None:
+		for resource in self.get_all_resources():
+			for happening in range(happenings):
+				for event in range(event_bound):
+					resource_occurrence = ResourceOccurence(resource.iri, happening, event)
+					resource.add_occurence(resource_occurrence)
+
+	def get_all_resources(self) -> Set[Resource]:
+		return {capability.resource for capability in self.capabilities.values()}
