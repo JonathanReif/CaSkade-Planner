@@ -12,7 +12,7 @@ def init_smt():
 		value = init.value														    
 	
 		prop_type = property_dictionary.get_property_data_type(property_iri) 
-		if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
+		if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real" or prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Integer":
 
 			match relation:
 				case "<":
