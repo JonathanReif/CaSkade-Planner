@@ -8,7 +8,7 @@ from smt_planning.openmath.parse_openmath import QueryCache
 from smt_planning.ontology_handling.capability_and_property_query import get_all_properties, get_provided_capabilities
 from smt_planning.ontology_handling.init_query import get_init
 from smt_planning.ontology_handling.capability_constraints_query import get_capability_constraints
-from smt_planning.smt.variable_declaration import create_property_dictionary_with_occurrences, create_capability_dictionary_with_occurrences
+from smt_planning.smt.variable_declaration import create_property_dictionary_with_occurrences, create_capability_dictionary_with_occurrences, create_resource_ids
 from smt_planning.smt.capability_preconditions import capability_preconditions_smt
 from smt_planning.smt.capability_effects import capability_effects_smt
 from smt_planning.smt.capability_constraints import capability_constraints_smt
@@ -62,7 +62,7 @@ class CaskadePlanner:
 		# Capability Constraints
 		get_capability_constraints()
 
-		# Get all inits and goals of planninb problem based on the instance descriptions
+		# Get all inits and goals of planning problem based on the instance descriptions
 		get_init()
 
 		while (happenings <= max_happenings and solver_result == unsat):
@@ -79,6 +79,12 @@ class CaskadePlanner:
 
 			# Get provided capabilities and transform to boolean SMT variables
 			create_capability_dictionary_with_occurrences(happenings)
+
+			# ------------------------------Ressource IDs---------------------------------------------------
+			self.add_comment(solver, "Start of resource ids")
+			resource_ids = create_resource_ids(happenings, event_bound)
+			for resource_id in resource_ids:
+				solver.add(resource_id)
 
 			# ------------------------Constraint Proposition (H1 + H2) --> bool properties------------------
 			self.add_comment(solver, "Start of constraints proposition")
