@@ -156,17 +156,20 @@ class PlanningResult:
 				continue
 				
 			try:
-				capability = capability_dictionary.get_capability_from_z3_variable(variable) # type: ignore
-				if(variable_value == True):
-					capability_appearance = CapabilityAppearance(capability.iri)
-					plan.insert_capability_appearance(capability.happening, capability_appearance)
-			except:
-				property_occurrence = property_dictionary.get_property_from_z3_variable(variable) # type: ignore
-				property = property_dictionary.get_property(property_occurrence.iri)
-				happening = property_occurrence.happening
-				event = property_occurrence.event
-				property_appearance = PropertyAppearance(property, event, variable_value) # type: ignore
-				property_appearance_store.setdefault(happening, []).append(property_appearance)
+				try:
+					capability = capability_dictionary.get_capability_from_z3_variable(variable) # type: ignore
+					if(variable_value == True):
+						capability_appearance = CapabilityAppearance(capability.iri)
+						plan.insert_capability_appearance(capability.happening, capability_appearance)
+				except:
+					property_occurrence = property_dictionary.get_property_from_z3_variable(variable) # type: ignore
+					property = property_dictionary.get_property(property_occurrence.iri)
+					happening = property_occurrence.happening
+					event = property_occurrence.event
+					property_appearance = PropertyAppearance(property, event, variable_value) # type: ignore
+					property_appearance_store.setdefault(happening, []).append(property_appearance)
+			except KeyError:
+				print(f"Could not find a property or capability for variable {variable} in the model.")
 
 		for property_appearance_item in property_appearance_store.items():
 			happening = property_appearance_item[0]
