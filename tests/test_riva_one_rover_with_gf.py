@@ -129,21 +129,29 @@ class TestRoverWithGF:
 		assert property_latitude_output == True, "Latitude of rover should be output"
 
 		property_grabbed = "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_de"
+		property_current_holder = "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/currentHolder_de"
 		property_grabbed_output = False
+		property_current_holder_output = False
 
 		for property in expected_plan.plan.plan_steps[1].capability_appearances[0].outputs:
 			if property_grabbed == property.property.iri:
 				assert property.value == True, "Grabbed-Property of Item should be True"
 				property_grabbed_output = True
+			elif property_current_holder == property.property.iri:
+				assert property.value != 0, "Current holder of Item should be not equal 0, but any ID which stands for Rover7"
+				property_current_holder_output = True
 				
 		assert property_grabbed_output == True, "Grabbed-Property of Item should be output"
+		assert property_current_holder_output == True, "Current holder of Item should be output"
 
 		property_item_latitude = "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/AssuranceProdItem/latitude_de"
 		property_item_latitude_output = False
 		property_item_longitude = "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/AssuranceProdItem/longitude_de"
 		property_item_longitude_output = False
 		property_item_grabbed = "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/AssuranceProdItem/grabbed158_de"
+		property_item_current_holder = "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33/AssuranceProdItem/currentHolder_de"
 		property_item_grabbed_output = False
+		property_item_current_holder_output = False
 		property_latitude_drop_output = False
 		property_longitude_drop_output = False
 
@@ -163,9 +171,13 @@ class TestRoverWithGF:
 			elif property_item_grabbed == property.property.iri:
 				assert property.value == False, "Grabbed-Property of Item after drop should be False"
 				property_item_grabbed_output = True
+			elif property_item_current_holder == property.property.iri:	
+				assert property.value == 0, "Current holder of Item after drop should be 0, which stands for no holder"
+				property_item_current_holder_output = True
 				
 		assert property_longitude_drop_output == True, "Longitude of rover should be output of drop capability"
 		assert property_latitude_drop_output == True, "Latitude of rover should be output of drop capability"
 		assert property_item_longitude_output == True, "Longitude of item should be output of drop capability"
 		assert property_item_latitude_output == True, "Latitude of item should be output of drop capability"
 		assert property_item_grabbed_output == True, "Grabbed-Property of Item should be output of drop capability"
+		assert property_item_current_holder_output == True, "Current holder of Item should be output of drop capability"
