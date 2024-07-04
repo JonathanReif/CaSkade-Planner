@@ -2,7 +2,7 @@ import json
 import time
 
 from smt_planning.ontology_handling.query_handlers import FileQueryHandler, SparqlEndpointQueryHandler
-from z3 import Solver, unsat, Bool
+from z3 import Solver, Optimize, unsat, Bool, Sum
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.openmath.parse_openmath import QueryCache
 from smt_planning.ontology_handling.capability_and_property_query import get_all_properties, get_provided_capabilities
@@ -158,18 +158,26 @@ class CaskadePlanner:
 			for cross_relation in property_cross_relations:
 				solver.add(cross_relation)
 
+			# Optimize by minimizing number of used capabilities to prevent unnecessary use of capabilities
+			constraints = solver.assertions()
+			opt = Optimize()
+			opt.add(constraints)
+
+			capabilities = [occurrence.z3_variable for capability in capability_dictionary.capabilities.values() for occurrence in capability.occurrences.values()]
+			opt.minimize(Sum(capabilities))
+
 			end_time = time.time()
 			print(f"Time for generating SMT: {end_time - start_time}")	
 
 			# Check satisfiability and get the model
-			solver_result = solver.check()
+			solver_result = opt.check()
 			end_time_solver = time.time()
 			print(f"Time for solving SMT: {end_time_solver - end_time}")
 
 			if solver_result == unsat:
 				print(f"No solution with {happenings} happening(s) found.")
 			else:
-				model = solver.model()
+				model = opt.model()
 				plan = PlanningResult(model)
 
 				if problem_location:
