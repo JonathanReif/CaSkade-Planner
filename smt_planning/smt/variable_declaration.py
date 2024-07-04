@@ -12,12 +12,11 @@ def create_capability_dictionary_with_occurrences(happenings:int) -> None:
 	capability_dictionary.add_capability_occurrences(happenings)
 	
 def create_resource_ids(happenings:int, event_bound:int) -> List[BoolRef]:
-	capability_dictionary = StateHandler().get_capability_dictionary()
-	capability_dictionary.add_resource_occurences(happenings, event_bound)
+	resource_dictionary = StateHandler().get_resource_dictionary()
+	resource_dictionary.add_resource_occurences(happenings, event_bound)
 
-	resources = capability_dictionary.get_all_resources()
 	resources_smt: List[BoolRef] = []
-	for resource in resources: 
+	for resource in resource_dictionary.resources.values(): 
 		for inner_dict in resource.occurrences.values():
 			for occurrence in inner_dict.values():
 				resource_smt = occurrence.z3_variable == resource.id
