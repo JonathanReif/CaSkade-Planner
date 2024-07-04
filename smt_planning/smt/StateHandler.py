@@ -2,6 +2,7 @@ from rdflib import Graph
 
 from smt_planning.dicts.CapabilityDictionary import CapabilityDictionary
 from smt_planning.dicts.PropertyDictionary import PropertyDictionary
+from smt_planning.dicts.ResourceDictionary import ResourceDictionary
 from smt_planning.ontology_handling.query_handlers import QueryHandler
 
 # Singleton class
@@ -15,6 +16,7 @@ class StateHandler:
 			cls.__graph = None
 			cls.__property_dictionary = None
 			cls.__capability_dictionary = None
+			cls.__resource_dictionary = None
 			from smt_planning.smt.capability_links import CapabilityPairCache
 			from smt_planning.smt.property_links import PropertyPairCache
 			cls.__property_pair_cache = CapabilityPairCache
@@ -45,6 +47,12 @@ class StateHandler:
 	def get_capability_dictionary(self) -> CapabilityDictionary:
 		return self.__capability_dictionary
 	
+	def set_resource_dictionary(self, resource_dictionary: ResourceDictionary):
+		self.__resource_dictionary = resource_dictionary
+
+	def get_resource_dictionary(self) -> ResourceDictionary:
+		return self.__resource_dictionary
+
 	def reset_caches(self) -> None:
 		self.__property_pair_cache.reset()
 		self.__capability_pair_cache.reset()
