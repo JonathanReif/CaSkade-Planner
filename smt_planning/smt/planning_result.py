@@ -156,7 +156,7 @@ class PlanningResult:
 				continue
 				
 			try:
-				try: 
+				try:
 					capability = capability_dictionary.get_capability_from_z3_variable(variable) # type: ignore
 					if(variable_value == True):
 						capability_appearance = CapabilityAppearance(capability.iri)
@@ -166,8 +166,7 @@ class PlanningResult:
 					property = property_dictionary.get_property(property_occurrence.iri)
 					happening = property_occurrence.happening
 					event = property_occurrence.event
-					property_occurrence.iri
-					property_appearance = PropertyAppearance(property, event, variable_value)
+					property_appearance = PropertyAppearance(property, event, variable_value) # type: ignore
 					property_appearance_store.setdefault(happening, []).append(property_appearance)
 			except KeyError:
 				print(f"Could not find a property or capability for variable {variable} in the model.")

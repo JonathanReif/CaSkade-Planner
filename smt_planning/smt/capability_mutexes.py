@@ -6,18 +6,12 @@ from smt_planning.dicts.CapabilityDictionary import Capability
 
 def get_capability_mutexes(happenings: int):
 
-    capability_dictionary = StateHandler().get_capability_dictionary()
+    resource_dictionary = StateHandler().get_resource_dictionary()
 
     constraints = []
 
-    resource_cap_combination: Dict[str, List[Capability]] = {}
-
-    for cap in capability_dictionary.capabilities.values(): 
-        resource_cap_combination.setdefault(cap.resource, [])
-        resource_cap_combination[cap.resource].append(cap)
-
-    for resource in resource_cap_combination.keys():
-        combinations = list(itertools.combinations(resource_cap_combination[resource], 2))
+    for res in resource_dictionary.resources.values(): 
+        combinations = list(itertools.combinations(res.capabilities, 2))
 
         for happening in range(happenings):
             for combination in combinations:

@@ -1,8 +1,9 @@
-from typing import List
+from typing import List, Tuple
 
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.dicts.PropertyDictionary import PropertyDictionary, CapabilityType
 from smt_planning.dicts.CapabilityDictionary import CapabilityDictionary, CapabilityPropertyInfluence, PropertyChange
+from smt_planning.dicts.ResourceDictionary import ResourceDictionary
 
 def get_all_properties() -> PropertyDictionary:
 	
@@ -58,7 +59,7 @@ def get_all_properties() -> PropertyDictionary:
 			properties.add_instance_description(str(row['de']), cap, CapabilityType.ProvidedCapability, str(row['expr_goal']), str(row['log']), str(row['val'])) 
 	return properties
 
-def get_provided_capabilities() -> CapabilityDictionary:
+def get_provided_capabilities() -> Tuple[CapabilityDictionary, ResourceDictionary]:
 	query_string = """
 	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
@@ -86,12 +87,17 @@ def get_provided_capabilities() -> CapabilityDictionary:
 		input_properties = [property_dictionary.get_provided_property(input) for input in inputs]
 		# Outputs need to have their effect attached and are more tricky
 		outputs = get_output_influences_of_capability(cap)
-		resource = next((str(row['res']) for row in results if str(row['cap']) == cap), None)
-		if resource is None:
-			raise ValueError("Resource not found for capability")
-		capability_dictionary.add_capability(cap, "http://www.w3id.org/hsu-aut/cask#ProvidedCapability", input_properties, outputs, resource)
+		capability_dictionary.add_capability(cap, "http://www.w3id.org/hsu-aut/cask#ProvidedCapability", input_properties, outputs)
 
-	return capability_dictionary
+	resource_dictionary = ResourceDictionary()
+
+	resources = set([str(row['res']) for row in results])
+	for resource in resources:
+		caps = set([str(row['cap']) for row in results if (str(row['res']) == resource)])
+		resource_caps = [capability_dictionary.get_capability(cap) for cap in caps]
+		resource_dictionary.add_resource(resource, resource_caps)
+
+	return capability_dictionary, resource_dictionary
 
 # TODO one query for both ... 
 def get_output_influences_of_capability(capability_iri: str) -> List[CapabilityPropertyInfluence] :
