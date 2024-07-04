@@ -55,9 +55,12 @@ class CaskadePlanner:
 		property_dictionary = get_all_properties()
 		state_handler.set_property_dictionary(property_dictionary)
 
-		# Get provided capabilities and their influence on output objects
-		capability_dictionary = get_provided_capabilities()
+		# Get provided capabilities and their influence on output objects as well as resources that provide capabilities
+		cap_and_res_dictionary = get_provided_capabilities()
+		capability_dictionary = cap_and_res_dictionary[0]
+		resource_dictionary = cap_and_res_dictionary[1]
 		state_handler.set_capability_dictionary(capability_dictionary)
+		state_handler.set_resource_dictionary(resource_dictionary)
 
 		# Capability Constraints
 		get_capability_constraints()
