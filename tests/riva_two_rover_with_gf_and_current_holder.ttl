@@ -5770,8 +5770,7 @@ ns3:formalProperty a owl:ObjectProperty .
     :has_Point <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point1>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point2>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point3>,
-        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point4>,
-        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point5> .
+        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point4>.
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point1> a :Point ;
     ns1:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point1/latitude_de>,
@@ -5827,20 +5826,6 @@ ns3:formalProperty a owl:ObjectProperty .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point4/longitude_de> a ns1:Data_Element ;
     ns1:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point4/longitude_id> ;
-    ns1:has_Type_Description :longitude_TD .
-
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point5> a :Point ;
-    ns1:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point5/latitude_de>,
-        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point5/longitude_de> ;
-    ns5:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point5/latitude_id>,
-        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point5/longitude_id> .
-
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point5/latitude_de> a ns1:Data_Element ;
-    ns1:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point5/latitude_id> ;
-    ns1:has_Type_Description :latitude_TD .
-
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point5/longitude_de> a ns1:Data_Element ;
-    ns1:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point5/longitude_id> ;
     ns1:has_Type_Description :longitude_TD .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/latitude_de> a ns1:Data_Element ;
@@ -6159,8 +6144,7 @@ ns3:formalProperty a owl:ObjectProperty .
     :has_Point <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point1>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point2>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point3>,
-        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point4>,
-        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point5> .
+        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point4> .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point1> a :Point ;
     ns1:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point1/latitude_de>,
@@ -6216,20 +6200,6 @@ ns3:formalProperty a owl:ObjectProperty .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point4/longitude_de> a ns1:Data_Element ;
     ns1:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point4/longitude_id> ;
-    ns1:has_Type_Description :longitude_TD .
-
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point5> a :Point ;
-    ns1:has_Data_Element <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point5/latitude_de>,
-        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point5/longitude_de> ;
-    ns5:isCharacterizedBy <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point5/latitude_id>,
-        <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point5/longitude_id> .
-
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point5/latitude_de> a ns1:Data_Element ;
-    ns1:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point5/latitude_id> ;
-    ns1:has_Type_Description :latitude_TD .
-
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point5/longitude_de> a ns1:Data_Element ;
-    ns1:has_Instance_Description <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point5/longitude_id> ;
     ns1:has_Type_Description :longitude_TD .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/latitude_de> a ns1:Data_Element ;
@@ -11131,18 +11101,6 @@ ns2:variables a owl:ObjectProperty .
     ns1:Logic_Interpretation "=" ;
     ns1:Value "10.11110454797745" .
 
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point5/latitude_id> a ns1:Instance_Description,
-        ns1:Real ;
-    ns1:Expression_Goal "Actual_Value" ;
-    ns1:Logic_Interpretation "=" ;
-    ns1:Value "53.5672925737124" .
-
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover49/geofence/point5/longitude_id> a ns1:Instance_Description,
-        ns1:Real ;
-    ns1:Expression_Goal "Actual_Value" ;
-    ns1:Logic_Interpretation "=" ;
-    ns1:Value "10.110501050949098" .
-
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/cap-driveTo19> a <http://www.w3id.org/hsu-aut/cask#ProvidedCapability> ;
     ns5:hasInput <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/cap-driveTo19/RequiredInflat>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/cap-driveTo19/RequiredInflong> ;
@@ -11281,18 +11239,6 @@ ns2:variables a owl:ObjectProperty .
     ns1:Expression_Goal "Actual_Value" ;
     ns1:Logic_Interpretation "=" ;
     ns1:Value "10.110640525817873" .
-
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point5/latitude_id> a ns1:Instance_Description,
-        ns1:Real ;
-    ns1:Expression_Goal "Actual_Value" ;
-    ns1:Logic_Interpretation "=" ;
-    ns1:Value "53.56726391383577" .
-
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover50/geofence/point5/longitude_id> a ns1:Instance_Description,
-        ns1:Real ;
-    ns1:Expression_Goal "Actual_Value" ;
-    ns1:Logic_Interpretation "=" ;
-    ns1:Value "10.11021673679352" .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#required-cap-logistics/Input/Item17/currentHolder_id> a ns1:Instance_Description,
         ns1:Integer ;
