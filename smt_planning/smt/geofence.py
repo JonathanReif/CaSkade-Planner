@@ -30,13 +30,13 @@ def geofence_smt(happenings: int, event_bound: int) -> List[BoolRef]:
                     
                     # Check if the ray crosses this edge
                     cross_condition = And(
-                        z3_variable_longitude > min(p1y, p2y),                                                          # type: ignore
-                        z3_variable_longitude <= max(p1y, p2y),                                                         # type: ignore
-                        z3_variable_latitude <= max(p1x, p2x),                                                          # type: ignore
+                        z3_variable_latitude > min(p1y, p2y),                                                          # type: ignore
+                        z3_variable_latitude <= max(p1y, p2y),                                                         # type: ignore
+                        z3_variable_longitude <= max(p1x, p2x),                                                          # type: ignore
                         p1y != p2y,
                         Or(
                             p1x == p2x,
-                            z3_variable_latitude <= (z3_variable_longitude - p1y) * (p2x - p1x) / (p2y - p1y) + p1x     # type: ignore
+                            z3_variable_longitude <= (z3_variable_latitude - p1y) * (p2x - p1x) / (p2y - p1y) + p1x     # type: ignore
                         )
                     )
 

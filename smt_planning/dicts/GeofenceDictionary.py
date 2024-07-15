@@ -23,7 +23,7 @@ class Geofence:
     def generate_geofence_polygon(self) -> List[Tuple[float, float]]:
         geofence_polygon = []
         for point in self.points.values():
-            geofence_polygon.append((point.latitude, point.longitude))
+            geofence_polygon.append((point.longitude, point.latitude))
         return geofence_polygon
     
 class Robot: 
