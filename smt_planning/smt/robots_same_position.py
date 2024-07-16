@@ -23,8 +23,7 @@ def robot_positions_smt(happenings: int, event_bound: int):
                 for j in range(i + 1, len(lat_props)):
                     lat_1 = property_dictionary.get_provided_property_occurrence(lat_props[j], happening, event).z3_variable
                     long_1 = property_dictionary.get_provided_property_occurrence(long_props[j], happening, event).z3_variable
-
-                robots_not_same_position = Or(lat_0 != lat_1, long_0 != long_1)
-                robots_not_same_position_constraints.append(robots_not_same_position)
+                    robots_not_same_position = Or(lat_0 != lat_1, long_0 != long_1)
+                    robots_not_same_position_constraints.append(robots_not_same_position)
 
     return robots_not_same_position_constraints
