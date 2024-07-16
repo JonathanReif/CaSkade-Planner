@@ -13,15 +13,14 @@ def get_real_variable_continuous_changes(happenings: int, event_bound: int) -> L
 	for happening in range(happenings)[1:]:
 		for property in properties:
 			if property.data_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real" or property.data_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Integer":
-				free_variable = True
+				free_variable = False
 				for instance in property.instances.values():
 					if isinstance(instance, FreeVariable):
+						free_variable = True
 						continue
 					else:
 						free_variable = False
 						break
-				else: 
-					free_variable = False
 				if free_variable:
 					continue
 				property_current_happening_start = property.occurrences[happening][0].z3_variable
