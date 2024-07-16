@@ -9,6 +9,7 @@ def geofence_smt(happenings: int, event_bound: int) -> List[BoolRef]:
     gf_dict = stateHandler.get_geofence_dictionary()
 
     geofence_constraints = []
+    robot_id = 1
 
     for robot in gf_dict.robots.values():
         # Define a list of vertices representing the polygon
@@ -21,7 +22,7 @@ def geofence_smt(happenings: int, event_bound: int) -> List[BoolRef]:
                 z3_variable_longitude = robot.longitude.occurrences[happening][layer].z3_variable
 
                 # Create symbolic boolean variables for the edges crossed by the ray
-                crossed_edges = [Bool(f'crossed_edge_{i}') for i in range(len(geofence_polygon))]
+                crossed_edges = [Bool(f'crossed_edge_{robot_id}_{i}_{happening}_{layer}') for i in range(len(geofence_polygon))]
 
                 # Add constraints to check if the point is inside the polygon
                 for i in range(len(geofence_polygon)):
@@ -49,4 +50,5 @@ def geofence_smt(happenings: int, event_bound: int) -> List[BoolRef]:
                 inside = num_crossed_edges % 2 == 1
                 geofence_constraints.append(inside)
 
+        robot_id += 1
     return geofence_constraints
