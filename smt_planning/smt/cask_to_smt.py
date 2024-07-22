@@ -1,3 +1,5 @@
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import copy
 import json 
 import time
 
@@ -43,10 +45,8 @@ class CaskadePlanner:
 		state_handler = StateHandler()
 		state_handler.set_query_handler(self.query_handler)
 
-		happenings = 0
 		# Fixed upper bound for number of events in one happening. Currently no events, so we just have the start and end of a happening
 		event_bound = 2
-		solver_result = unsat
 
 		# needs to be reset for new planning request, otherwise it will keep the old data annd not be able to solve the problem at all or solve the problem incorrectly
 		QueryCache.reset()
@@ -68,138 +68,159 @@ class CaskadePlanner:
 		# Get all inits and goals of planning problem based on the instance descriptions
 		get_init()
 
-		while (happenings <= max_happenings and solver_result == unsat):
-			# SMT Solver
-			solver = Solver()
-			solver.reset()
-			state_handler.reset_caches()
-			solver_result = unsat
-			happenings += 1
+		with ThreadPoolExecutor() as executor:
+			futures = {executor.submit(self.solve_happening, h, event_bound, problem_location = None, model_location = None, plan_location = None): h for h in range(max_happenings + 1)}
 
-			# ------------------------------Variable Declaration------------------------------------------ 	
-			# Get all properties connected to provided capabilities as inputs or outputs
-			create_property_dictionary_with_occurrences(happenings, event_bound)
+			for future in as_completed(futures):
+				happenings = futures[future]
+				try: 
+					plan = future.result()
+					if plan:
+						end_time_solver = time.time()
+						print(f"Solution found with {happenings} happenings in {end_time_solver - start_time} seconds.")
+						return plan
+				except Exception as e:
+					print(f"Exception for {happenings} happenings: {e}")
 
-			# Get provided capabilities and transform to boolean SMT variables
-			create_capability_dictionary_with_occurrences(happenings)
+		print("No solution found.")
+		return None
 
-			# ------------------------------Ressource IDs---------------------------------------------------
-			self.add_comment(solver, "Start of resource ids")
-			resource_ids = create_resource_ids(happenings, event_bound)
-			for resource_id in resource_ids:
-				solver.add(resource_id)
+	def solve_happening(self, happenings: int, event_bound: int, problem_location = None, model_location = None, plan_location = None):
+		
+		start_time = time.time()
 
-			# ------------------------Constraint Proposition (H1 + H2) --> bool properties------------------
-			self.add_comment(solver, "Start of constraints proposition")
-			bool_constraints = get_bool_constraints(happenings, event_bound)
-			for bool_constraint in bool_constraints:
-				solver.add(bool_constraint)	
+		# SMT Solver
+		solver = Solver()
+		solver.reset()
+		state_handler = StateHandler()
+		state_handler.reset_caches()
+		# TODO: Maybe work with deep copies of the state_handler or dictionaries to prevent data from being used in multiple threads
+		solver_result = unsat
 
-			# ---------------------Constraint Real Variable (H5) --> real properties-----------------------------
-			self.add_comment(solver, "Start of constraints real variables")
-			variable_constraints = get_variable_constraints(happenings, event_bound)
-			for variable_constraint in variable_constraints:
-				solver.add(variable_constraint)	
+		# ------------------------------Variable Declaration------------------------------------------ 	
+		# Get all properties connected to provided capabilities as inputs or outputs
+		property_dictionary = create_property_dictionary_with_occurrences(happenings, event_bound)
 
-			# ----------------- Capability Precondition ------------------------------------------------------
-			self.add_comment(solver, "Start of preconditions")
-			preconditions = capability_preconditions_smt(happenings, event_bound)
-			for precondition in preconditions:
-				solver.add(precondition)
+		# Get provided capabilities and transform to boolean SMT variables
+		capability_dictionary = create_capability_dictionary_with_occurrences(happenings)
 
-			# --------------------------------------- Capability Effect ---------------------------------------
-			self.add_comment(solver, "Start of effects")
-			effects = capability_effects_smt(happenings, event_bound)
-			for effect in effects:
-				solver.add(effect)
+		# ------------------------------Ressource IDs---------------------------------------------------
+		self.add_comment(solver, "Start of resource ids")
+		resource_ids = create_resource_ids(happenings, event_bound)
+		for resource_id in resource_ids:
+			solver.add(resource_id)
 
-			# Capability constraints are expressions in smt2 form that cannot be added programmatically. Thus, we take the current solver in string form
-			# We create a new solver object. Then we take the current solver string and add the constraint strings. We then re-import everything back into the fresh solver object
-			# It has to be a fresh object because just re-importing doesn't clear everything
-			self.add_comment(solver, "Start of capability constraints")
-			current_solver_string = solver.to_smt2()
-			solver = Solver()
-			constraints = capability_constraints_smt(happenings, event_bound)
-			for constraint in constraints:
-				current_solver_string += f"\n{constraint}" 
+		# ------------------------Constraint Proposition (H1 + H2) --> bool properties------------------
+		self.add_comment(solver, "Start of constraints proposition")
+		bool_constraints = get_bool_constraints(happenings, event_bound)
+		for bool_constraint in bool_constraints:
+			solver.add(bool_constraint)	
 
-			solver.from_string(current_solver_string)
+		# ---------------------Constraint Real Variable (H5) --> real properties-----------------------------
+		self.add_comment(solver, "Start of constraints real variables")
+		variable_constraints = get_variable_constraints(happenings, event_bound)
+		for variable_constraint in variable_constraints:
+			solver.add(variable_constraint)	
 
-			# ---------------- Constraints Capability mutexes (H14) -----------------------------------------
-			self.add_comment(solver, "Start of capability mutexes")
-			capability_mutexes = get_capability_mutexes(happenings)
-			for capability_mutex in capability_mutexes:
-				solver.add(capability_mutex)		
+		# ----------------- Capability Precondition ------------------------------------------------------
+		self.add_comment(solver, "Start of preconditions")
+		preconditions = capability_preconditions_smt(happenings, event_bound)
+		for precondition in preconditions:
+			solver.add(precondition)
 
-			# ---------------- Init  --------------------------------------------------------
-			self.add_comment(solver, "Start of init")
-			inits = init_smt()
-			for init in inits:
-				solver.add(init)												
+		# --------------------------------------- Capability Effect ---------------------------------------
+		self.add_comment(solver, "Start of effects")
+		effects = capability_effects_smt(happenings, event_bound)
+		for effect in effects:
+			solver.add(effect)
 
-			# ---------------------- Goal ------------------------------------------------- 
-			self.add_comment(solver, "Start of goal")
-			goals = goal_smt()
-			for goal in goals:
-				solver.add(goal)
+		# Capability constraints are expressions in smt2 form that cannot be added programmatically. Thus, we take the current solver in string form
+		# We create a new solver object. Then we take the current solver string and add the constraint strings. We then re-import everything back into the fresh solver object
+		# It has to be a fresh object because just re-importing doesn't clear everything
+		self.add_comment(solver, "Start of capability constraints")
+		current_solver_string = solver.to_smt2()
+		solver = Solver()
+		constraints = capability_constraints_smt(happenings, event_bound)
+		for constraint in constraints:
+			current_solver_string += f"\n{constraint}" 
 
-			# ------------------- Proposition support (P5 + P6) ----------------------------
-			self.add_comment(solver, "Start of proposition support")
-			proposition_supports = getPropositionSupports(happenings, event_bound)
-			for support in proposition_supports:
-				solver.add(support)
+		solver.from_string(current_solver_string)
 
-			# ----------------- Continuous change on real variables (P11) ------------------
-			self.add_comment(solver, "Start of real variable continuous change")
-			real_variable_cont_changes = get_real_variable_continuous_changes(happenings, event_bound)
-			for real_variable_cont_change in real_variable_cont_changes:
-				solver.add(real_variable_cont_change)
+		# ---------------- Constraints Capability mutexes (H14) -----------------------------------------
+		self.add_comment(solver, "Start of capability mutexes")
+		capability_mutexes = get_capability_mutexes(happenings)
+		for capability_mutex in capability_mutexes:
+			solver.add(capability_mutex)		
 
-			# ----------------- Cross-connection of related properties (new) -----------------
-			self.add_comment(solver, "Start of related properties")
-			property_cross_relations = get_property_cross_relations(happenings, event_bound)
-			for cross_relation in property_cross_relations:
-				solver.add(cross_relation)
+		# ---------------- Init  --------------------------------------------------------
+		self.add_comment(solver, "Start of init")
+		inits = init_smt()
+		for init in inits:
+			solver.add(init)												
 
-			# Optimize by minimizing number of used capabilities to prevent unnecessary use of capabilities
-			constraints = solver.assertions()
-			opt = Optimize()
-			opt.add(constraints)
+		# ---------------------- Goal ------------------------------------------------- 
+		self.add_comment(solver, "Start of goal")
+		goals = goal_smt()
+		for goal in goals:
+			solver.add(goal)
 
-			capabilities = [occurrence.z3_variable for capability in capability_dictionary.capabilities.values() for occurrence in capability.occurrences.values()]
-			opt.minimize(Sum(capabilities))
+		# ------------------- Proposition support (P5 + P6) ----------------------------
+		self.add_comment(solver, "Start of proposition support")
+		proposition_supports = getPropositionSupports(happenings, event_bound)
+		for support in proposition_supports:
+			solver.add(support)
 
-			end_time = time.time()
-			print(f"Time for generating SMT: {end_time - start_time}")	
+		# ----------------- Continuous change on real variables (P11) ------------------
+		self.add_comment(solver, "Start of real variable continuous change")
+		real_variable_cont_changes = get_real_variable_continuous_changes(happenings, event_bound)
+		for real_variable_cont_change in real_variable_cont_changes:
+			solver.add(real_variable_cont_change)
 
-			# Check satisfiability and get the model
-			solver_result = opt.check()
-			end_time_solver = time.time()
-			print(f"Time for solving SMT: {end_time_solver - end_time}")
+		# ----------------- Cross-connection of related properties (new) -----------------
+		self.add_comment(solver, "Start of related properties")
+		property_cross_relations = get_property_cross_relations(happenings, event_bound)
+		for cross_relation in property_cross_relations:
+			solver.add(cross_relation)
 
-			if solver_result == unsat:
-				print(f"No solution with {happenings} happening(s) found.")
-			else:
-				model = opt.model()
-				plan = PlanningResult(model)
+		# Optimize by minimizing number of used capabilities to prevent unnecessary use of capabilities
+		constraints = solver.assertions()
+		opt = Optimize()
+		opt.add(constraints)
 
-				if problem_location:
-					# if problem_location is passed, store problem
-					with open(problem_location, 'w') as file:
-						file.write(solver.to_smt2())
+		capabilities = [occurrence.z3_variable for capability in capability_dictionary.capabilities.values() for occurrence in capability.occurrences.values()]
+		opt.minimize(Sum(capabilities))
 
-				if model_location:
-					# if model_location is passed, store model untransformed
-					model_dict = {}
-					for var in model:
-						model_dict[str(var)] = str(model[var])
-					with open(model_location, 'w') as file:
-						json.dump(model_dict, file, indent=4)
+		end_time = time.time()
+		print(f"Time for generating SMT: {end_time - start_time}")	
 
-				if plan_location:
-					# if plan_location is passed, store model after transformation to better JSON
-					with open(plan_location, 'w') as json_file:
-						json.dump(plan, json_file, default=lambda o: o.as_dict(), indent=4)
+		# Check satisfiability and get the model
+		solver_result = opt.check()
+		end_time_solver = time.time()
+		print(f"Time for solving SMT: {end_time_solver - end_time}")
 
+		if solver_result == unsat:
+			print(f"No solution with {happenings} happening(s) found.")
+			return None
+		else:
+			model = opt.model()
+			plan = PlanningResult(model)
+			
+			if problem_location:
+				# if problem_location is passed, store problem
+				with open(problem_location, 'w') as file:
+					file.write(solver.to_smt2())
 
-				return plan 
+			if model_location:
+				# if model_location is passed, store model untransformed
+				model_dict = {}
+				for var in model:
+					model_dict[str(var)] = str(model[var])
+				with open(model_location, 'w') as file:
+					json.dump(model_dict, file, indent=4)
+
+			if plan_location:
+				# if plan_location is passed, store model after transformation to better JSON
+				with open(plan_location, 'w') as json_file:
+					json.dump(plan, json_file, default=lambda o: o.as_dict(), indent=4)
+
+			return plan
