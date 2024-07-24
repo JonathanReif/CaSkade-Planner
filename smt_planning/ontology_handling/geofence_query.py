@@ -17,6 +17,42 @@ def get_geofence_constraints() -> RobotGeofenceDictionary:
             ?id DINEN61360:Value ?val. 
         } """
     
+    query_string_gozone = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
+    PREFIX RIVA: <http://www.hsu-hh.de/aut/RIVA/Logistic#>
+    PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
+    select ?robot (COALESCE(?hole, ?alt_gozone) AS ?zone) ?zone_type ?point ?de ?type ?val where { 
+        ?robot a CSS:Resource; 
+            RIVA:has_Gozone ?gozone.
+        {
+        ?gozone RIVA:has_Point ?point; 
+            a ?zone_type. 
+        ?point DINEN61360:has_Data_Element ?de. 
+        ?de DINEN61360:has_Instance_Description ?id;
+            DINEN61360:has_Type_Description ?type. 
+        ?id DINEN61360:Value ?val. 
+        }
+        UNION {
+            ?gozone RIVA:has_Hole ?hole. 
+            ?hole RIVA:has_Point ?point; 
+                a ?zone_type. 
+            ?point DINEN61360:has_Data_Element ?de. 
+            ?de DINEN61360:has_Instance_Description ?id;
+                DINEN61360:has_Type_Description ?type. 
+            ?id DINEN61360:Value ?val. 
+        }
+        UNION {
+            ?gozone RIVA:has_Alternative_Gozone ?alt_gozone. 
+            ?alt_gozone RIVA:has_Point ?point;
+                a ?zone_type.  
+            ?point DINEN61360:has_Data_Element ?de. 
+            ?de DINEN61360:has_Instance_Description ?id;
+                DINEN61360:has_Type_Description ?type. 
+            ?id DINEN61360:Value ?val. 
+        }
+    } """
+    
     query_string_vehicle_points = """
         PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
         PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
@@ -50,6 +86,34 @@ def get_geofence_constraints() -> RobotGeofenceDictionary:
                     latitude = float(str(row['val']))
                     gf_dict.add_geofence_point(robot, str(row['point']), latitude = latitude)
 
+    results_gozone = query_handler.query(query_string_gozone)
+    for row in results_gozone:
+        robot = gf_dict.get_robots()[str(row['robot'])]
+        gozone = robot.get_gozone() 
+        if "#Hole" in str(row['zone_type']):
+            gozone.add_hole(str(row['zone']))
+            if "longitude" in str(row['type']): 
+                longitude = float(str(row['val']))
+                gozone.add_hole_point(str(row['zone']), str(row['point']), longitude = longitude)
+            elif "latitude" in str(row['type']): 
+                latitude = float(str(row['val']))
+                gozone.add_hole_point(str(row['zone']), str(row['point']), latitude = latitude)
+        elif "#Alternative_Gozone" in str(row['zone_type']):
+            gozone.add_alternative_gozone(str(row['zone']))
+            if "longitude" in str(row['type']): 
+                longitude = float(str(row['val']))
+                gozone.add_alternative_gozone_point(str(row['zone']), str(row['point']), longitude = longitude)
+            elif "latitude" in str(row['type']): 
+                latitude = float(str(row['val']))
+                gozone.add_alternative_gozone_point(str(row['zone']), str(row['point']), latitude = latitude)
+        elif "#Gozone" in str(row['zone_type']): 
+            if "longitude" in str(row['type']): 
+                longitude = float(str(row['val']))
+                gozone.add_point(str(row['point']), longitude = longitude)
+            elif "latitude" in str(row['type']): 
+                latitude = float(str(row['val']))
+                gozone.add_point(str(row['point']), latitude = latitude)
+    
     # Get z3 variables for property (property has to be in every happening and layer inside geofence)
     property_dictionary = StateHandler().get_property_dictionary()
 
