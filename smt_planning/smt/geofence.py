@@ -14,7 +14,7 @@ def geofence_smt(happenings: int, event_bound: int) -> List[BoolRef]:
     for robot in gf_dict.robots.values():
         # Define a list of vertices representing the polygon
         gozone_polygon = robot.gozone.generate_polygon()
-        
+        #TODO: What to do with gozone split in multiple polygons? A vehicle can enter its other gozone only if another robot moves this robot to other gozone 
         nogozone_polygons: Dict[int, List[Tuple[float, float]]] = {}
         hole_number = 0
         for hole in robot.gozone.holes.values():
