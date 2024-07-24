@@ -2,7 +2,7 @@ from typing import Dict, Set, List
 from z3 import Real, Bool, Int, AstRef
 from enum import Enum
 
-# data_type is some instance of http://www.hsu-ifa.de/ontologies/DINEN61360#Simple_Data_Type
+# data_type is some instance of http://www.w3id.org/hsu-aut/DINEN61360#Simple_Data_Type
 class PropertyOccurrence:
 	def __init__(self, iri: str, data_type: str, happening: int, event: int):
 		self.iri = iri
@@ -10,11 +10,11 @@ class PropertyOccurrence:
 		self.event = event
 		z3_variable_name = iri + "_" + str(happening) + "_" + str(event)
 		match data_type:
-			case "http://www.hsu-ifa.de/ontologies/DINEN61360#Real":
+			case "http://www.w3id.org/hsu-aut/DINEN61360#Real":
 				self.z3_variable = Real(z3_variable_name)
-			case "http://www.hsu-ifa.de/ontologies/DINEN61360#Boolean":
+			case "http://www.w3id.org/hsu-aut/DINEN61360#Boolean":
 				self.z3_variable = Bool(z3_variable_name)
-			case "http://www.hsu-ifa.de/ontologies/DINEN61360#Integer":
+			case "http://www.w3id.org/hsu-aut/DINEN61360#Integer":
 				self.z3_variable = Int(z3_variable_name)
 			case _  :
 				# Base case if no type given: Create a real
@@ -69,7 +69,7 @@ class FreeVariable(InstanceDescription):
 
 '''
 iri is the IRI of the data element
-data_type is some instance of http://www.hsu-ifa.de/ontologies/DINEN61360#Simple_Data_Type
+data_type is some instance of http://www.w3id.org/hsu-aut/DINEN61360#Simple_Data_Type
 relation_type is the relation type of the property, i.e., "hasInput" or "hasOutput"
 '''
 class Property:

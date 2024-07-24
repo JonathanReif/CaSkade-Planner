@@ -32,7 +32,7 @@ def capability_effects_smt(happenings: int, event_bound: int) -> List[BoolRef]:
 
 def generate_effect_constraint(capability: BoolRef, property: BoolRef | ArithRef, prop_type: str, relation: str, value: str) -> BoolRef | None:	
 	
-	if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real" or prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Integer":
+	if prop_type == "http://www.w3id.org/hsu-aut/DINEN61360#Real" or prop_type == "http://www.w3id.org/hsu-aut/DINEN61360#Integer":
 		match relation:
 			case "<":
 				effect_smt = Implies(capability, property < value)									 # type: ignore
@@ -50,7 +50,7 @@ def generate_effect_constraint(capability: BoolRef, property: BoolRef | ArithRef
 				raise RuntimeError("Incorrect logical relation")
 		return effect_smt
 	
-	elif prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Boolean":
+	elif prop_type == "http://www.w3id.org/hsu-aut/DINEN61360#Boolean":
 		match value: 
 			case 'true':
 				effect_smt = Implies(capability, property)

@@ -135,7 +135,7 @@ def find_property_pairs() -> List[PropertyPair]:
 	# Queries the graph and finds all implicitly related property pairs
 
 	query_string = """
-	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
+	PREFIX DINEN61360: <http://www.w3id.org/hsu-aut/DINEN61360#>
 	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
 	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>

@@ -12,7 +12,7 @@ def goal_smt():
 		value = goal.value                                                            
 		
 		prop_type = property_dictionary.get_property_data_type(property_iri) 
-		if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real" or prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Integer":
+		if prop_type == "http://www.w3id.org/hsu-aut/DINEN61360#Real" or prop_type == "http://www.w3id.org/hsu-aut/DINEN61360#Integer":
 
 			match relation:														    
 				case "<":
@@ -31,7 +31,7 @@ def goal_smt():
 					raise RuntimeError("Incorrent logical relation")
 			goals.append(goal_smt)
 		
-		elif prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Boolean":
+		elif prop_type == "http://www.w3id.org/hsu-aut/DINEN61360#Boolean":
 				match value: 
 					case 'true':
 						goal_smt = property

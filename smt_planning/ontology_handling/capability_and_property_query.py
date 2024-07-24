@@ -11,7 +11,7 @@ def get_all_properties() -> PropertyDictionary:
 	# Thing and type description together define a certain property in a context.
 	# rdflib is not capable of inferencing 
 	query_string = """
-	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
+	PREFIX DINEN61360: <http://www.w3id.org/hsu-aut/DINEN61360#>
 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
 	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
 	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
@@ -61,7 +61,7 @@ def get_all_properties() -> PropertyDictionary:
 
 def get_provided_capabilities() -> Tuple[CapabilityDictionary, ResourceDictionary]:
 	query_string = """
-	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
+	PREFIX DINEN61360: <http://www.w3id.org/hsu-aut/DINEN61360#>
 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
 	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
 	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
@@ -102,7 +102,7 @@ def get_provided_capabilities() -> Tuple[CapabilityDictionary, ResourceDictionar
 # TODO one query for both ... 
 def get_output_influences_of_capability(capability_iri: str) -> List[CapabilityPropertyInfluence] :
 	query_string = """
-	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
+	PREFIX DINEN61360: <http://www.w3id.org/hsu-aut/DINEN61360#>
 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
 	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
 	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
