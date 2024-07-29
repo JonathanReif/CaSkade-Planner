@@ -73,7 +73,7 @@ def generate_and_solve_plan():
 		max_happenings = 5
 	result = planner.cask_to_smt(max_happenings)
 	if result == None:
-		return jsonify({'error': 'No plan found'}), 404
+		return jsonify({'error': 'No plan found'}), 204
 	return result.as_dict()
 
 def run():
