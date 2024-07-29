@@ -156,7 +156,7 @@ def get_output_influences_of_capability(capability_iri: str) -> List[CapabilityP
 		# capDict.add_CapabilityOccurrence(str(row['cap']), "http://www.w3id.org/hsu-aut/cask#ProvidedCapability", happening, [], [])
 		property_iri = str(row['output_de'])
 		prop = property_dictionary.get_property(property_iri)
-		if(not row.get('equalConstraint') and not row.get('outputValue') and not row.get('inputValue')):
+		if(not row.get('equalConstraint') and not row.get('outputValue')):
 			continue
 		if(row.get('equalConstraint')):
 			if(not row.get('inputStateClass').eq(row.get('outputStateClass'))):
