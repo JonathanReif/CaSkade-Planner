@@ -5483,13 +5483,10 @@ ns2:formalProperty a owl:ObjectProperty .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/latitude71> a ns1:Application,
         ns4:CapabilityConstraint ;
-    ns1:arguments <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/latitude71/ArgList> ;
+    ns1:arguments (<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat/latitude71_id> <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_id>) ;
     ns1:operator <http://www.openmath.org/cd/relation1#eq> ;
     ns4:references <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat/latitude71_id>,
         <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_id> .
-
-<http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/latitude71/ArgList> rdf:first <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/AssuranceInflat/latitude71_id> ;
-    rdf:rest ( <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/RequiredInflat/latitude71_id> ) .
 
 <http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19/Constraint/longitude70> a ns1:Application,
         ns4:CapabilityConstraint ;
