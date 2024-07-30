@@ -138,11 +138,11 @@ class Plan:
 
 
 class PlanningResult:
-	def __init__(self, model: ModelRef):
+	def __init__(self, model: Dict[str, bool | float | int]):
 		self.time_created = datetime.now()
 		self.plan = self.derive_plan_from_model(model)
 
-	def derive_plan_from_model(self, model: ModelRef) -> Plan:
+	def derive_plan_from_model(self, model: Dict[str, bool | float | int]) -> Plan:
 		property_dictionary = StateHandler().get_property_dictionary()
 		capability_dictionary = StateHandler().get_capability_dictionary()
 
@@ -151,7 +151,7 @@ class PlanningResult:
 		property_appearance_store: Dict[int, List[PropertyAppearance]] = {} 	# store is a dict with happenings as a key
 		for variable in model:
 			variable_value = model[variable]
-			# Filter out these pesty comments
+			# Filter out all comments
 			if (str(variable).startswith("##") and str(variable).endswith("##")):
 				continue
 				
