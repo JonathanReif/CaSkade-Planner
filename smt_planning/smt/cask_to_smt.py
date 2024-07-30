@@ -2,7 +2,7 @@ import json
 import time
 
 from smt_planning.ontology_handling.query_handlers import FileQueryHandler, SparqlEndpointQueryHandler
-from z3 import Solver, Optimize, unsat, Bool, Sum
+from z3 import Solver, Optimize, unsat, Bool, Sum, BoolRef, parse_smt2_string
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.openmath.parse_openmath import QueryCache
 from smt_planning.ontology_handling.capability_and_property_query import get_all_properties, get_provided_capabilities
@@ -23,6 +23,8 @@ from smt_planning.smt.capability_mutexes import get_capability_mutexes
 from smt_planning.smt.planning_result import PlanningResult
 
 class CaskadePlanner:
+
+	assertion_dictionary = {}
 
 	def with_file_query_handler(self, filename: str):
 		self.query_handler = FileQueryHandler(filename)
@@ -71,6 +73,7 @@ class CaskadePlanner:
 		while (happenings <= max_happenings and solver_result == unsat):
 			# SMT Solver
 			solver = Solver()
+			solver.set(unsat_core=True)
 			solver.reset()
 			state_handler.reset_caches()
 			solver_result = unsat
@@ -86,101 +89,172 @@ class CaskadePlanner:
 			# ------------------------------Ressource IDs---------------------------------------------------
 			self.add_comment(solver, "Start of resource ids")
 			resource_ids = create_resource_ids(happenings, event_bound)
+			resource_id_counter = 0
 			for resource_id in resource_ids:
-				solver.add(resource_id)
+				resource_id_counter += 1
+				assertion_name = f'resourceId_{resource_id_counter}_{happenings}'
+				self.assertion_dictionary[assertion_name] = resource_id
+				solver.assert_and_track(resource_id, assertion_name)
 
 			# ------------------------Constraint Proposition (H1 + H2) --> bool properties------------------
 			self.add_comment(solver, "Start of constraints proposition")
 			bool_constraints = get_bool_constraints(happenings, event_bound)
+			bool_constraint_counter = 0
 			for bool_constraint in bool_constraints:
-				solver.add(bool_constraint)	
+				bool_constraint_counter += 1
+				assertion_name = f'boolConstraint_{bool_constraint_counter}_{happenings}'
+				self.assertion_dictionary[assertion_name] = bool_constraint
+				solver.assert_and_track(bool_constraint, assertion_name)
 
 			# ---------------------Constraint Real Variable (H5) --> real properties-----------------------------
 			self.add_comment(solver, "Start of constraints real variables")
 			variable_constraints = get_variable_constraints(happenings, event_bound)
+			variable_constraint_counter = 0
 			for variable_constraint in variable_constraints:
-				solver.add(variable_constraint)	
+				variable_constraint_counter += 1
+				assertion_name = f'varConstraint_{variable_constraint_counter}_{happenings}'
+				self.assertion_dictionary[assertion_name] = variable_constraint
+				solver.assert_and_track(variable_constraint, assertion_name)
 
 			# ----------------- Capability Precondition ------------------------------------------------------
 			self.add_comment(solver, "Start of preconditions")
 			preconditions = capability_preconditions_smt(happenings, event_bound)
+			precondition_counter = 0
 			for precondition in preconditions:
-				solver.add(precondition)
+				precondition_counter += 1
+				assertion_name = f'precond_{precondition_counter}_{happenings}'
+				self.assertion_dictionary[assertion_name] = precondition
+				solver.assert_and_track(precondition, assertion_name)
 
 			# --------------------------------------- Capability Effect ---------------------------------------
 			self.add_comment(solver, "Start of effects")
 			effects = capability_effects_smt(happenings, event_bound)
+			effect_counter = 0
 			for effect in effects:
-				solver.add(effect)
+				effect_counter += 1
+				assertion_name = f'effect_{effect_counter}_{happenings}'
+				self.assertion_dictionary[assertion_name] = effect
+				solver.assert_and_track(effect, assertion_name)
 
-			# Capability constraints are expressions in smt2 form that cannot be added programmatically. Thus, we take the current solver in string form
-			# We create a new solver object. Then we take the current solver string and add the constraint strings. We then re-import everything back into the fresh solver object
-			# It has to be a fresh object because just re-importing doesn't clear everything
+			# Capability constraints are expressions in smt2 form that cannot be added programmatically, because we only have the whole expression in string form 
+			# after parsing it from OpenMath RDF. Hence, we must read it as string into a temp solver and then add all assertions into our main solver
 			self.add_comment(solver, "Start of capability constraints")
-			current_solver_string = solver.to_smt2()
-			solver = Solver()
+			# current_solver_string = solver.to_smt2()
+			
+			temp_solver = Solver()
+			main_solver_state = solver.to_smt2()
+			temp_solver_string = "\n".join(
+				line for line in main_solver_state.splitlines() if line.startswith("(declare-fun")
+			)
+			
+			# Füge die ursprünglichen Variablen wieder hinzu
+			# temp_solver.from_string(variables_state)
+
+			# temp_solver_string = ""
 			constraints = capability_constraints_smt(happenings, event_bound)
 			for constraint in constraints:
-				current_solver_string += f"\n{constraint}" 
+				temp_solver_string += f"\n{constraint}" 
 
-			solver.from_string(current_solver_string)
+			temp_solver.from_string(temp_solver_string)
+			temp_solver_assertions = temp_solver.assertions()
+
+			# add all assertions back into main solver
+			cap_constraint_counter = 0
+			for capability_constraint_assertion in temp_solver_assertions:
+				cap_constraint_counter += 1
+				assertion_name = f'capConstraint_{cap_constraint_counter}_{happenings}'
+				self.assertion_dictionary[assertion_name] = capability_constraint_assertion
+				solver.assert_and_track(capability_constraint_assertion, assertion_name)
 
 			# ---------------- Constraints Capability mutexes (H14) -----------------------------------------
 			self.add_comment(solver, "Start of capability mutexes")
 			capability_mutexes = get_capability_mutexes(happenings)
+			capability_mutex_counter = 0
 			for capability_mutex in capability_mutexes:
-				solver.add(capability_mutex)		
+				capability_mutex_counter += 1
+				assertion_name = f'capMutex_{capability_mutex_counter}_{happenings}'
+				self.assertion_dictionary[assertion_name] = capability_mutex
+				solver.assert_and_track(capability_mutex, assertion_name)
 
 			# ---------------- Init  --------------------------------------------------------
 			self.add_comment(solver, "Start of init")
 			inits = init_smt()
+			init_counter = 0
 			for init in inits:
-				solver.add(init)												
+				init_counter += 1
+				assertion_name = f'init_{init_counter}_{happenings}'
+				self.assertion_dictionary[assertion_name] = init
+				solver.assert_and_track(init, assertion_name)
 
 			# ---------------------- Goal ------------------------------------------------- 
 			self.add_comment(solver, "Start of goal")
 			goals = goal_smt()
+			goal_counter = 0
 			for goal in goals:
-				solver.add(goal)
+				goal_counter += 1
+				assertion_name = f'goal_{goal_counter}_{happenings}'
+				self.assertion_dictionary[assertion_name] = goal
+				solver.assert_and_track(goal, assertion_name)
 
 			# ------------------- Proposition support (P5 + P6) ----------------------------
 			self.add_comment(solver, "Start of proposition support")
 			proposition_supports = getPropositionSupports(happenings, event_bound)
+			suppport_counter = 0
 			for support in proposition_supports:
-				solver.add(support)
+				suppport_counter += 1
+				assertion_name = f'support_{suppport_counter}_{happenings}'
+				self.assertion_dictionary[assertion_name] = support
+				solver.assert_and_track(support, assertion_name)
 
 			# ----------------- Continuous change on real variables (P11) ------------------
 			self.add_comment(solver, "Start of real variable continuous change")
 			real_variable_cont_changes = get_real_variable_continuous_changes(happenings, event_bound)
+			real_variable_cont_change_counter = 0
 			for real_variable_cont_change in real_variable_cont_changes:
-				solver.add(real_variable_cont_change)
+				real_variable_cont_change_counter += 1
+				assertion_name = f'realVarContChange_{real_variable_cont_change_counter}_{happenings}'
+				self.assertion_dictionary[assertion_name] = real_variable_cont_change
+				solver.assert_and_track(real_variable_cont_change, assertion_name)
 
 			# ----------------- Cross-connection of related properties (new) -----------------
 			self.add_comment(solver, "Start of related properties")
 			property_cross_relations = get_property_cross_relations(happenings, event_bound)
+			cross_relation_counter = 0
 			for cross_relation in property_cross_relations:
-				solver.add(cross_relation)
+				cross_relation_counter += 1
+				assertion_name = f'crossRelation_{cross_relation_counter}_{happenings}'
+				self.assertion_dictionary[assertion_name] = cross_relation
+				solver.assert_and_track(cross_relation, assertion_name)
 
 			# Optimize by minimizing number of used capabilities to prevent unnecessary use of capabilities
-			constraints = solver.assertions()
-			opt = Optimize()
-			opt.add(constraints)
+			#constraints = solver.assertions()
+			# opt = Optimize()
+			# opt.add(constraints)
 
-			capabilities = [occurrence.z3_variable for capability in capability_dictionary.capabilities.values() for occurrence in capability.occurrences.values()]
-			opt.minimize(Sum(capabilities))
+			#capabilities = [occurrence.z3_variable for capability in capability_dictionary.capabilities.values() for occurrence in capability.occurrences.values()]
+			# opt.minimize(Sum(capabilities))
 
 			end_time = time.time()
 			print(f"Time for generating SMT: {end_time - start_time}")	
 
 			# Check satisfiability and get the model
-			solver_result = opt.check()
+			solver_result = solver.check()
 			end_time_solver = time.time()
 			print(f"Time for solving SMT: {end_time_solver - end_time}")
 
 			if solver_result == unsat:
 				print(f"No solution with {happenings} happening(s) found.")
 			else:
-				model = opt.model()
+				model = solver.model()
+				replaced_model = {}
+				for model_declaration in model.decls():
+					constraint_name = model_declaration.name()
+					if constraint_name in self.assertion_dictionary:
+						replaced_model[self.assertion_dictionary[constraint_name]] = model[model_declaration]
+					else:
+						replaced_model[constraint_name] = model[model_declaration]
+				print(model)
+				print(replaced_model)
 				plan = PlanningResult(model)
 
 				if problem_location:
@@ -202,4 +276,20 @@ class CaskadePlanner:
 						json.dump(plan, json_file, default=lambda o: o.as_dict(), indent=4)
 
 
-				return plan 
+				return plan
+		unsat_core = solver.unsat_core()
+
+def is_unsat_core(solver, core):
+    s = Solver()
+    for c in core:
+        s.add(c)
+    return s.check() == unsat
+
+def find_minimal_unsat_core(solver, core):
+    if not is_unsat_core(solver, core):
+        return []
+    for i in range(len(core)):
+        reduced_core = core[:i] + core[i+1:]
+        if is_unsat_core(solver, reduced_core):
+            return find_minimal_unsat_core(solver, reduced_core)
+    return core
