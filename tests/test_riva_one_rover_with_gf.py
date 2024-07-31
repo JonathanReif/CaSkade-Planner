@@ -12,7 +12,7 @@ class TestRoverWithGF:
 	This ontology file contains three capabilities (driveTo, grab and drop) of a Rover that are supposed to be executed in three happenings. Additionally, the rover has a geofence, which restricts the rovers range of movement.
 	"""
 	def test_one_create_and_solve(self):
-		ontology_file = os.getcwd() + "\\tests\\riva_one_rover_with_gf.ttl"
+		ontology_file = os.getcwd() + "/tests/riva_one_rover_with_gf.ttl"
 		max_happenings = 3
 		planner: CaskadePlanner = CaskadePlanner() 
 		planner.with_file_query_handler(ontology_file)
@@ -84,7 +84,7 @@ class TestRoverWithGF:
 
 	#TODO Tests for the rover with geofence, that do not allow a plan. Here more than "None" need to be checked
 	def test_two_create_and_solve_fail_item_goal(self):
-		ontology_file = os.getcwd() + "\\tests\\riva_one_rover_with_gf_fail_item_goal.ttl"
+		ontology_file = os.getcwd() + "/tests/riva_one_rover_with_gf_fail_item_goal.ttl"
 		max_happenings = 3
 		planner: CaskadePlanner = CaskadePlanner() 
 		planner.with_file_query_handler(ontology_file)
@@ -92,7 +92,7 @@ class TestRoverWithGF:
 		assert expected_plan == None, "No plan should be found"
 
 	def test_two_create_and_solve_fail_item_start(self):
-		ontology_file = os.getcwd() + "\\tests\\riva_one_rover_with_gf_fail_item_start.ttl"
+		ontology_file = os.getcwd() + "/tests/riva_one_rover_with_gf_fail_item_start.ttl"
 		max_happenings = 3
 		planner: CaskadePlanner = CaskadePlanner() 
 		planner.with_file_query_handler(ontology_file)
@@ -100,7 +100,7 @@ class TestRoverWithGF:
 		assert expected_plan == None, "No plan should be found"
 
 	def test_riva_one_rover_with_gf_and_current_holder(self):
-		ontology_file = os.getcwd() + "\\tests\\riva_one_rover_with_gf_and_current_holder.ttl"
+		ontology_file = os.getcwd() + "/tests/riva_one_rover_with_gf_and_current_holder.ttl"
 		max_happenings = 3
 		planner: CaskadePlanner = CaskadePlanner() 
 		planner.with_file_query_handler(ontology_file)
