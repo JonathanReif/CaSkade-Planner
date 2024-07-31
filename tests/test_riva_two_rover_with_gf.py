@@ -9,7 +9,7 @@ This ontology file contains three capabilities (driveTo, grab and drop) of two R
 class TestTwoRoverWithGF:
 	
 	def test_create_and_solve(self):
-		ontology_file = os.getcwd() + "\\tests\\riva_two_rover_with_gf_and_current_holder.ttl"
+		ontology_file = os.getcwd() + "/tests/riva_two_rover_with_gf_and_current_holder.ttl"
 		max_happenings = 6
 		planner: CaskadePlanner = CaskadePlanner() 
 		planner.with_file_query_handler(ontology_file)

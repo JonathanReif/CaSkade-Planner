@@ -12,7 +12,7 @@ class TestDroneWithGF:
 	This ontology file contains three capabilities (flyTo, grab and drop) of a Drone that are supposed to be executed in three happenings. Additionally, the drone has a geofence, which restricts the drones range of movement.
 	"""
 	def test_one_create_and_solve(self):
-		ontology_file = os.getcwd() + "\\tests\\riva_one_drone_with_gf_and_current_holder.ttl"
+		ontology_file = os.getcwd() + "/tests/riva_one_drone_with_gf_and_current_holder.ttl"
 		max_happenings = 3
 		planner: CaskadePlanner = CaskadePlanner() 
 		planner.with_file_query_handler(ontology_file)

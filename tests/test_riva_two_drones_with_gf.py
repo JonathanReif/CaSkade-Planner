@@ -9,7 +9,7 @@ This ontology file contains three capabilities (flyTo, grab and drop) of two Dro
 class TestTwoDronesWithGF:
 	
 	def test_create_and_solve(self):
-		ontology_file = os.getcwd() + "\\tests\\riva_two_drones.ttl"
+		ontology_file = os.getcwd() + "/tests/riva_two_drones.ttl"
 		max_happenings = 6
 		planner: CaskadePlanner = CaskadePlanner() 
 		planner.with_file_query_handler(ontology_file)
