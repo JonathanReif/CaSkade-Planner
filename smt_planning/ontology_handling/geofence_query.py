@@ -6,7 +6,7 @@ def get_geofence_constraints() -> RobotGeofenceDictionary:
     query_string_geofence = """
         PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
         PREFIX RIVA: <http://www.hsu-hh.de/aut/RIVA/Logistic#>
-        PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
+        PREFIX DINEN61360: <http://www.w3id.org/hsu-aut/DINEN61360#>
         select ?robot ?point ?de ?type ?val where { 
             ?robot a CSS:Resource; 
                 RIVA:has_Geofence ?geofence. 
@@ -19,7 +19,7 @@ def get_geofence_constraints() -> RobotGeofenceDictionary:
     
     query_string_vehicle_points = """
         PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
-        PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
+        PREFIX DINEN61360: <http://www.w3id.org/hsu-aut/DINEN61360#>
         select ?robot ?de ?type where { 
             ?robot a CSS:Resource;
                 DINEN61360:has_Data_Element ?de. 

@@ -3,7 +3,7 @@
 @prefix ns2: <http://openmath.org/vocab/math/meta#> .
 @prefix ns3: <http://www.w3id.org/hsu-aut/css#> .
 @prefix ns4: <http://www.w3id.org/hsu-aut/VDI3682#> .
-@prefix ns5: <http://www.hsu-ifa.de/ontologies/DINEN61360#> .
+@prefix ns5: <http://www.w3id.org/hsu-aut/DINEN61360#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
@@ -86,7 +86,7 @@ ns2:formalProperty rdf:type owl:ObjectProperty .
 :has_Point rdf:type owl:ObjectProperty .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Data_Element_describes
+###  http://www.w3id.org/hsu-aut/DINEN61360#Data_Element_describes
 ns5:Data_Element_describes rdf:type owl:ObjectProperty ;
                            owl:inverseOf ns5:has_Data_Element ;
                            rdfs:domain ns5:Data_Element ;
@@ -94,20 +94,20 @@ ns5:Data_Element_describes rdf:type owl:ObjectProperty ;
 This ObjectProperty is used to connect a data element with any kind of entity that is described by the data element""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Instance_Description_has_Type
+###  http://www.w3id.org/hsu-aut/DINEN61360#Instance_Description_has_Type
 ns5:Instance_Description_has_Type rdf:type owl:ObjectProperty ;
                                   owl:inverseOf ns5:Type_Description_has_Instance ;
                                   rdfs:domain ns5:Instance_Description ;
                                   rdfs:range ns5:Type_Description .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Type_Description_has_Instance
+###  http://www.w3id.org/hsu-aut/DINEN61360#Type_Description_has_Instance
 ns5:Type_Description_has_Instance rdf:type owl:ObjectProperty ;
                                   rdfs:domain ns5:Type_Description ;
                                   rdfs:range ns5:Instance_Description .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#complex_Data_Type_has_Member
+###  http://www.w3id.org/hsu-aut/DINEN61360#complex_Data_Type_has_Member
 ns5:complex_Data_Type_has_Member rdf:type owl:ObjectProperty ;
                                  owl:inverseOf ns5:is_Member_of_Complex_Data_Type ;
                                  rdfs:domain [ owl:intersectionOf ( ns5:Instance_Description
@@ -123,14 +123,14 @@ ns5:complex_Data_Type_has_Member rdf:type owl:ObjectProperty ;
 ObjectProperty that is used to connect an instance of a complex data type with corresponding members of the complex data type. These members are connected to types and instances of other (complex) data types""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#has_Data_Element
+###  http://www.w3id.org/hsu-aut/DINEN61360#has_Data_Element
 ns5:has_Data_Element rdf:type owl:ObjectProperty ;
                      rdfs:range ns5:Data_Element ;
                      rdfs:comment """Description:r
 This ObjectProperty is used to connect any kind of entity with a data element that is used for its description.""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#has_Instance_Description
+###  http://www.w3id.org/hsu-aut/DINEN61360#has_Instance_Description
 ns5:has_Instance_Description rdf:type owl:ObjectProperty ;
                              owl:inverseOf ns5:is_Instance_Description_of_Data_Element ;
                              rdf:type owl:InverseFunctionalProperty ;
@@ -144,7 +144,7 @@ ns5:has_Instance_Description rdf:type owl:ObjectProperty ;
 ObjectProperty is used to connect an individual that needs to be described by DataProperties with the Instance Description of that properties.""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#has_Type_Description
+###  http://www.w3id.org/hsu-aut/DINEN61360#has_Type_Description
 ns5:has_Type_Description rdf:type owl:ObjectProperty ;
                          owl:inverseOf ns5:is_Type_Description_of_Data_Element ;
                          rdf:type owl:FunctionalProperty ;
@@ -161,7 +161,7 @@ Functional:r
 Any indivudual representing a property, can have only one Type Description""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#is_Instance_Description_of_Data_Element
+###  http://www.w3id.org/hsu-aut/DINEN61360#is_Instance_Description_of_Data_Element
 ns5:is_Instance_Description_of_Data_Element rdf:type owl:ObjectProperty ;
                                             rdfs:comment """Description:r
 ObjectProperty is used to connect an Instance Description with the Data_Element that it describes.r
@@ -169,7 +169,7 @@ r
 Inverse of has_Instance_Description""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#is_Member_of_Complex_Data_Type
+###  http://www.w3id.org/hsu-aut/DINEN61360#is_Member_of_Complex_Data_Type
 ns5:is_Member_of_Complex_Data_Type rdf:type owl:ObjectProperty ;
                                    rdfs:domain ns5:Complex_Data_Type_Member ;
                                    rdfs:range [ owl:intersectionOf ( ns5:Instance_Description
@@ -182,7 +182,7 @@ ns5:is_Member_of_Complex_Data_Type rdf:type owl:ObjectProperty ;
                                               ] .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#is_Type_Description_of_Data_Element
+###  http://www.w3id.org/hsu-aut/DINEN61360#is_Type_Description_of_Data_Element
 ns5:is_Type_Description_of_Data_Element rdf:type owl:ObjectProperty ;
                                         rdfs:comment """Description:r
 ObjectProperty is used to connect a Type_Description with a Data_Element that has instace descriptions of this type. r
@@ -868,7 +868,7 @@ ns2:commentedProperty rdf:type owl:DatatypeProperty .
 ns2:description rdf:type owl:DatatypeProperty .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Array_Member_Dimension
+###  http://www.w3id.org/hsu-aut/DINEN61360#Array_Member_Dimension
 ns5:Array_Member_Dimension rdf:type owl:DatatypeProperty ;
                            rdfs:domain ns5:Array_Member ;
                            rdfs:range xsd:int ;
@@ -877,14 +877,14 @@ r
 Indicates the dimension of an array member.""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Array_Member_Position
+###  http://www.w3id.org/hsu-aut/DINEN61360#Array_Member_Position
 ns5:Array_Member_Position rdf:type owl:DatatypeProperty ;
                           rdfs:comment """Description:r
 r
 DataProperty that indicates the position of an Array_Member in a DataType List.""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Boolean_Operator
+###  http://www.w3id.org/hsu-aut/DINEN61360#Boolean_Operator
 ns5:Boolean_Operator rdf:type owl:DatatypeProperty ,
                               owl:FunctionalProperty ;
                      rdfs:range [ rdf:type rdfs:Datatype ;
@@ -908,7 +908,7 @@ ns5:Boolean_Operator rdf:type owl:DatatypeProperty ,
                      rdfs:comment "Is used with Boolean_Association to define what kind of boolean relation connects the Data_Elements of the Boolean_Association" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Code
+###  http://www.w3id.org/hsu-aut/DINEN61360#Code
 ns5:Code rdf:type owl:DatatypeProperty ;
          rdfs:subPropertyOf owl:topDataProperty ;
          rdf:type owl:FunctionalProperty ;
@@ -922,7 +922,7 @@ r
 type: string with 6 digits between, first three digits are a-z and last three digits are 0-9  poposed data range expression: xsd:string[pattern \"[a-z0-9] {6}\"]""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Created_at_Date
+###  http://www.w3id.org/hsu-aut/DINEN61360#Created_at_Date
 ns5:Created_at_Date rdf:type owl:DatatypeProperty ;
                     rdfs:domain ns5:Instance_Description ;
                     rdfs:range xsd:dateTimeStamp ;
@@ -930,7 +930,7 @@ ns5:Created_at_Date rdf:type owl:DatatypeProperty ;
 A SemAnz40 attribute, that indicates the creation date for an instance.""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Definition
+###  http://www.w3id.org/hsu-aut/DINEN61360#Definition
 ns5:Definition rdf:type owl:DatatypeProperty ;
                rdfs:subPropertyOf owl:topDataProperty ;
                rdfs:domain ns5:Type_Description ;
@@ -946,7 +946,7 @@ r
 Poposed Data Range Expression: xsd:string""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Drawing_Reference
+###  http://www.w3id.org/hsu-aut/DINEN61360#Drawing_Reference
 ns5:Drawing_Reference rdf:type owl:DatatypeProperty ;
                       rdfs:subPropertyOf owl:topDataProperty ;
                       rdfs:domain ns5:Type_Description ;
@@ -962,7 +962,7 @@ r
 Poposed Data Range Expression: xsd:string""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Expression_Goal
+###  http://www.w3id.org/hsu-aut/DINEN61360#Expression_Goal
 ns5:Expression_Goal rdf:type owl:DatatypeProperty ;
                     rdfs:subPropertyOf owl:topDataProperty ;
                     rdf:type owl:FunctionalProperty ;
@@ -986,7 +986,7 @@ r
 Liability: Necessary""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Format_DIN61360_SemAnz40
+###  http://www.w3id.org/hsu-aut/DINEN61360#Format_DIN61360_SemAnz40
 ns5:Format_DIN61360_SemAnz40 rdf:type owl:DatatypeProperty ;
                              rdfs:subPropertyOf owl:topDataProperty ;
                              rdfs:domain ns5:Data_Element ;
@@ -1001,7 +1001,7 @@ r
 Poposed Data Range Expression: xsd:boolean""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Formula
+###  http://www.w3id.org/hsu-aut/DINEN61360#Formula
 ns5:Formula rdf:type owl:DatatypeProperty ;
             rdfs:subPropertyOf owl:topDataProperty ;
             rdfs:domain ns5:Type_Description ;
@@ -1017,7 +1017,7 @@ r
 Poposed Data Range Expression: xsd:string""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#List_Member_Position
+###  http://www.w3id.org/hsu-aut/DINEN61360#List_Member_Position
 ns5:List_Member_Position rdf:type owl:DatatypeProperty ;
                          rdfs:domain ns5:List_Member ;
                          rdfs:range xsd:int ;
@@ -1026,7 +1026,7 @@ r
 DataProperty that indicates the position of a List_Member in a DataType List.""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Logic_Interpretation
+###  http://www.w3id.org/hsu-aut/DINEN61360#Logic_Interpretation
 ns5:Logic_Interpretation rdf:type owl:DatatypeProperty ;
                          rdfs:subPropertyOf owl:topDataProperty ;
                          rdf:type owl:FunctionalProperty ;
@@ -1056,7 +1056,7 @@ r
 Liability: Necessary""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Note
+###  http://www.w3id.org/hsu-aut/DINEN61360#Note
 ns5:Note rdf:type owl:DatatypeProperty ;
          rdfs:subPropertyOf owl:topDataProperty ;
          rdfs:domain ns5:Type_Description ;
@@ -1072,7 +1072,7 @@ r
 Poposed Data Range Expression: xsd:string""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Preferred_Letter_Symbol
+###  http://www.w3id.org/hsu-aut/DINEN61360#Preferred_Letter_Symbol
 ns5:Preferred_Letter_Symbol rdf:type owl:DatatypeProperty ;
                             rdfs:subPropertyOf owl:topDataProperty ;
                             rdfs:domain ns5:Type_Description ;
@@ -1088,7 +1088,7 @@ r
 Poposed Data Range Expression: xsd:string""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Preferred_Name
+###  http://www.w3id.org/hsu-aut/DINEN61360#Preferred_Name
 ns5:Preferred_Name rdf:type owl:DatatypeProperty ;
                    rdfs:subPropertyOf owl:topDataProperty ;
                    rdfs:domain ns5:Type_Description ;
@@ -1104,7 +1104,7 @@ r
 Poposed Data Range Expression: xsd:string[maxLength 70]""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Quality
+###  http://www.w3id.org/hsu-aut/DINEN61360#Quality
 ns5:Quality rdf:type owl:DatatypeProperty ;
             rdfs:subPropertyOf owl:topDataProperty ;
             rdfs:domain ns5:Instance_Description ;
@@ -1113,14 +1113,14 @@ r
 Not supported so far, since it requires a additional quality ontology""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Remark
+###  http://www.w3id.org/hsu-aut/DINEN61360#Remark
 ns5:Remark rdf:type owl:DatatypeProperty ;
            rdfs:domain ns5:Type_Description ;
            rdfs:comment """Additional information that can be used to express a oppinion but should not change the meaning of the definition.r
 DIN EN 61360-1:2018 Section 8.5""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Revision_Number
+###  http://www.w3id.org/hsu-aut/DINEN61360#Revision_Number
 ns5:Revision_Number rdf:type owl:DatatypeProperty ;
                     rdfs:subPropertyOf owl:topDataProperty ;
                     rdfs:domain ns5:Type_Description ;
@@ -1136,7 +1136,7 @@ r
 Poposed Data Range Expression: xsd:integer[>= 1 , <= 99]""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Short_Name
+###  http://www.w3id.org/hsu-aut/DINEN61360#Short_Name
 ns5:Short_Name rdf:type owl:DatatypeProperty ;
                rdfs:subPropertyOf owl:topDataProperty ;
                rdfs:domain ns5:Type_Description ;
@@ -1152,7 +1152,7 @@ r
 Poposed Data Range Expression: xsd:string[maxLength 17]""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Source_Document_of_Definition
+###  http://www.w3id.org/hsu-aut/DINEN61360#Source_Document_of_Definition
 ns5:Source_Document_of_Definition rdf:type owl:DatatypeProperty ;
                                   rdfs:subPropertyOf owl:topDataProperty ;
                                   rdfs:domain ns5:Type_Description ;
@@ -1168,7 +1168,7 @@ r
 Poposed Data Range Expression: xsd:string""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Synonymous_Letter_Symbol
+###  http://www.w3id.org/hsu-aut/DINEN61360#Synonymous_Letter_Symbol
 ns5:Synonymous_Letter_Symbol rdf:type owl:DatatypeProperty ;
                              rdfs:subPropertyOf owl:topDataProperty ;
                              rdfs:domain ns5:Type_Description ;
@@ -1184,7 +1184,7 @@ r
 Poposed Data Range Expression: xsd:string""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Synonymous_Name
+###  http://www.w3id.org/hsu-aut/DINEN61360#Synonymous_Name
 ns5:Synonymous_Name rdf:type owl:DatatypeProperty ;
                     rdfs:subPropertyOf owl:topDataProperty ;
                     rdfs:domain ns5:Type_Description ;
@@ -1200,7 +1200,7 @@ r
 Poposed Data Range Expression: xsd:string[maxLength 70]""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Unit_of_Measure
+###  http://www.w3id.org/hsu-aut/DINEN61360#Unit_of_Measure
 ns5:Unit_of_Measure rdf:type owl:DatatypeProperty ;
                     rdfs:subPropertyOf owl:topDataProperty ;
                     rdfs:domain ns5:Type_Description ;
@@ -1216,7 +1216,7 @@ r
 Poposed Data Range Expression: xsd:string""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Value
+###  http://www.w3id.org/hsu-aut/DINEN61360#Value
 ns5:Value rdf:type owl:DatatypeProperty ;
           rdfs:subPropertyOf owl:topDataProperty ;
           rdf:type owl:FunctionalProperty ;
@@ -1241,7 +1241,7 @@ r
 Poposed Data Range Expression: xsd:string""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Value_Format_Field_length
+###  http://www.w3id.org/hsu-aut/DINEN61360#Value_Format_Field_length
 ns5:Value_Format_Field_length rdf:type owl:DatatypeProperty ;
                               rdfs:subPropertyOf owl:topDataProperty ;
                               rdfs:domain ns5:Type_Description ;
@@ -1257,7 +1257,7 @@ r
 Poposed Data Range Expression: xsd:string""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Value_Format_Field_length_Variable
+###  http://www.w3id.org/hsu-aut/DINEN61360#Value_Format_Field_length_Variable
 ns5:Value_Format_Field_length_Variable rdf:type owl:DatatypeProperty ;
                                        rdfs:subPropertyOf owl:topDataProperty ;
                                        rdfs:domain ns5:Type_Description ;
@@ -1273,7 +1273,7 @@ r
 Poposed Data Range Expression: xsd:boolean""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Value_Format_non-quantitativ
+###  http://www.w3id.org/hsu-aut/DINEN61360#Value_Format_non-quantitativ
 ns5:Value_Format_non-quantitativ rdf:type owl:DatatypeProperty ;
                                  rdfs:subPropertyOf owl:topDataProperty ;
                                  rdfs:domain ns5:Type_Description ;
@@ -1308,7 +1308,7 @@ r
 Poposed Data Range Expression: xsd:string""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Value_Format_quantitativ
+###  http://www.w3id.org/hsu-aut/DINEN61360#Value_Format_quantitativ
 ns5:Value_Format_quantitativ rdf:type owl:DatatypeProperty ;
                              rdfs:subPropertyOf owl:topDataProperty ;
                              rdfs:domain ns5:Type_Description ;
@@ -1336,7 +1336,7 @@ r
 Poposed Data Range Expression: xsd:string""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Value_List
+###  http://www.w3id.org/hsu-aut/DINEN61360#Value_List
 ns5:Value_List rdf:type owl:DatatypeProperty ;
                rdfs:subPropertyOf owl:topDataProperty ;
                rdfs:domain ns5:Simple_Data_Type ;
@@ -1352,7 +1352,7 @@ r
 Poposed Data Range Expression: xsd:boolean""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Value_List_Member
+###  http://www.w3id.org/hsu-aut/DINEN61360#Value_List_Member
 ns5:Value_List_Member rdf:type owl:DatatypeProperty ;
                       rdfs:subPropertyOf owl:topDataProperty ;
                       rdfs:domain ns5:Simple_Data_Type ;
@@ -1368,7 +1368,7 @@ r
 Poposed Data Range Expression: xsd:string""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Version_Number
+###  http://www.w3id.org/hsu-aut/DINEN61360#Version_Number
 ns5:Version_Number rdf:type owl:DatatypeProperty ;
                    rdfs:subPropertyOf owl:topDataProperty ;
                    rdfs:domain ns5:Type_Description ;
@@ -1384,7 +1384,7 @@ r
 Poposed Data Range Expression: xsd:integer[>= 1 , <= 999]""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#backwards_compatible_Revision
+###  http://www.w3id.org/hsu-aut/DINEN61360#backwards_compatible_Revision
 ns5:backwards_compatible_Revision rdf:type owl:DatatypeProperty ;
                                   rdfs:domain ns5:Type_Description ;
                                   rdfs:comment """Description:r
@@ -1395,7 +1395,7 @@ r
 Poposed Data Range Expression: xsd:string""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#backwards_compatible_Version
+###  http://www.w3id.org/hsu-aut/DINEN61360#backwards_compatible_Version
 ns5:backwards_compatible_Version rdf:type owl:DatatypeProperty ;
                                  rdfs:domain ns5:Type_Description ;
                                  rdfs:comment """Description:r
@@ -1757,7 +1757,7 @@ ns2:SemanticAttributionSymbol rdf:type owl:Class ;
 :Point rdf:type owl:Class .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Array
+###  http://www.w3id.org/hsu-aut/DINEN61360#Array
 ns5:Array rdf:type owl:Class ;
           rdfs:subClassOf ns5:Complex_Data_Type ,
                           [ rdf:type owl:Restriction ;
@@ -1766,7 +1766,7 @@ ns5:Array rdf:type owl:Class ;
                           ] .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Array_Member
+###  http://www.w3id.org/hsu-aut/DINEN61360#Array_Member
 ns5:Array_Member rdf:type owl:Class ;
                  rdfs:subClassOf ns5:Complex_Data_Type_Member ,
                                  [ rdf:type owl:Restriction ;
@@ -1781,7 +1781,7 @@ ns5:Array_Member rdf:type owl:Class ;
                                  ] .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Bag
+###  http://www.w3id.org/hsu-aut/DINEN61360#Bag
 ns5:Bag rdf:type owl:Class ;
         rdfs:subClassOf ns5:Complex_Data_Type ,
                         [ rdf:type owl:Restriction ;
@@ -1790,12 +1790,12 @@ ns5:Bag rdf:type owl:Class ;
                         ] .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Bag_Member
+###  http://www.w3id.org/hsu-aut/DINEN61360#Bag_Member
 ns5:Bag_Member rdf:type owl:Class ;
                rdfs:subClassOf ns5:Complex_Data_Type_Member .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Boolean
+###  http://www.w3id.org/hsu-aut/DINEN61360#Boolean
 ns5:Boolean rdf:type owl:Class ;
             rdfs:subClassOf ns5:Simple_Data_Type ,
                             [ rdf:type owl:Restriction ;
@@ -1804,18 +1804,18 @@ ns5:Boolean rdf:type owl:Class ;
                             ] .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Complex_Data_Type
+###  http://www.w3id.org/hsu-aut/DINEN61360#Complex_Data_Type
 ns5:Complex_Data_Type rdf:type owl:Class ;
                       rdfs:subClassOf ns5:Data_Type ;
                       owl:disjointWith ns5:Simple_Data_Type .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Complex_Data_Type_Member
+###  http://www.w3id.org/hsu-aut/DINEN61360#Complex_Data_Type_Member
 ns5:Complex_Data_Type_Member rdf:type owl:Class ;
                              rdfs:subClassOf ns5:Data_Type .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Data_Element
+###  http://www.w3id.org/hsu-aut/DINEN61360#Data_Element
 ns5:Data_Element rdf:type owl:Class ;
                  rdfs:subClassOf ns3:Property ,
                                  [ owl:intersectionOf ( [ rdf:type owl:Restriction ;
@@ -1873,11 +1873,11 @@ r
 Each Data_Element has to have a type description and may have an instance description""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Data_Type
+###  http://www.w3id.org/hsu-aut/DINEN61360#Data_Type
 ns5:Data_Type rdf:type owl:Class .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Instance_Description
+###  http://www.w3id.org/hsu-aut/DINEN61360#Instance_Description
 ns5:Instance_Description rdf:type owl:Class ;
                          rdfs:subClassOf [ rdf:type owl:Restriction ;
                                            owl:onProperty ns5:Expression_Goal ;
@@ -1892,7 +1892,7 @@ ns5:Instance_Description rdf:type owl:Class ;
                          owl:disjointWith ns5:Type_Description .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Integer
+###  http://www.w3id.org/hsu-aut/DINEN61360#Integer
 ns5:Integer rdf:type owl:Class ;
             rdfs:subClassOf ns5:Simple_Data_Type ,
                             [ rdf:type owl:Restriction ;
@@ -1901,7 +1901,7 @@ ns5:Integer rdf:type owl:Class ;
                             ] .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#List
+###  http://www.w3id.org/hsu-aut/DINEN61360#List
 ns5:List rdf:type owl:Class ;
          rdfs:subClassOf ns5:Complex_Data_Type ,
                          [ rdf:type owl:Restriction ;
@@ -1910,7 +1910,7 @@ ns5:List rdf:type owl:Class ;
                          ] .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#List_Member
+###  http://www.w3id.org/hsu-aut/DINEN61360#List_Member
 ns5:List_Member rdf:type owl:Class ;
                 rdfs:subClassOf ns5:Complex_Data_Type_Member ,
                                 [ rdf:type owl:Restriction ;
@@ -1920,7 +1920,7 @@ ns5:List_Member rdf:type owl:Class ;
                                 ] .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Real
+###  http://www.w3id.org/hsu-aut/DINEN61360#Real
 ns5:Real rdf:type owl:Class ;
          rdfs:subClassOf ns5:Simple_Data_Type ,
                          [ rdf:type owl:Restriction ;
@@ -1929,7 +1929,7 @@ ns5:Real rdf:type owl:Class ;
                          ] .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Set
+###  http://www.w3id.org/hsu-aut/DINEN61360#Set
 ns5:Set rdf:type owl:Class ;
         rdfs:subClassOf ns5:Complex_Data_Type ,
                         [ rdf:type owl:Restriction ;
@@ -1938,12 +1938,12 @@ ns5:Set rdf:type owl:Class ;
                         ] .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Set_Member
+###  http://www.w3id.org/hsu-aut/DINEN61360#Set_Member
 ns5:Set_Member rdf:type owl:Class ;
                rdfs:subClassOf ns5:Complex_Data_Type_Member .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Simple_Data_Type
+###  http://www.w3id.org/hsu-aut/DINEN61360#Simple_Data_Type
 ns5:Simple_Data_Type rdf:type owl:Class ;
                      rdfs:subClassOf ns5:Data_Type ,
                                      [ rdf:type owl:Restriction ;
@@ -1961,7 +1961,7 @@ r
 Type: is a enumeration of standard compliant data types. Please see DIN61360 for a description of level/class-instance/list/set/bag/array""" .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#String
+###  http://www.w3id.org/hsu-aut/DINEN61360#String
 ns5:String rdf:type owl:Class ;
            rdfs:subClassOf ns5:Simple_Data_Type ,
                            [ rdf:type owl:Restriction ;
@@ -1970,7 +1970,7 @@ ns5:String rdf:type owl:Class ;
                            ] .
 
 
-###  http://www.hsu-ifa.de/ontologies/DINEN61360#Type_Description
+###  http://www.w3id.org/hsu-aut/DINEN61360#Type_Description
 ns5:Type_Description rdf:type owl:Class ;
                      rdfs:subClassOf [ rdf:type owl:Restriction ;
                                        owl:onProperty ns5:Code ;

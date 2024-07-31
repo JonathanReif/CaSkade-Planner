@@ -1,5 +1,5 @@
 @prefix : <http://www.hsu-hh.de/aut/RIVA/Logistic#> .
-@prefix ns1: <http://www.hsu-ifa.de/ontologies/DINEN61360#> .
+@prefix ns1: <http://www.w3id.org/hsu-aut/DINEN61360#> .
 @prefix ns2: <http://openmath.org/vocab/math#> .
 @prefix ns3: <http://openmath.org/vocab/math/meta#> .
 @prefix ns4: <http://www.w3id.org/hsu-aut/css#> .
