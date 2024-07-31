@@ -21,7 +21,7 @@ def get_geofence_constraints() -> RobotGeofenceDictionary:
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
     PREFIX RIVA: <http://www.hsu-hh.de/aut/RIVA/Logistic#>
-    PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
+    PREFIX DINEN61360: <http://www.w3id.org/hsu-aut/DINEN61360#>
     select ?robot (COALESCE(?hole, ?alt_gozone) AS ?zone) ?zone_type ?point ?de ?type ?val where { 
         ?robot a CSS:Resource; 
             RIVA:has_Gozone ?gozone.
