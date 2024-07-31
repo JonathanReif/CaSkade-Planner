@@ -11,7 +11,7 @@ def getPropositionSupports(happenings: int, event_bound: int) -> List:
 
 	for happening in range(happenings)[1:]:
 		for property in properties:
-			if property.data_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Boolean":
+			if property.data_type == "http://www.w3id.org/hsu-aut/DINEN61360#Boolean":
 				property_current_happening_start = property.occurrences[happening][0].z3_variable
 				property_last_happening_end = property.occurrences[happening-1][event_bound-1].z3_variable
 

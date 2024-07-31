@@ -19,7 +19,7 @@ def from_open_math_in_graph( query_handler, rootApplicationIri: str, happening: 
 	PREFIX ont: <http://example.org/ontology#>
 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
 	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-	PREFIX DINEN61360: <http://www.hsu-ifa.de/ontologies/DINEN61360#>
+	PREFIX DINEN61360: <http://www.w3id.org/hsu-aut/DINEN61360#>
 	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
 	SELECT ?application (count(?argumentList)-1 as ?position) ?operator (COALESCE(?argDE, ?arg) AS ?argName) ?argType ?arg WHERE {
 		?application a OM:Application, CSS:CapabilityConstraint.
