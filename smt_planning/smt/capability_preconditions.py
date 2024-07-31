@@ -15,7 +15,7 @@ def capability_preconditions_smt(happenings: int, event_bound: int) -> List[Bool
 
 			prop_type = property_dictionary.get_property_data_type(property_iri) 
 			value = precondition.value
-			if prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Real" or prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Integer":
+			if prop_type == "http://www.w3id.org/hsu-aut/DINEN61360#Real" or prop_type == "http://www.w3id.org/hsu-aut/DINEN61360#Integer":
 
 				match precondition.logical_interpretation:
 					case "<":
@@ -34,7 +34,7 @@ def capability_preconditions_smt(happenings: int, event_bound: int) -> List[Bool
 						raise RuntimeError("Incorrect logical relation")
 				
 				preconditions_smt.append(precondition_smt)
-			elif prop_type == "http://www.hsu-ifa.de/ontologies/DINEN61360#Boolean":
+			elif prop_type == "http://www.w3id.org/hsu-aut/DINEN61360#Boolean":
 				match value: 
 					case 'true':
 						precondition_smt = Implies(currentCap, currentProp)

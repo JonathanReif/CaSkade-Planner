@@ -15,7 +15,7 @@ def get_bool_constraints(happenings: int, event_bound: int) -> List:
 	constraints = []
 	properties = property_dictionary.provided_properties.values()
 	for original_property in properties:
-		if original_property.data_type != "http://www.hsu-ifa.de/ontologies/DINEN61360#Boolean": continue
+		if original_property.data_type != "http://www.w3id.org/hsu-aut/DINEN61360#Boolean": continue
 
 		# Get all capabilities directly or indirectly influencing current property
 		property_capability_iris = original_property.capability_iris

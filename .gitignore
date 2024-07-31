@@ -151,3 +151,9 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+
+# SMT code and results
+plan.json
+problem.smt
+smt_solution.json
