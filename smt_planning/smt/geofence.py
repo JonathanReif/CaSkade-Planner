@@ -61,6 +61,7 @@ def geofence_smt(happenings: int, event_bound: int) -> List[BoolRef]:
                 geofence_constraints.append(inside)
 
                 for j in nogozone_polygons:
+                    z = 0
                     for i in range(len(nogozone_polygons[j])):
                         p1x, p1y = nogozone_polygons[j][i]
                         p2x, p2y = nogozone_polygons[j][(i + 1) % len(nogozone_polygons[j])]
@@ -78,8 +79,9 @@ def geofence_smt(happenings: int, event_bound: int) -> List[BoolRef]:
                         )
 
                         # Add constraint 
-                        constraint = crossed_hole_edges[j] == cross_condition
+                        constraint = crossed_hole_edges[z] == cross_condition
                         geofence_constraints.append(constraint)
+                        z+=1
                         
                 # Check if an even number of edges are crossed --> outside the hole 
                 num_crossed_hole_edges = Sum([If(ce, 1, 0) for ce in crossed_hole_edges])
