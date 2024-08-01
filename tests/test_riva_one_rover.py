@@ -1,6 +1,6 @@
 import os
 from smt_planning.smt.cask_to_smt import CaskadePlanner
-from smt_planning.smt.planning_result import PlanningResult
+from smt_planning.planning_result import PlanningResultType
 
 """
 This test checks if the planner can create a plan for the riva_one_rover.ttl ontology file. 
@@ -13,19 +13,22 @@ class TestThreeCaps:
 		max_happenings = 3
 		planner: CaskadePlanner = CaskadePlanner("http://www.hsu-hh.de/aut/RIVA/Logistic#required-cap-logistics") 
 		planner.with_file_query_handler(ontology_file)
-		expected_plan : PlanningResult = planner.cask_to_smt(max_happenings, "./problem.smt", "smt_solution.json", "plan.json") #type:ignore
-		assert expected_plan.plan.plan_length == 3, "Plan length should be 3"
+		response = planner.cask_to_smt(max_happenings, "./problem.smt", "smt_solution.json", "plan.json")
+		assert response.result_type == PlanningResultType.SAT
+		expected_plan = response.plan
+		assert expected_plan is not None
+		assert expected_plan.plan_length == 3, "Plan length should be 3"
 
-		assert expected_plan.plan.plan_steps[0].capability_appearances[0].capability_iri == "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19", "First capability should be driveTo19"
-		assert expected_plan.plan.plan_steps[1].capability_appearances[0].capability_iri == "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34", "Second capability should be grab34"
-		assert expected_plan.plan.plan_steps[2].capability_appearances[0].capability_iri == "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33", "Third capability should be drop33"
+		assert expected_plan.plan_steps[0].capability_appearances[0].capability_iri == "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19", "First capability should be driveTo19"
+		assert expected_plan.plan_steps[1].capability_appearances[0].capability_iri == "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34", "Second capability should be grab34"
+		assert expected_plan.plan_steps[2].capability_appearances[0].capability_iri == "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-drop33", "Third capability should be drop33"
 		
 		property_longitude = "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/longitude_de"
 		property_longitude_output = False
 		property_latitude = "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/latitude_de"
 		property_latitude_output = False
 
-		for property in expected_plan.plan.plan_steps[0].capability_appearances[0].outputs:
+		for property in expected_plan.plan_steps[0].capability_appearances[0].outputs:
 			if property_longitude == property.property.iri:
 				assert property.value == 10.112242266565111, "Longitude after driveTo should be 10.112242266565111"
 				property_longitude_output = True
@@ -39,7 +42,7 @@ class TestThreeCaps:
 		property_grabbed = "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_de"
 		property_grabbed_output = False
 
-		for property in expected_plan.plan.plan_steps[1].capability_appearances[0].outputs:
+		for property in expected_plan.plan_steps[1].capability_appearances[0].outputs:
 			if property_grabbed == property.property.iri:
 				assert property.value == True, "Grabbed-Property of Item should be True"
 				property_grabbed_output = True
@@ -55,7 +58,7 @@ class TestThreeCaps:
 		property_latitude_drop_output = False
 		property_longitude_drop_output = False
 
-		for property in expected_plan.plan.plan_steps[2].capability_appearances[0].outputs:
+		for property in expected_plan.plan_steps[2].capability_appearances[0].outputs:
 			if property_longitude == property.property.iri:
 				assert property.value == 10.112298130989076, "Longitude after drop should be 10.112298130989076"
 				property_longitude_drop_output = True
