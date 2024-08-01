@@ -2,7 +2,8 @@ import json
 import time
 
 from smt_planning.ontology_handling.query_handlers import FileQueryHandler, SparqlEndpointQueryHandler
-from z3 import Solver, Optimize, unsat, Bool, Sum, BoolRef, parse_smt2_string
+from smt_planning.planning_result import PlanningResultType, PlanningResult
+from z3 import Solver, Optimize, unsat, Bool, Sum, BoolRef, parse_smt2_string, AstVector
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.openmath.parse_openmath import QueryCache
 from smt_planning.ontology_handling.capability_and_property_query import get_all_properties, get_provided_capabilities
@@ -20,11 +21,14 @@ from smt_planning.smt.init import init_smt
 from smt_planning.smt.goal import goal_smt
 from smt_planning.smt.real_variable_contin_change import get_real_variable_continuous_changes
 from smt_planning.smt.capability_mutexes import get_capability_mutexes
-from smt_planning.smt.planning_result import PlanningResult
 
 class CaskadePlanner:
 
 	assertion_dictionary = {}
+	required_capability_iri: str
+
+	def __init__(self, required_capability_iri: str) -> None:
+		self.required_capability_iri = required_capability_iri
 
 	def with_file_query_handler(self, filename: str):
 		self.query_handler = FileQueryHandler(filename)
@@ -39,8 +43,8 @@ class CaskadePlanner:
 		comment = Bool(f"## {comment_text} ##")
 		solver.add(comment)
 
-	def cask_to_smt(self, max_happenings: int = 5, problem_location = None, model_location = None, plan_location = None):
-
+	def cask_to_smt(self, max_happenings: int = 5, problem_location = None, model_location = None, plan_location = None) -> PlanningResult:
+		print("Started planning. This may take a while...")
 		start_time = time.time()
 		state_handler = StateHandler()
 		state_handler.set_query_handler(self.query_handler)
@@ -54,7 +58,7 @@ class CaskadePlanner:
 		QueryCache.reset()
 			
 		# Get all properties connected to provided capabilities as inputs or outputs as well as all instance descriptions 
-		property_dictionary = get_all_properties()
+		property_dictionary = get_all_properties(self.required_capability_iri)
 		state_handler.set_property_dictionary(property_dictionary)
 
 		# Get provided capabilities and their influence on output objects as well as resources that provide capabilities
@@ -70,7 +74,7 @@ class CaskadePlanner:
 		# Get all inits and goals of planning problem based on the instance descriptions
 		get_init()
 
-		while (happenings <= max_happenings and solver_result == unsat):
+		while (happenings < max_happenings and solver_result == unsat):
 			# SMT Solver
 			solver = Solver()
 			solver.set(unsat_core=True)
@@ -98,7 +102,7 @@ class CaskadePlanner:
 
 			# ------------------------Constraint Proposition (H1 + H2) --> bool properties------------------
 			self.add_comment(solver, "Start of constraints proposition")
-			bool_constraints = get_bool_constraints(happenings, event_bound)
+			bool_constraints = get_bool_constraints(happenings, event_bound, self.required_capability_iri)
 			bool_constraint_counter = 0
 			for bool_constraint in bool_constraints:
 				bool_constraint_counter += 1
@@ -108,7 +112,7 @@ class CaskadePlanner:
 
 			# ---------------------Constraint Real Variable (H5) --> real properties-----------------------------
 			self.add_comment(solver, "Start of constraints real variables")
-			variable_constraints = get_variable_constraints(happenings, event_bound)
+			variable_constraints = get_variable_constraints(happenings, event_bound, self.required_capability_iri)
 			variable_constraint_counter = 0
 			for variable_constraint in variable_constraints:
 				variable_constraint_counter += 1
@@ -128,7 +132,7 @@ class CaskadePlanner:
 
 			# --------------------------------------- Capability Effect ---------------------------------------
 			self.add_comment(solver, "Start of effects")
-			effects = capability_effects_smt(happenings, event_bound)
+			effects = capability_effects_smt(happenings, event_bound, self.required_capability_iri)
 			effect_counter = 0
 			for effect in effects:
 				effect_counter += 1
@@ -218,7 +222,7 @@ class CaskadePlanner:
 
 			# ----------------- Cross-connection of related properties (new) -----------------
 			self.add_comment(solver, "Start of related properties")
-			property_cross_relations = get_property_cross_relations(happenings, event_bound)
+			property_cross_relations = get_property_cross_relations(happenings, event_bound, self.required_capability_iri)
 			cross_relation_counter = 0
 			for cross_relation in property_cross_relations:
 				cross_relation_counter += 1
@@ -248,15 +252,17 @@ class CaskadePlanner:
 				model = solver.model()
 				replaced_model = {}
 				for model_declaration in model.decls():
-					constraint_name = model_declaration.name()
-					if constraint_name in self.assertion_dictionary:
-						replaced_model[self.assertion_dictionary[constraint_name]] = model[model_declaration]
+					declaration_name = model_declaration.name()
+					if declaration_name in self.assertion_dictionary:
+						continue
+						# replaced_model[self.assertion_dictionary[declaration_name]] = model[model_declaration]
 					else:
-						replaced_model[constraint_name] = model[model_declaration]
-				print(model)
-				print(replaced_model)
-				plan = PlanningResult(model)
+						replaced_model[declaration_name] = model[model_declaration]
+				
+				# Create the result
+				result = PlanningResult(PlanningResultType.SAT, replaced_model, None)
 
+				# Optional: store outputs in file
 				if problem_location:
 					# if problem_location is passed, store problem
 					with open(problem_location, 'w') as file:
@@ -273,23 +279,35 @@ class CaskadePlanner:
 				if plan_location:
 					# if plan_location is passed, store model after transformation to better JSON
 					with open(plan_location, 'w') as json_file:
-						json.dump(plan, json_file, default=lambda o: o.as_dict(), indent=4)
+						json.dump(result, json_file, default=lambda o: o.as_dict(), indent=4)
 
-
-				return plan
+				
+				return result
+		
 		unsat_core = solver.unsat_core()
+		# Retransform unsat core to insert original properties instead of assertion_name
+		transformed_unsat_core = []
+		for core in unsat_core:
+			core_elem = self.assertion_dictionary[core]
+			transformed_unsat_core.append(core_elem)
 
-def is_unsat_core(solver, core):
-    s = Solver()
-    for c in core:
-        s.add(c)
-    return s.check() == unsat
+		result = PlanningResult(PlanningResultType.UNSAT, None, transformed_unsat_core)
+		return result
 
-def find_minimal_unsat_core(solver, core):
-    if not is_unsat_core(solver, core):
-        return []
-    for i in range(len(core)):
-        reduced_core = core[:i] + core[i+1:]
-        if is_unsat_core(solver, reduced_core):
-            return find_minimal_unsat_core(solver, reduced_core)
-    return core
+
+
+# TODO: In case we need to find MUC, add back in
+# def is_unsat_core(solver, core):
+#     s = Solver()
+#     for c in core:
+#         s.add(c)
+#     return s.check() == unsat
+
+# def find_minimal_unsat_core(solver, core):
+#     if not is_unsat_core(solver, core):
+#         return []
+#     for i in range(len(core)):
+#         reduced_core = core[:i] + core[i+1:]
+#         if is_unsat_core(solver, reduced_core):
+#             return find_minimal_unsat_core(solver, reduced_core)
+#     return core
