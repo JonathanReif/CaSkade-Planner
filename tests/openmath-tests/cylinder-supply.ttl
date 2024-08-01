@@ -17,6 +17,10 @@
                                                                           owl:imports <http://www.hsu-hh.de/aut/ontologies/lab/MPS500/property-types> ,
                                                                                       <http://www.w3id.org/hsu-aut/caskman/4.6.0> .
 
+# This T-Box info is required for queries to work. Usually, it would be included in the CaSk T-Box. 
+# It has been added here to keep the examples small
+m:Variable rdfs:subClassOf m:Object.
+
 #################################################################
 #    Individuals
 #################################################################
