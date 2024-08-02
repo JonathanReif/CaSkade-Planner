@@ -81,7 +81,7 @@ def generate_and_solve_plan():
 	result = planner.cask_to_smt(max_happenings)
 	if result == None:
 		return jsonify({'error': 'No plan found'}), 204
-	return result.as_dict()
+	return jsonify(result.to_json())
 
 def run():
 	app.run()

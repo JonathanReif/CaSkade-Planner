@@ -28,8 +28,7 @@ class PropertyAppearance:
 		else:
 			raise NameError(f"No cast operation for type {type(value).__name__} of variabel {value} defined")
 
-	def as_dict(self) -> Dict[str, object]:
-		val = self.value
+	def to_json(self) -> Dict[str, object]:
 		dict = {
 			"property_iri": self.property.iri,
 			"value": self.value
@@ -68,11 +67,11 @@ class CapabilityAppearance:
 		if property_appearance.property.relation_type == "Output":
 			self.add_output(property_appearance)
 		
-	def as_dict(self) -> Dict[str, object]:
+	def to_json(self) -> Dict[str, object]:
 		dict = {
 			"capability_iri": self.capability_iri,
-			"inputs": [input.as_dict() for input in self.inputs],
-			"outputs": [output.as_dict() for output in self.outputs]
+			"inputs": [input.to_json() for input in self.inputs],
+			"outputs": [output.to_json() for output in self.outputs]
 		}
 		return dict
 
@@ -86,11 +85,11 @@ class PlanStep:
 	def add_capability_appearance(self, capability_appearance: CapabilityAppearance):
 		self.capability_appearances.append(capability_appearance)
 
-	def as_dict(self) -> Dict[str, object]:
+	def to_json(self) -> Dict[str, object]:
 		dict = {
 			"duration": self.duration,
 			"step_number": self.step_number,
-			"capability_applications": [capability_appearance.as_dict() for capability_appearance in self.capability_appearances]
+			"capability_applications": [capability_appearance.to_json() for capability_appearance in self.capability_appearances]
 		}
 		return dict
 
@@ -131,9 +130,9 @@ class Plan:
 		# Update plan length
 		self.plan_length = len(self.plan_steps)
 	
-	def as_dict(self) -> Dict[str, object]:
+	def to_json(self) -> Dict[str, object]:
 		dict = {
-			"plan_steps": [plan_step.as_dict() for plan_step in self.plan_steps],
+			"plan_steps": [plan_step.to_json() for plan_step in self.plan_steps],
 			"plan_length":  self.plan_length,
 			"total_duration": self.total_duration
 		}
@@ -203,18 +202,18 @@ class PlanningResult:
 		self.plan.plan_length = len(self.plan.plan_steps)
 
 
-	def as_dict(self) -> Dict[str, object]:
+	def to_json(self) -> Dict[str, object]:
 		if self.plan is None:
 			plan_dict = {}
-			unsat_core_dict = self.unsat_core.__dict__
+			unsat_core_json = self.unsat_core
 		else:
-			plan_dict = self.plan.as_dict()
-			unsat_core_dict = {}
+			plan_dict = self.plan.to_json()
+			unsat_core_json = {}
 
 		dict = {
 			"timeCreated": str(self.time_created),
 			"resultType": str(self.result_type),
-			"unsatCore": unsat_core_dict,
+			"unsatCore": unsat_core_json,
 			"plan": plan_dict
 		}
 		return dict
