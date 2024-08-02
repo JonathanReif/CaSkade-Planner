@@ -9,24 +9,25 @@ def capability_effects_smt(happenings: int, event_bound: int, required_capabilit
 	capability_dictionary = StateHandler().get_capability_dictionary()
 	effects_smt = []
 	for happening in range(happenings):
-		for effect in property_dictionary.get_effects().values():
-			property_iri = effect.iri
-			value = effect.value
-			current_capability = capability_dictionary.get_capability_occurrence(effect.cap_iri, happening).z3_variable
-			effect_property = property_dictionary.get_provided_property_occurrence(property_iri, happening, 1).z3_variable
-			# Case 1: Constant effect 																					
-			if value != "None": 																								
-				prop_type = property_dictionary.get_property_data_type(property_iri) 												
-				effect_smt = generate_effect_constraint(current_capability, effect_property, prop_type, effect.logical_interpretation, value)	
-				effects_smt.append(effect_smt)
-			else: 
-				# TODO: Constraint effect currently in capability_constraints. Needs to be changed  
-				pass
-			related_properties = get_related_properties(property_iri, required_capability_iri)
-			for related_property in related_properties:
-				property = property_dictionary.get_property_occurence(related_property.iri, happening, 1)
-				effect_smt = Implies(current_capability, effect_property == property.z3_variable)
-				effects_smt.append(effect_smt)
+		for property_iri, effect_list in property_dictionary.get_effects().items():
+			for effect in effect_list:
+				#property_iri = effect.iri
+				value = effect.value
+				current_capability = capability_dictionary.get_capability_occurrence(effect.cap_iri, happening).z3_variable
+				effect_property = property_dictionary.get_provided_property_occurrence(property_iri, happening, 1).z3_variable
+				# Case 1: Constant effect 																					
+				if value != "None": 																								
+					prop_type = property_dictionary.get_property_data_type(property_iri) 												
+					effect_smt = generate_effect_constraint(current_capability, effect_property, prop_type, effect.logical_interpretation, value)	
+					effects_smt.append(effect_smt)
+				else: 
+					# TODO: Constraint effect currently in capability_constraints. Needs to be changed  
+					pass
+				related_properties = get_related_properties(property_iri, required_capability_iri)
+				for related_property in related_properties:
+					property = property_dictionary.get_property_occurence(related_property.iri, happening, 1)
+					effect_smt = Implies(current_capability, effect_property == property.z3_variable)
+					effects_smt.append(effect_smt)
 				
 	return effects_smt
 

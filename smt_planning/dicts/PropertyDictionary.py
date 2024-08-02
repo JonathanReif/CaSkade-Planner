@@ -105,10 +105,10 @@ class PropertyDictionary:
 	def __init__(self):
 		self.provided_properties: Dict[str, Property] = {}
 		self.required_properties: Dict[str, Property] = {}
-		self.preconditions: Dict[str, Precondition] = {}
-		self.effects: Dict[str, Effect] = {}
-		self.inits: Dict[str, Init] = {}
-		self.goals: Dict[str, Goal] = {}
+		self.preconditions: Dict[str, List[Precondition]] = {}
+		self.effects: Dict[str, List[Effect]] = {}
+		self.inits: Dict[str, List[Init]] = {}
+		self.goals: Dict[str, List[Goal]] = {}
 
 	def add_provided_property(self, iri: str, data_type: str, relation_type: str, capability_iris: Set[str], expression_goal: str = "", logical_interpretation: str = "", value: str = ""):
 		property = Property(iri, data_type, relation_type, capability_iris)
@@ -191,33 +191,33 @@ class PropertyDictionary:
 		else:
 			print(f"InstanceDescription with Expression Goal {expr_goal}, logic interpretation {logical_interpretation} and value {value} are capability constraints.")
 
-	def add_instance_description(self, iri: str, cap_iri: str, cap_type: CapabilityType, expr_goal: str, logical_interpretation: str, value: str):
-		instance_description = self.create_instance_description(iri, cap_iri, cap_type, expr_goal, logical_interpretation, value)
+	def add_instance_description(self, data_element_iri: str, cap_iri: str, cap_type: CapabilityType, expr_goal: str, logical_interpretation: str, value: str):
+		instance_description = self.create_instance_description(data_element_iri, cap_iri, cap_type, expr_goal, logical_interpretation, value)
 		if instance_description is None:
 			return
 		if isinstance(instance_description, Precondition):
-			self.preconditions.setdefault(iri, instance_description)
+			self.preconditions.setdefault(data_element_iri, []).append(instance_description)
 		elif isinstance(instance_description, Effect):
-			self.effects.setdefault(iri, instance_description)
+			self.effects.setdefault(data_element_iri, []).append(instance_description)
 		elif isinstance(instance_description, Init):
-			self.inits.setdefault(iri, instance_description)
+			self.inits.setdefault(data_element_iri, []).append(instance_description)
 		elif isinstance(instance_description, Goal):
-			self.goals.setdefault(iri, instance_description)
-		self.get_property(iri).add_instance(instance_description)
+			self.goals.setdefault(data_element_iri, []).append(instance_description)
+		self.get_property(data_element_iri).add_instance(instance_description)
 
     # TODO after combining query of precondition and property move this function to add provided property 
 	# def add_precondition_property(self, iri: str, cap_iri: str, logical_interpretation: str, value: str):    
 	# 	precondition = Precondition(iri, cap_iri, logical_interpretation, value)
 	# 	self.preconditions.setdefault(iri, precondition)
 
-	def get_preconditions(self) -> Dict[str, Precondition]:
+	def get_preconditions(self) -> Dict[str, List[Precondition]]:
 		return self.preconditions
 	
-	def get_effects(self) -> Dict[str, Effect]:
+	def get_effects(self) -> Dict[str, List[Effect]]:
 		return self.effects
 	
-	def get_inits(self) -> Dict[str, Init]:
+	def get_inits(self) -> Dict[str, List[Init]]:
 		return self.inits
 	
-	def get_goals(self) -> Dict[str, Goal]:
+	def get_goals(self) -> Dict[str, List[Goal]]:
 		return self.goals
