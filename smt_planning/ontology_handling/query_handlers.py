@@ -36,14 +36,17 @@ class SparqlEndpointQueryHandler(QueryHandler):
 		# Define the headers
 		self.headers = {
 			"Accept": "application/sparql-results+json",  # or "application/sparql-results+xml" for XML format
-			"Content-Type": "application/sparql-query"
+			"Content-Type": "application/sparql-query",
+		}
+		self.params = {
+			"infer": "false"
 		}
 	
 
 	def query(self, query_string: str) -> Result:
 
 		# Send the request
-		response = requests.post(self.endpoint_url, data=query_string, headers=self.headers)
+		response = requests.post(self.endpoint_url, data=query_string, headers=self.headers, params=self.params)
 
 		# Check if the request was successful
 		if response.status_code == 200:
