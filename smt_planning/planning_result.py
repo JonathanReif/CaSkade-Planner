@@ -191,6 +191,10 @@ class PlanningResult:
 			except KeyError:
 				print(f"Could not find a property or capability for variable {variable} in the model.")
 
+		# By this point, all capabilities should have been added. If there are none, that means that a trivial plan was found
+		# In such cases, we simply return an empty plan
+		if (len(self.plan.plan_steps) == 0): return
+
 		for property_appearance_item in property_appearance_store.items():
 			happening = property_appearance_item[0]
 			property_appearances = property_appearance_item[1]
