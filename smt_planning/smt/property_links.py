@@ -9,10 +9,11 @@ from smt_planning.dicts.PropertyDictionary import Property
 
 
 # Define some variables to get values from SPARQL results
-td_variable = Variable("td")
-de_variable = Variable("de")
-cap_variable = Variable("cap")
-inout_subtype_variable = Variable("inOutSubType")
+TD = Variable("td")
+DE = Variable("de")
+CAP = Variable("cap")
+FPB_SUBTYPE = Variable("fpbSubType")
+FPB_TYPE = Variable("fpbType")
 
 class PropertyPair:
 	def __init__(self, property_a: Property, property_b: Property) -> None:
@@ -140,7 +141,7 @@ def find_property_pairs(required_cap_iri: str) -> List[PropertyPair]:
 	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
 	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-	SELECT ?cap ?inOut ?de ?td ?inOutType ?inOutSubType WHERE {
+	SELECT DISTINCT ?cap ?inOut ?de ?td ?fpbType ?fpbSubType WHERE {
 		?cap a ?capType;
 			^CSS:requiresCapability ?process.
 		values ?capType { CaSk:ProvidedCapability CaSk:RequiredCapability }.
@@ -151,12 +152,11 @@ def find_property_pairs(required_cap_iri: str) -> List[PropertyPair]:
 		?de DINEN61360:has_Type_Description ?td;
 			DINEN61360:has_Instance_Description ?id.
 		?inOut DINEN61360:has_Data_Element ?de.
-		BIND(VDI3682:Product AS ?inOutType)
-		?inOut a ?inOutType.
-		OPTIONAL {
-			?inOut a ?inOutSubType.
-			?inOutSubType rdfs:subClassOf VDI3682:Product.
-		}
+    	# Get the most specific type (the one that the inOut was declared with)
+    	?inOut a ?fpbSubType.
+		# Get the super class that is one of the subclasses of VDI3682:State
+    	?fpbSubType rdfs:subClassOf* ?fpbType.
+    	?fpbType rdfs:subClassOf VDI3682:State.
 	}
 	"""
 	query_string = query_string.replace('{required_cap_iri}', required_cap_iri)
@@ -170,33 +170,51 @@ def find_property_pairs(required_cap_iri: str) -> List[PropertyPair]:
 	for binding in result.bindings:
 		related_bindings = list(filter(lambda x: is_related_property_binding(binding, x), result.bindings))
 		for related_binding in related_bindings:
-			property_a = property_dictionary.get_property(str(binding.get(de_variable)))
-			property_b = property_dictionary.get_property(str(related_binding.get(de_variable)))
+			property_a = property_dictionary.get_property(str(binding.get(DE)))
+			property_b = property_dictionary.get_property(str(related_binding.get(DE)))
 			pair = PropertyPair(property_a, property_b)
 			existing_pair = next(filter(lambda x: is_existing(pair, x), related_property_pairs), None)
-			self_pair = is_self_pair(pair) 
-			if not existing_pair and not self_pair:
+			if not existing_pair:
 				related_property_pairs.append(pair)
 
 	return related_property_pairs
 
 
 def is_related_property_binding(binding: Mapping[Variable, Identifier], other_binding: Mapping[Variable, Identifier]) -> bool:
-	# Checks whether two properties are related
-	return same_type_description(binding, other_binding) and subtype_matches(binding, other_binding)
+	# Checks whether two properties are related.
+	# a) They have to belong to different capabilities. This is the base requirement as this is what related props are for: Create explicit relations between 
+	# implicitly connected properties. Properties of the same cap are typically explictly related
+	different_cap = different_capability(binding, other_binding)
+	
+	# b) They have to have the same type description. Obviously, we don't want to compare length with weight etc.
+	same_type = same_type_description(binding, other_binding)
+
+	# b) They either have to have the same subtype. We then can assume that properties of a should be related to the props of b
+	subtype_match = subtype_matches(binding, other_binding)
+
+	# c) Or one of both is a VDI3682:Product. We assume that abstract products take all properties
+	one_is_abstract = one_is_abstract_product(binding, other_binding)
+
+	return different_cap and same_type and (subtype_match or one_is_abstract)
 
 
 def different_capability(binding: Mapping[Variable, Identifier], other_binding: Mapping[Variable, Identifier]) -> bool:
 	# Checks wheter two result bindings belong to different capabilities
-	return (str(binding.get(cap_variable)) != str(other_binding.get(cap_variable)))
+	return (str(binding.get(CAP)) != str(other_binding.get(CAP)))
 
 
 def same_type_description(binding: Mapping[Variable, Identifier], other_binding: Mapping[Variable, Identifier]) -> bool:
 	# Checks whether two result bindings refer to the same type description
-	return (str(binding.get(td_variable)) == str(other_binding.get(td_variable)))
+	return (str(binding.get(TD)) == str(other_binding.get(TD)))
 
 
 def subtype_matches(binding: Mapping[Variable, Identifier], other_binding: Mapping[Variable, Identifier]) -> bool:
 	# Checks whether the product subtype of two result bindings is identical
-	return (str(binding.get(inout_subtype_variable)) == str(other_binding.get(inout_subtype_variable)))
+	return (str(binding.get(FPB_SUBTYPE)) == str(other_binding.get(FPB_SUBTYPE)))
 
+def one_is_abstract_product(binding: Mapping[Variable, Identifier], other_binding: Mapping[Variable, Identifier]) -> bool:
+	# One is only an abstract product (no subtype) if the subtype is defined as product
+	a_is_abstract_product = str(binding.get(FPB_SUBTYPE)) == 'http://www.w3id.org/hsu-aut/VDI3682#Product'
+	b_is_abstract_product = str(other_binding.get(FPB_SUBTYPE))== 'http://www.w3id.org/hsu-aut/VDI3682#Product'
+	one_is_abstract_product = a_is_abstract_product or b_is_abstract_product
+	return one_is_abstract_product
