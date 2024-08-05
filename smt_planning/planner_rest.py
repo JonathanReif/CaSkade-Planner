@@ -73,7 +73,7 @@ def generate_and_solve_plan():
 		planner = CaskadePlanner(required_capability_iri)
 		planner.with_endpoint_query_handler(endpoint_url)
 
-	max_happenings = request.args.get('max-happenings',type=int)
+	max_happenings = data.get('maxHappenings')
 	
 	# In case None gets passed as a max_happening, set back to default value of 5
 	if max_happenings == None:
