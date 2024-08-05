@@ -155,8 +155,8 @@ def find_property_pairs(required_cap_iri: str) -> List[PropertyPair]:
     	# Get the most specific type (the one that the inOut was declared with)
     	?inOut a ?fpbSubType.
 		# Get the super class that is one of the subclasses of VDI3682:State
+    	BIND(VDI3682:Product AS ?fpbType).
     	?fpbSubType rdfs:subClassOf* ?fpbType.
-    	?fpbType rdfs:subClassOf VDI3682:State.
 	}
 	"""
 	query_string = query_string.replace('{required_cap_iri}', required_cap_iri)
