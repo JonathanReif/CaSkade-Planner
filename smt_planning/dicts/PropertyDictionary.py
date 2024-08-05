@@ -12,13 +12,17 @@ class PropertyOccurrence:
 		match data_type:
 			case "http://www.w3id.org/hsu-aut/DINEN61360#Real":
 				self.z3_variable = Real(z3_variable_name)
+				self.type = "Real"
 			case "http://www.w3id.org/hsu-aut/DINEN61360#Boolean":
 				self.z3_variable = Bool(z3_variable_name)
+				self.type = "Bool"
 			case "http://www.w3id.org/hsu-aut/DINEN61360#Integer":
 				self.z3_variable = Int(z3_variable_name)
+				self.type = "Int"
 			case _  :
 				# Base case if no type given: Create a real
 				self.z3_variable = Real(z3_variable_name)
+				self.type = "Real"
 
 class CapabilityType(Enum):
 	ProvidedCapability = 1
@@ -86,6 +90,11 @@ class Property:
 		event = occurrence.event
 		self.occurrences.setdefault(happening, {}).setdefault(event, occurrence)
 
+	def get_all_occurrences(self) -> List[PropertyOccurrence]:
+		# Double list comprehension to flatten the double dict-structure of self.occurrences
+		occurrences = [value for inner_dict in self.occurrences.values() for value in inner_dict.values()]
+		return occurrences
+
 	def get_occurrence_by_z3_variable(self, z3_variable_name: str) -> PropertyOccurrence | None:
 		# Filters occurrences for the given z3_variable. There should only be one result
 		happening_occurrences = [occ for occ in self.occurrences.values()]
@@ -147,6 +156,20 @@ class PropertyDictionary:
 			except KeyError:
 				raise KeyError(f"There is neither a provided nor a required property with key {str(iri)}.")
 		return property
+	
+
+	def get_all_property_occurences(self) -> List[PropertyOccurrence]:
+		'''
+		Return all currently stored property occurrences
+		'''
+		all_properties = {**self.required_properties, **self.provided_properties}
+		all_occurrences: List[PropertyOccurrence] = []
+		for property in all_properties.values():
+			occurrences = property.get_all_occurrences()
+			all_occurrences.extend(occurrences)
+		
+		return all_occurrences
+
 
 	def get_provided_property(self, iri:str) -> Property:
 		if (not iri in self.provided_properties):

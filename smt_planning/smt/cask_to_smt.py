@@ -3,9 +3,10 @@ import time
 
 from smt_planning.ontology_handling.query_handlers import FileQueryHandler, SparqlEndpointQueryHandler
 from smt_planning.planning_result import PlanningResultType, PlanningResult
-from z3 import Solver, Optimize, unsat, Bool, Sum, BoolRef, parse_smt2_string, AstVector
+from z3 import Solver, Optimize, unsat, Bool 
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.openmath.parse_openmath import QueryCache
+from smt_planning.smt.property_links import PropertyPairCache
 from smt_planning.ontology_handling.capability_and_property_query import get_all_properties, get_provided_capabilities
 from smt_planning.ontology_handling.init_query import get_init
 from smt_planning.ontology_handling.capability_constraints_query import get_capability_constraints
@@ -60,9 +61,10 @@ class CaskadePlanner:
 		# Get all properties connected to provided capabilities as inputs or outputs as well as all instance descriptions 
 		property_dictionary = get_all_properties(self.required_capability_iri)
 		state_handler.set_property_dictionary(property_dictionary)
+		# PropertyPairCache.get_property_pairs(self.required_capability_iri)
 
 		# Get provided capabilities and their influence on output objects as well as resources that provide capabilities
-		cap_and_res_dictionary = get_provided_capabilities()
+		cap_and_res_dictionary = get_provided_capabilities(self.required_capability_iri)
 		capability_dictionary = cap_and_res_dictionary[0]
 		resource_dictionary = cap_and_res_dictionary[1]
 		state_handler.set_capability_dictionary(capability_dictionary)
@@ -122,9 +124,9 @@ class CaskadePlanner:
 
 			# ----------------- Capability Precondition ------------------------------------------------------
 			self.add_comment(solver, "Start of preconditions")
-			preconditions = capability_preconditions_smt(happenings, event_bound)
+			precondition_constraints = capability_preconditions_smt(happenings, event_bound)
 			precondition_counter = 0
-			for precondition in preconditions:
+			for precondition in precondition_constraints:
 				precondition_counter += 1
 				assertion_name = f'precond_{precondition_counter}_{happenings}'
 				self.assertion_dictionary[assertion_name] = precondition
@@ -140,36 +142,6 @@ class CaskadePlanner:
 				self.assertion_dictionary[assertion_name] = effect
 				solver.assert_and_track(effect, assertion_name)
 
-			# Capability constraints are expressions in smt2 form that cannot be added programmatically, because we only have the whole expression in string form 
-			# after parsing it from OpenMath RDF. Hence, we must read it as string into a temp solver and then add all assertions into our main solver
-			self.add_comment(solver, "Start of capability constraints")
-			# current_solver_string = solver.to_smt2()
-			
-			temp_solver = Solver()
-			main_solver_state = solver.to_smt2()
-			temp_solver_string = "\n".join(
-				line for line in main_solver_state.splitlines() if line.startswith("(declare-fun")
-			)
-			
-			# Füge die ursprünglichen Variablen wieder hinzu
-			# temp_solver.from_string(variables_state)
-
-			# temp_solver_string = ""
-			constraints = capability_constraints_smt(happenings, event_bound)
-			for constraint in constraints:
-				temp_solver_string += f"\n{constraint}" 
-
-			temp_solver.from_string(temp_solver_string)
-			temp_solver_assertions = temp_solver.assertions()
-
-			# add all assertions back into main solver
-			cap_constraint_counter = 0
-			for capability_constraint_assertion in temp_solver_assertions:
-				cap_constraint_counter += 1
-				assertion_name = f'capConstraint_{cap_constraint_counter}_{happenings}'
-				self.assertion_dictionary[assertion_name] = capability_constraint_assertion
-				solver.assert_and_track(capability_constraint_assertion, assertion_name)
-
 			# ---------------- Constraints Capability mutexes (H14) -----------------------------------------
 			self.add_comment(solver, "Start of capability mutexes")
 			capability_mutexes = get_capability_mutexes(happenings)
@@ -182,9 +154,9 @@ class CaskadePlanner:
 
 			# ---------------- Init  --------------------------------------------------------
 			self.add_comment(solver, "Start of init")
-			inits = init_smt()
+			init_constraints = init_smt()
 			init_counter = 0
-			for init in inits:
+			for init in init_constraints:
 				init_counter += 1
 				assertion_name = f'init_{init_counter}_{happenings}'
 				self.assertion_dictionary[assertion_name] = init
@@ -192,9 +164,9 @@ class CaskadePlanner:
 
 			# ---------------------- Goal ------------------------------------------------- 
 			self.add_comment(solver, "Start of goal")
-			goals = goal_smt()
+			goal_constraints = goal_smt()
 			goal_counter = 0
-			for goal in goals:
+			for goal in goal_constraints:
 				goal_counter += 1
 				assertion_name = f'goal_{goal_counter}_{happenings}'
 				self.assertion_dictionary[assertion_name] = goal
@@ -229,6 +201,37 @@ class CaskadePlanner:
 				assertion_name = f'crossRelation_{cross_relation_counter}_{happenings}'
 				self.assertion_dictionary[assertion_name] = cross_relation
 				solver.assert_and_track(cross_relation, assertion_name)
+
+
+			# Capability constraints are expressions in smt2 form that cannot be added programmatically, because we only have the whole expression in string form 
+			# after parsing it from OpenMath RDF. Hence, we must read it as string into a temp solver and then add all assertions into our main solver
+			self.add_comment(solver, "Start of capability constraints")
+			# current_solver_string = solver.to_smt2()
+			
+			temp_solver = Solver()
+			# Add property z3 variables (they are needed for constraints in the next step)
+			temp_solver_string = "\n".join(
+				[f'(declare-fun {occurrence.z3_variable.sexpr()} () {occurrence.type})' for occurrence in property_dictionary.get_all_property_occurences()]
+			)
+			# Add capability z3 variables (they are needed for constraints in the next step)
+			temp_solver_string += "\n".join(
+				[f'(declare-fun {occurrence.z3_variable.sexpr()} () Bool)' for occurrence in capability_dictionary.get_all_capability_occurrences()]
+			)
+			# Add constraints
+			constraints = capability_constraints_smt(happenings, event_bound)
+			for constraint in constraints:
+				temp_solver_string += f"\n{constraint}" 
+
+			temp_solver.from_string(temp_solver_string)
+			temp_solver_assertions = temp_solver.assertions()
+
+			# add all assertions back into main solver, now with tracking
+			cap_constraint_counter = 0
+			for capability_constraint_assertion in temp_solver_assertions:
+				cap_constraint_counter += 1
+				assertion_name = f'capConstraint_{cap_constraint_counter}_{happenings}'
+				self.assertion_dictionary[assertion_name] = capability_constraint_assertion
+				solver.assert_and_track(capability_constraint_assertion, assertion_name)
 
 			# Optimize by minimizing number of used capabilities to prevent unnecessary use of capabilities
 			#constraints = solver.assertions()
@@ -279,7 +282,7 @@ class CaskadePlanner:
 				if plan_location:
 					# if plan_location is passed, store model after transformation to better JSON
 					with open(plan_location, 'w') as json_file:
-						json.dump(result, json_file, default=lambda o: o.as_dict(), indent=4)
+						json.dump(result, json_file, default=lambda o: o.to_json(), indent=4)
 
 				
 				return result
@@ -288,26 +291,34 @@ class CaskadePlanner:
 		# Retransform unsat core to insert original properties instead of assertion_name
 		transformed_unsat_core = []
 		for core in unsat_core:
-			core_elem = self.assertion_dictionary[core]
+			core_elem = self.assertion_dictionary[str(core)]
 			transformed_unsat_core.append(core_elem)
 
-		result = PlanningResult(PlanningResultType.UNSAT, None, transformed_unsat_core)
+		muc = find_minimal_unsat_core(transformed_unsat_core)
+		unsat_core_string = []
+		for core in muc:
+			unsat_core_string.append(str(core))
+		result = PlanningResult(PlanningResultType.UNSAT, None, unsat_core_string)
 		return result
 
 
 
-# TODO: In case we need to find MUC, add back in
-# def is_unsat_core(solver, core):
-#     s = Solver()
-#     for c in core:
-#         s.add(c)
-#     return s.check() == unsat
+def is_unsat_core(core):
+    s = Solver()
+    for c in core:
+        s.add(c)
+    return s.check() == unsat
 
-# def find_minimal_unsat_core(solver, core):
-#     if not is_unsat_core(solver, core):
-#         return []
-#     for i in range(len(core)):
-#         reduced_core = core[:i] + core[i+1:]
-#         if is_unsat_core(solver, reduced_core):
-#             return find_minimal_unsat_core(solver, reduced_core)
-#     return core
+def find_minimal_unsat_core(core):
+    # Überprüfen, ob der initiale Core unsatisfiable ist
+    if not is_unsat_core(core):
+        return core
+    
+    # Versuche, eine minimale unsatisfiable Menge zu finden
+    for i in range(len(core)):
+        reduced_core = core[:i] + core[i+1:]
+        if is_unsat_core(reduced_core):
+            return find_minimal_unsat_core(reduced_core)
+    
+    # Wenn keine Verkleinerung möglich ist, gebe den aktuellen Core zurück
+    return core

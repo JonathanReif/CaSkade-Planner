@@ -19,11 +19,11 @@ def get_bool_constraints(happenings: int, event_bound: int, required_capability_
 
 		# Get all capabilities directly or indirectly influencing current property
 		property_capability_iris = original_property.capability_iris
-		capabilities = [capability_dictionary.get_capability(capabilit_iri) for capabilit_iri in property_capability_iris]
+		capabilities = [capability_dictionary.get_provided_capability(capabilit_iri) for capabilit_iri in property_capability_iris]
 		
 		related_capabilities: List[Capability] = []
 		for capability_iri in property_capability_iris:
-			current_cap_related_capabilities = get_related_capabilities(capability_iri, original_property.iri)
+			current_cap_related_capabilities = get_related_capabilities(capability_iri, original_property.iri, required_capability_iri)
 			related_capabilities.extend(current_cap_related_capabilities)
 		
 		all_capabilities = [*capabilities, *related_capabilities]

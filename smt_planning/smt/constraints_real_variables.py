@@ -20,11 +20,11 @@ def get_variable_constraints(happenings: int, event_bound: int, required_capabil
 		
 		# Get all capabilities directly or indirectly influencing current property
 		property_capability_iris = original_property.capability_iris
-		capabilities = [capability_dictionary.get_capability(capabilit_iri) for capabilit_iri in property_capability_iris]
+		capabilities = [capability_dictionary.get_provided_capability(capabilit_iri) for capabilit_iri in property_capability_iris]
 		
 		related_capabilities: List[Capability] = []
 		for capability_iri in property_capability_iris:
-			current_cap_related_capabilities = get_related_capabilities(capability_iri, original_property.iri)
+			current_cap_related_capabilities = get_related_capabilities(capability_iri, original_property.iri, required_capability_iri)
 			related_capabilities.extend(current_cap_related_capabilities)
 		
 		all_capabilities = [*capabilities, *related_capabilities]
@@ -46,7 +46,6 @@ def get_variable_constraints(happenings: int, event_bound: int, required_capabil
 			all_capability_variables_with_numeric_influence = [cap.occurrences[happening].z3_variable for cap in all_capabilities_with_numeric_influence]
 			caps_constraint = [Not(cap) for cap in all_capability_variables_with_numeric_influence]                
 			constraint = Implies(And(*caps_constraint), prop_end == prop_start)
-
 			constraints.append(constraint)
 
 	return constraints
