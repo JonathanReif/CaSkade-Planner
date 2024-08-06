@@ -83,7 +83,7 @@ class Property:
 		self.relation_type = relation_type
 		self.capability_iris = capability_iris
 		self.occurrences: Dict[int, Dict[int, PropertyOccurrence]] = {}
-		self.instances: Dict[str, InstanceDescription] = {}
+		self.instances: List[InstanceDescription] = []
 
 	def add_occurrence(self, occurrence: PropertyOccurrence):
 		happening = occurrence.happening
@@ -108,7 +108,7 @@ class Property:
 			return None
 		
 	def add_instance(self, instance: InstanceDescription):
-		self.instances.setdefault(instance.iri, instance)
+		self.instances.append(instance)
 
 class PropertyDictionary:
 	def __init__(self):
