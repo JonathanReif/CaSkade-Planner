@@ -99,7 +99,7 @@ class CapabilityDictionary:
 
 	def add_required_capability(self, iri: str, input_properties: List[Property], output_properties: List[CapabilityPropertyInfluence]) -> None:
 		capability = Capability(iri,"http://www.w3id.org/hsu-aut/cask#RequiredCapability", input_properties, output_properties)
-		self.provided_capabilities.setdefault(iri, capability)
+		self.required_capabilities.setdefault(iri, capability)
 
 	def add_capability_occurrences(self, happenings: int) -> None:
 		capabilities = {**self.provided_capabilities, **self.required_capabilities}
