@@ -109,6 +109,20 @@ class Property:
 		
 	def add_instance(self, instance: InstanceDescription):
 		self.instances.append(instance)
+	
+
+	def __lt__(self, other):
+		return self.iri < other.iri  # Vergleich anhand des IRI-Strings
+
+	def __repr__(self):
+		return f"Property(iri={self.iri})"
+    
+    # Optional kannst du auch die anderen Methoden implementieren
+	def __eq__(self, other):
+		return self.iri == other.iri
+    
+	def __hash__(self):
+		return hash(self.iri)
 
 class PropertyDictionary:
 	def __init__(self):
