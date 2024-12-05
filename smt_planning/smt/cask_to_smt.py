@@ -1,12 +1,15 @@
 import json 
 import time
 
+from typing import List
+
 from smt_planning.ontology_handling.query_handlers import FileQueryHandler, SparqlEndpointQueryHandler
 from smt_planning.planning_result import PlanningResultType, PlanningResult
-from z3 import Solver, Optimize, unsat, Bool 
+from smt_planning.dicts.PropertyDictionary import Property
+from z3 import Solver, Optimize, unsat, Bool, Real, RealSort, IntSort, BoolSort, Z3_OP_IMPLIES
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.openmath.parse_openmath import QueryCache
-from smt_planning.smt.property_links import PropertyPairCache
+from smt_planning.smt.property_links import get_related_properties, get_property_cross_relations
 from smt_planning.ontology_handling.capability_and_property_query import get_all_properties, get_provided_capabilities
 from smt_planning.ontology_handling.init_query import get_init
 from smt_planning.ontology_handling.capability_constraints_query import get_capability_constraints
@@ -17,11 +20,11 @@ from smt_planning.smt.capability_constraints import capability_constraints_smt
 from smt_planning.smt.bool_variable_support import getPropositionSupports
 from smt_planning.smt.constraints_bools import get_bool_constraints
 from smt_planning.smt.constraints_real_variables import get_variable_constraints
-from smt_planning.smt.property_links import get_property_cross_relations
 from smt_planning.smt.init import init_smt
 from smt_planning.smt.goal import goal_smt
 from smt_planning.smt.real_variable_contin_change import get_real_variable_continuous_changes
 from smt_planning.smt.capability_mutexes import get_capability_mutexes
+from smt_planning.smt.fix_constants import fix_constants
 
 class CaskadePlanner:
 
@@ -57,6 +60,7 @@ class CaskadePlanner:
 
 		# needs to be reset for new planning request, otherwise it will keep the old data annd not be able to solve the problem at all or solve the problem incorrectly
 		QueryCache.reset()
+		# state_handler.reset_caches()
 			
 		# Get all properties connected to provided capabilities as inputs or outputs as well as all instance descriptions 
 		property_dictionary = get_all_properties(self.required_capability_iri)
@@ -70,9 +74,10 @@ class CaskadePlanner:
 		state_handler.set_capability_dictionary(capability_dictionary)
 		state_handler.set_resource_dictionary(resource_dictionary)
 
-		# Capability Constraints
+		# Capability Constraints to store
+		# // TODO: Do we really need this?
 		get_capability_constraints()
-
+		
 		# Get all inits and goals of planning problem based on the instance descriptions
 		get_init()
 
@@ -81,7 +86,7 @@ class CaskadePlanner:
 			solver = Solver()
 			solver.set(unsat_core=True)
 			solver.reset()
-			state_handler.reset_caches()
+			
 			solver_result = unsat
 			happenings += 1
 
@@ -144,7 +149,7 @@ class CaskadePlanner:
 
 			# ---------------- Constraints Capability mutexes (H14) -----------------------------------------
 			self.add_comment(solver, "Start of capability mutexes")
-			capability_mutexes = get_capability_mutexes(happenings)
+			capability_mutexes = get_capability_mutexes(happenings, self.required_capability_iri)
 			capability_mutex_counter = 0
 			for capability_mutex in capability_mutexes:
 				capability_mutex_counter += 1
@@ -206,8 +211,6 @@ class CaskadePlanner:
 			# Capability constraints are expressions in smt2 form that cannot be added programmatically, because we only have the whole expression in string form 
 			# after parsing it from OpenMath RDF. Hence, we must read it as string into a temp solver and then add all assertions into our main solver
 			self.add_comment(solver, "Start of capability constraints")
-			# current_solver_string = solver.to_smt2()
-			
 			temp_solver = Solver()
 			# Add property z3 variables (they are needed for constraints in the next step)
 			temp_solver_string = "\n".join(
@@ -233,6 +236,14 @@ class CaskadePlanner:
 				self.assertion_dictionary[assertion_name] = capability_constraint_assertion
 				solver.assert_and_track(capability_constraint_assertion, assertion_name)
 
+			constant_expressions = fix_constants(property_dictionary, capability_dictionary, happenings, event_bound)
+			constant_counter = 0
+			for constant_expression in constant_expressions:
+				constant_counter += 1
+				assertion_name = f'constant_{constant_counter}'
+				self.assertion_dictionary[assertion_name] = constant_expression
+				solver.assert_and_track(constant_expression, assertion_name)
+				
 			# Optimize by minimizing number of used capabilities to prevent unnecessary use of capabilities
 			#constraints = solver.assertions()
 			# opt = Optimize()
@@ -240,6 +251,33 @@ class CaskadePlanner:
 
 			#capabilities = [occurrence.z3_variable for capability in capability_dictionary.capabilities.values() for occurrence in capability.occurrences.values()]
 			# opt.minimize(Sum(capabilities))
+
+			# Important. All the related props of output values at 0_0 need to be bound. Otherwise if they are floating, the goal at happening_1 value can be taken for 0_0. 
+			# This in turn leads to no capabilities getting invoked
+			for goal in property_dictionary.goals:
+				# add all goals themselves as we need to look into them as well. NO, DONT
+				# properties_related_to_goal.append(property_dictionary.get_property(goal))
+				properties_related_to_goal = get_related_properties(goal, self.required_capability_iri)
+				
+				# If a single one of the properties related to goal is bound, we can skip it. Else, bind
+				# any(find_variable_in_expression(child, variable) for child in expression.children())
+				if any(is_variable_asserted(solver, property_dictionary.get_property_occurence(goal_prop.iri, 0, 0).z3_variable) for goal_prop in properties_related_to_goal): continue
+
+				for goal_related_prop in properties_related_to_goal:
+					var = property_dictionary.get_property_occurence(goal_related_prop.iri, 0, 0).z3_variable
+					# TODO:checking for assertions is very expensive (recursive check in every loop). We should store all asserted vars to make checking faster
+					# if is_variable_asserted(solver, var): continue
+					
+					if var.sort() == BoolSort(): 
+						goal_binding_assertion = var == False
+					if var.sort() == IntSort(): 
+						goal_binding_assertion = var == 0	# Maybe use better default?
+					if var.sort() == RealSort(): 
+						goal_binding_assertion = var == 0	# Maybe use better default?
+					
+					assertion_name = f"bind_{var}_{happenings}"
+					self.assertion_dictionary[assertion_name] = goal_binding_assertion
+					solver.assert_and_track(goal_binding_assertion, assertion_name)
 
 			end_time = time.time()
 			print(f"Time for generating SMT: {end_time - start_time}")	
@@ -299,6 +337,8 @@ class CaskadePlanner:
 		for core in muc:
 			unsat_core_string.append(str(core))
 		result = PlanningResult(PlanningResultType.UNSAT, None, unsat_core_string)
+		end_time_muc = time.time()
+		print(f"Time for finding MUC: {end_time_muc - end_time_solver}")
 		return result
 
 
@@ -322,3 +362,20 @@ def find_minimal_unsat_core(core):
     
     # Wenn keine Verkleinerung möglich ist, gebe den aktuellen Core zurück
     return core
+
+
+# Checks if a variable is already asserted
+def find_variable_in_expression(expression, variable):
+	# The first layer of equations consists of implies because of all the names needed for unsat cores. 
+	# But if in the lower layers, the type is an IMPLIES, we can skip it as such a constraint cannot be a binding of the var anymore
+	if any(child.decl().kind() == Z3_OP_IMPLIES for child in expression.children()) :
+		return False
+	if expression == variable:
+		return True
+	return any(find_variable_in_expression(child, variable) for child in expression.children())
+
+def is_variable_asserted(solver, variable):
+    for assertion in solver.assertions():
+        if find_variable_in_expression(assertion, variable):
+            return True
+    return False
