@@ -225,8 +225,7 @@ class PropertyDictionary:
 			return Effect(iri, cap_iri, logical_interpretation, value)
 		elif expr_goal == "Actual_Value" and value != "None":
 			return Init(iri, cap_iri, logical_interpretation, value)
-		else:
-			print(f"InstanceDescription with Expression Goal {expr_goal}, logic interpretation {logical_interpretation} and value {value} are capability constraints.")
+		# Everything else is handled as a capability constraint
 
 	def add_instance_description(self, data_element_iri: str, cap_iri: str, cap_type: CapabilityType, expr_goal: str, logical_interpretation: str, value: str):
 		instance_description = self.create_instance_description(data_element_iri, cap_iri, cap_type, expr_goal, logical_interpretation, value)
