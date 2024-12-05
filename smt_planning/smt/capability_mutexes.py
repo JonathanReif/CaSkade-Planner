@@ -5,9 +5,8 @@ from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.dicts.PropertyDictionary import Property
 from smt_planning.dicts.CapabilityDictionary import CapabilityPropertyInfluence
 from smt_planning.smt.property_links import get_related_properties
-from smt_planning.smt.capability_links import get_related_capabilities
 
-def get_capability_mutexes(happenings: int, required_cap_iri: str):
+def get_capability_mutexes(happenings: int):
 
 	resource_dictionary = StateHandler().get_resource_dictionary()
 
@@ -29,7 +28,7 @@ def get_capability_mutexes(happenings: int, required_cap_iri: str):
 	for cap in capabilities:
 		cap_input_properties = cap.input_properties
 		cap_input_and_related: List[Property] = [*cap_input_properties]
-		[cap_input_and_related.extend(get_related_properties(property.iri, required_cap_iri)) for property in cap_input_properties]
+		[cap_input_and_related.extend(get_related_properties(property.iri)) for property in cap_input_properties]
 
 		other_capabilities = [capability for capability in capabilities if capability.iri != cap.iri]
 		other_capabilities_outputs: List[CapabilityPropertyInfluence] = []

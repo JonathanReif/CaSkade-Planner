@@ -9,7 +9,7 @@ from smt_planning.dicts.PropertyDictionary import Property
 from z3 import Solver, Optimize, unsat, Bool, Real, RealSort, IntSort, BoolSort, Z3_OP_IMPLIES
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.openmath.parse_openmath import QueryCache
-from smt_planning.smt.property_links import get_related_properties, get_property_cross_relations
+from smt_planning.smt.property_links import get_related_properties, set_required_capability
 from smt_planning.ontology_handling.capability_and_property_query import get_all_properties, get_provided_capabilities
 from smt_planning.ontology_handling.init_query import get_init
 from smt_planning.ontology_handling.capability_constraints_query import get_capability_constraints
@@ -53,6 +53,9 @@ class CaskadePlanner:
 		state_handler = StateHandler()
 		state_handler.set_query_handler(self.query_handler)
 
+		# Set required cap to property link finding. TODO: Could be better moved to state handler
+		set_required_capability(self.required_capability_iri)
+
 		happenings = 0
 		# Fixed upper bound for number of events in one happening. Currently no events, so we just have the start and end of a happening
 		event_bound = 2
@@ -79,7 +82,7 @@ class CaskadePlanner:
 		get_capability_constraints()
 		
 		# Get all inits and goals of planning problem based on the instance descriptions
-		get_init()
+		# get_init()
 
 		while (happenings < max_happenings and solver_result == unsat):
 			# SMT Solver
@@ -109,7 +112,7 @@ class CaskadePlanner:
 
 			# ------------------------Constraint Proposition (H1 + H2) --> bool properties------------------
 			self.add_comment(solver, "Start of constraints proposition")
-			bool_constraints = get_bool_constraints(happenings, event_bound, self.required_capability_iri)
+			bool_constraints = get_bool_constraints(happenings, event_bound)
 			bool_constraint_counter = 0
 			for bool_constraint in bool_constraints:
 				bool_constraint_counter += 1
@@ -119,7 +122,7 @@ class CaskadePlanner:
 
 			# ---------------------Constraint Real Variable (H5) --> real properties-----------------------------
 			self.add_comment(solver, "Start of constraints real variables")
-			variable_constraints = get_variable_constraints(happenings, event_bound, self.required_capability_iri)
+			variable_constraints = get_variable_constraints(happenings, event_bound)
 			variable_constraint_counter = 0
 			for variable_constraint in variable_constraints:
 				variable_constraint_counter += 1
@@ -139,7 +142,7 @@ class CaskadePlanner:
 
 			# --------------------------------------- Capability Effect ---------------------------------------
 			self.add_comment(solver, "Start of effects")
-			effects = capability_effects_smt(happenings, event_bound, self.required_capability_iri)
+			effects = capability_effects_smt(happenings, event_bound)
 			effect_counter = 0
 			for effect in effects:
 				effect_counter += 1
@@ -149,7 +152,7 @@ class CaskadePlanner:
 
 			# ---------------- Constraints Capability mutexes (H14) -----------------------------------------
 			self.add_comment(solver, "Start of capability mutexes")
-			capability_mutexes = get_capability_mutexes(happenings, self.required_capability_iri)
+			capability_mutexes = get_capability_mutexes(happenings)
 			capability_mutex_counter = 0
 			for capability_mutex in capability_mutexes:
 				capability_mutex_counter += 1
@@ -169,7 +172,7 @@ class CaskadePlanner:
 
 			# ---------------------- Goal ------------------------------------------------- 
 			self.add_comment(solver, "Start of goal")
-			goal_constraints = goal_smt()
+			goal_constraints = goal_smt(happenings)
 			goal_counter = 0
 			for goal in goal_constraints:
 				goal_counter += 1
@@ -198,14 +201,14 @@ class CaskadePlanner:
 				solver.assert_and_track(real_variable_cont_change, assertion_name)
 
 			# ----------------- Cross-connection of related properties (new) -----------------
-			self.add_comment(solver, "Start of related properties")
-			property_cross_relations = get_property_cross_relations(happenings, event_bound, self.required_capability_iri)
-			cross_relation_counter = 0
-			for cross_relation in property_cross_relations:
-				cross_relation_counter += 1
-				assertion_name = f'crossRelation_{cross_relation_counter}_{happenings}'
-				self.assertion_dictionary[assertion_name] = cross_relation
-				solver.assert_and_track(cross_relation, assertion_name)
+			# self.add_comment(solver, "Start of related properties")
+			# property_cross_relations = get_property_cross_relations(happenings, event_bound)
+			# cross_relation_counter = 0
+			# for cross_relation in property_cross_relations:
+			# 	cross_relation_counter += 1
+			# 	assertion_name = f'crossRelation_{cross_relation_counter}_{happenings}'
+			# 	self.assertion_dictionary[assertion_name] = cross_relation
+			# 	solver.assert_and_track(cross_relation, assertion_name)
 
 
 			# Capability constraints are expressions in smt2 form that cannot be added programmatically, because we only have the whole expression in string form 
@@ -257,7 +260,7 @@ class CaskadePlanner:
 			for goal in property_dictionary.goals:
 				# add all goals themselves as we need to look into them as well. NO, DONT
 				# properties_related_to_goal.append(property_dictionary.get_property(goal))
-				properties_related_to_goal = get_related_properties(goal, self.required_capability_iri)
+				properties_related_to_goal = get_related_properties(goal)
 				
 				# If a single one of the properties related to goal is bound, we can skip it. Else, bind
 				# any(find_variable_in_expression(child, variable) for child in expression.children())

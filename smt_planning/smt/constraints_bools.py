@@ -6,7 +6,7 @@ from smt_planning.dicts.CapabilityDictionary import Capability
 from smt_planning.smt.property_links import get_related_properties
 from smt_planning.smt.capability_links import get_related_capabilities
 
-def get_bool_constraints(happenings: int, event_bound: int, required_capability_iri:str) -> List:
+def get_bool_constraints(happenings: int, event_bound: int) -> List:
 
 	stateHandler = StateHandler()	
 	property_dictionary = stateHandler.get_property_dictionary()
@@ -23,13 +23,13 @@ def get_bool_constraints(happenings: int, event_bound: int, required_capability_
 		
 		related_capabilities: List[Capability] = []
 		for capability_iri in property_capability_iris:
-			current_cap_related_capabilities = get_related_capabilities(capability_iri, original_property.iri, required_capability_iri)
+			current_cap_related_capabilities = get_related_capabilities(capability_iri, original_property.iri)
 			related_capabilities.extend(current_cap_related_capabilities)
 		
 		all_capabilities = [*capabilities, *related_capabilities]
 		
 		# Get all properties (this one and its related ones)
-		related_properties = get_related_properties(original_property.iri, required_capability_iri)
+		related_properties = get_related_properties(original_property.iri)
 		all_properties = [original_property, *related_properties]
 
 		all_true_setting_capabilities: List[Capability] = []

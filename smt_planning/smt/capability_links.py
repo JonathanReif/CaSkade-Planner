@@ -14,9 +14,9 @@ class CapabilityPair:
 		self.capability_b = capability_b
 		self.property = property
 
-def get_related_capabilities(capability_iri:str, property_iri:str, required_cap_iri: str) -> List[Capability]:
+def get_related_capabilities(capability_iri:str, property_iri:str) -> List[Capability]:
 	# Get all related properties and extract their capabilities
-	property_partners = get_related_properties(property_iri, required_cap_iri)
+	property_partners = get_related_properties(property_iri)
 
 	# Create a set to get only unique values. We don't want the original cap, that's why its added in the beginning
 	related_capability_iris = set()

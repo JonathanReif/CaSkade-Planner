@@ -33,68 +33,26 @@ class PropertyPair:
 # Private class that should not be imported. Instead only module functions are availalble outside this module
 class _PropertyPairCache:
 	property_pairs: List[PropertyPair] | None = list()
+	required_capability_iri = None
 
-	def get_property_pairs(self, required_capability_iri: str):
+	def get_property_pairs(self):
+		if self.required_capability_iri is None:
+			raise Exception("Required capability IRI is not set. Make sure to set it first as it is required for queries")
+		
 		if not self.property_pairs:
-			self.property_pairs = self.find_property_pairs(required_capability_iri)			
+			self.property_pairs = self.find_property_pairs()			
 
 		return self.property_pairs
 
-	def get_property_cross_relations(self, happenings: int, event_bound: int, required_capability_iri: str) -> List[BoolRef]:
-	
-		graph = StateHandler().get_graph()
-		property_dictionary = StateHandler().get_property_dictionary()
-		related_property_pairs = self.get_property_pairs(required_capability_iri)
-		
-		relation_constraints = []
+	def set_required_capability(self, required_capability_iri: str):
+		self.required_capability_iri = required_capability_iri
 
-		# 1: Relate inits. We need to get inputs of the required capability and make sure related properties are bound to the values of these properties.
-		# Both requirements and assurances need to be bound because otherwise assurance would be "floating" and could be set to goal without respecting caps
-		for required_prop in property_dictionary.required_properties.values():
-			if required_prop.relation_type != "Input":
-				continue
-			related_properties = self.get_partners(str(required_prop.iri), related_property_pairs)
-			for related_property in related_properties:
-				# related_property_relation_type = property_dictionary.get_relation_type_of_property(related_property_iri)
-				# if related_property_relation_type != "Input":
-				# 	continue
-
-				required_input_prop = property_dictionary.get_required_property_occurrence(str(required_prop.iri)).z3_variable
-				try: 
-					related_property = property_dictionary.get_provided_property_occurrence(str(related_property.iri), 0, 0).z3_variable
-					relation_constraint = (required_input_prop == related_property)
-					relation_constraints.append(relation_constraint)
-				except KeyError:
-					print(f"There is no provided property with key {related_property.iri}.")
-
-		# 2: Relate goals. We need to get all outputs of the required capability and make sure that related output properties are bound to the valu of these outputs
-		# Only constrain output properties because we are only interested in the final output. The input depends on the capability and must not be "over-constrained"
-		for required_prop in property_dictionary.required_properties.values():
-			if required_prop.relation_type != "Output":
-				continue
-			related_properties = self.get_partners(str(required_prop.iri), related_property_pairs)
-			for related_property in related_properties:
-				related_property_relation_type = property_dictionary.get_property_relation_type(related_property.iri)
-				if related_property_relation_type != "Output":
-					continue
-
-				required_output_prop = property_dictionary.get_required_property_occurrence(str(required_prop.iri)).z3_variable
-				try:
-					related_property = property_dictionary.get_provided_property_occurrence(str(related_property.iri), happenings-1, 1).z3_variable
-					relation_constraint = (required_output_prop == related_property)
-					relation_constraints.append(relation_constraint)
-				except KeyError: 
-					print(f"There is no provided property with key {related_property.iri}.")
-				
-		return relation_constraints
-
-	def get_related_properties(self, property_iri:str, required_capability_iri) -> List[Property]:
-
+	def get_related_properties(self, property_iri:str) -> List[Property]:
 		property_dictionary = StateHandler().get_property_dictionary()
 		result_related_properties: List[Property] = []
 
 		# Find all related partners of the given property
-		related_properties = self.get_partners(property_iri, self.get_property_pairs(required_capability_iri))
+		related_properties = self.get_partners(property_iri, self.get_property_pairs())
 		
 		# Make sure only provided ones are returned
 		for related_property in related_properties:
@@ -125,9 +83,11 @@ class _PropertyPairCache:
 	def is_self_pair(self, pair: PropertyPair) -> bool:
 		return str(pair.property_a.iri) == str(pair.property_b.iri)
 
-	def find_property_pairs(self, required_cap_iri: str) -> List[PropertyPair]: 
+	def find_property_pairs(self) -> List[PropertyPair]: 
+		if self.required_capability_iri is None:
+			raise Exception("Required capability IRI is not set. Make sure to set it first as it is required for queries")
+		
 		# Part 1: Queries the graph and finds all implicitly related property pairs
-
 		query_string = """
 		PREFIX DINEN61360: <http://www.w3id.org/hsu-aut/DINEN61360#>
 		PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
@@ -152,7 +112,7 @@ class _PropertyPairCache:
 			?fpbSubType rdfs:subClassOf* ?fpbType.
 		}
 		"""
-		query_string = query_string.replace('{required_cap_iri}', required_cap_iri)
+		query_string = query_string.replace('{required_cap_iri}', self.required_capability_iri)
 		query_handler = StateHandler().get_query_handler()
 		result = query_handler.query(query_string)
 		# Creates a list of pairs of related properties, i.e. a properties with a different data_element that is still implicitly connected and thus must be linked in SMT
@@ -326,8 +286,9 @@ class _PropertyPairCache:
 # Create one module-wide instance
 property_pair_cache = _PropertyPairCache()
 
-def get_related_properties(property_iri: str, required_capability_iri: str) -> List[Property]:
-	return property_pair_cache.get_related_properties(property_iri, required_capability_iri)
 
-def get_property_cross_relations(happenings: int, event_bound: int, required_capability_iri: str):
-	return property_pair_cache.get_property_cross_relations(happenings, event_bound, required_capability_iri)
+def set_required_capability(required_capability_iri: str):
+	return property_pair_cache.set_required_capability(required_capability_iri)
+
+def get_related_properties(property_iri: str) -> List[Property]:
+	return property_pair_cache.get_related_properties(property_iri)
