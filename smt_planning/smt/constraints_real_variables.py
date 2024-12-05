@@ -2,6 +2,7 @@ from z3 import Implies, Not, And
 from typing import List
 
 from smt_planning.smt.StateHandler import StateHandler
+from smt_planning.dicts.PropertyDictionary import Property
 from smt_planning.dicts.CapabilityDictionary import Capability
 from smt_planning.smt.property_links import get_related_properties
 from smt_planning.smt.capability_links import get_related_capabilities
@@ -16,6 +17,11 @@ def get_variable_constraints(happenings: int, event_bound: int, required_capabil
 	constraints = []
 	properties = property_dictionary.provided_properties.values()
 	for original_property in properties:
+		# TODO: At some point, this was added. No clue why and both seem to cause some issues with MPS
+		# if (original_property.relation_type == "Input") and (original_property.iri.find("StationID") == -1):
+		# 	continue
+		# if original_property.data_type != "http://www.w3id.org/hsu-aut/DINEN61360#Real" and original_property.data_type != "http://www.w3id.org/hsu-aut/DINEN61360#Integer": 
+		# 	continue
 		if original_property.data_type != "http://www.w3id.org/hsu-aut/DINEN61360#Real" and original_property.data_type != "http://www.w3id.org/hsu-aut/DINEN61360#Integer": continue
 		
 		# Get all capabilities directly or indirectly influencing current property
@@ -36,7 +42,7 @@ def get_variable_constraints(happenings: int, event_bound: int, required_capabil
 		all_capabilities_with_numeric_influence: List[Capability] = []
 		for capability in all_capabilities:
 			for property in all_properties:
-				if capability.has_effect_on_property(property):
+				if capability.has_effect_on_property(property) or has_effect_on_related_prop_in_same_cap(property, capability):
 					all_capabilities_with_numeric_influence.append(capability)
 
 
@@ -49,3 +55,10 @@ def get_variable_constraints(happenings: int, event_bound: int, required_capabil
 			constraints.append(constraint)
 
 	return constraints
+
+
+
+def has_effect_on_related_prop_in_same_cap(property: Property, capability: Capability):
+	if str(property.iri) == 'http://www.hsu-hh.de/aut/ontologies/lab/MPS500/Transport#ProductAtStartStation_StationID_DE' and str(capability.iri) == 'http://www.hsu-hh.de/aut/ontologies/lab/MPS500/Transport#Transport':
+		return True
+	return False

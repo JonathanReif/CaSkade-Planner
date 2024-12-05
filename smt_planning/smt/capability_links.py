@@ -5,7 +5,7 @@ from rdflib.term import Identifier
 
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.dicts.PropertyDictionary import Property
-from smt_planning.smt.property_links import PropertyPairCache, get_partners
+from smt_planning.smt.property_links import get_related_properties
 from smt_planning.dicts.CapabilityDictionary import Capability
 
 class CapabilityPair:
@@ -16,8 +16,7 @@ class CapabilityPair:
 
 def get_related_capabilities(capability_iri:str, property_iri:str, required_cap_iri: str) -> List[Capability]:
 	# Get all related properties and extract their capabilities
-	property_pairs = PropertyPairCache.get_property_pairs(required_cap_iri)
-	property_partners = get_partners(property_iri, property_pairs)
+	property_partners = get_related_properties(property_iri, required_cap_iri)
 
 	# Create a set to get only unique values. We don't want the original cap, that's why its added in the beginning
 	related_capability_iris = set()
