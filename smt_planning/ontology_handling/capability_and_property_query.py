@@ -7,9 +7,7 @@ from smt_planning.dicts.ResourceDictionary import ResourceDictionary
 
 def get_all_properties(required_cap_iri: str) -> PropertyDictionary:
 	
-	# Names need to be a combination of the thing that has a property (ID) with the corresponding type description. 
-	# Thing and type description together define a certain property in a context.
-	# And we need to get properties that belong to the capabilitiy inputs / outputs themselves as well as to resources, hence the UNION.
+	# We need to get properties that belong to the capabilitiy inputs / outputs themselves as well as to resources, hence the UNION.
 	# 
 	query_string = """
 	PREFIX DINEN61360: <http://www.w3id.org/hsu-aut/DINEN61360#>
@@ -22,29 +20,35 @@ def get_all_properties(required_cap_iri: str) -> PropertyDictionary:
 			# this part gets all the data elements of resources (that must provide a cap)
 			?resource CSS:providesCapability ?cap.
 			BIND(CaSk:ProvidedCapability as ?capType).
-			?cap a ?capType.
 			?resource DINEN61360:has_Data_Element ?de.
+			# Filter out results from the other union set to not get strange duplicates
+			FILTER(
+            NOT EXISTS {
+                ?inout a/rdfs:subClassOf VDI3682:State.
+                ?inout VDI3682:isCharacterizedBy ?id.
+            })
 		}
 		UNION 
 		{
 			# this part gets all properties that are directly connected to a process / capability
-			?process ?relation ?inout.
-		}
-		# All caps must have a type, that can either be provided or required (but if required, filter for the one we're plannning for)
-		?cap a ?capType;
+			?cap a ?capType;
 			^CSS:requiresCapability ?process.
-		values ?capType {
-			CaSk:ProvidedCapability CaSk:RequiredCapability 
-		}.
+			?process ?relation ?inout.
+			FILTER(?capType = CaSk:ProvidedCapability || ?cap = <{required_cap_iri}>)
+		}
+		
+		?inout VDI3682:isCharacterizedBy ?id.
+		# All caps must have a type, that can either be provided or required (but if required, filter for the one we're plannning for)
 		VALUES ?relation {
-				VDI3682:hasInput VDI3682:hasOutput
+			VDI3682:hasInput VDI3682:hasOutput
 		}.
 		BIND(STRAFTER(STR(?relation), "has") AS ?relationType)
-		?inout VDI3682:isCharacterizedBy ?id.
+		VALUES ?capType {
+			CaSk:ProvidedCapability CaSk:RequiredCapability 
+		}.
 		# Filter to get only provided caps AND the one required that we are planning for
-		FILTER(?capType = CaSk:ProvidedCapability || ?cap = <{required_cap_iri}>)
-		# All DE need ID with datatype, exp goal (optional), log (optional), value (optional)
 		?de DINEN61360:has_Instance_Description ?id.
+		# All DE need ID with datatype, exp goal (optional), log (optional), value (optional)
 		?id a ?dataType.
 		?dataType rdfs:subClassOf DINEN61360:Simple_Data_Type.
 		FILTER(?dataType != DINEN61360:Simple_Data_Type) # Only get the real subclasses, not Simple_D_T itself
@@ -80,21 +84,27 @@ def get_all_properties(required_cap_iri: str) -> PropertyDictionary:
 			properties.add_instance_description(str(row['de']), cap, CapabilityType.ProvidedCapability, str(row['expr_goal']), str(row['log']), str(row['val'])) 
 	return properties
 
-def get_provided_capabilities() -> Tuple[CapabilityDictionary, ResourceDictionary]:
+def get_provided_capabilities(required_cap_iri: str) -> Tuple[CapabilityDictionary, ResourceDictionary]:
 	query_string = """
 	PREFIX DINEN61360: <http://www.w3id.org/hsu-aut/DINEN61360#>
 	PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
 	PREFIX CaSk: <http://www.w3id.org/hsu-aut/cask#>
 	PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
-	SELECT DISTINCT ?cap ?de ?res WHERE { 
-		?cap a CaSk:ProvidedCapability;
+	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+	SELECT DISTINCT ?cap ?de ?res ?capType WHERE {
+		?cap a ?capType;
 			^CSS:requiresCapability ?process.
+		?capType rdfs:subClassOf CSS:Capability.
+		FILTER(?capType = CaSk:ProvidedCapability || ?cap = <{required_cap_iri}>)
 		?process VDI3682:hasInput ?input.
 		?input VDI3682:isCharacterizedBy ?id.
 		?de DINEN61360:has_Instance_Description ?id.
-		?res CSS:providesCapability ?cap.
+		OPTIONAL{
+			?res CSS:providesCapability ?cap.
+		}
 	}
 	"""
+	query_string = query_string.replace('{required_cap_iri}', required_cap_iri)
 	query_handler = StateHandler().get_query_handler()
 	results = query_handler.query(query_string)
 	
@@ -105,17 +115,18 @@ def get_provided_capabilities() -> Tuple[CapabilityDictionary, ResourceDictionar
 	for cap in caps:
 		# Input properties can be retrieved from query
 		inputs = [str(row['de']) for row in results if (str(row['cap']) == cap)]
-		input_properties = [property_dictionary.get_provided_property(input) for input in inputs]
+		input_properties = [property_dictionary.get_property(input) for input in inputs]
 		# Outputs need to have their effect attached and are more tricky
 		outputs = get_output_influences_of_capability(cap)
-		capability_dictionary.add_capability(cap, "http://www.w3id.org/hsu-aut/cask#ProvidedCapability", input_properties, outputs)
+		capType = [str(row['capType']) for row in results if (str(row['cap']) == cap)][0]
+		capability_dictionary.add_capability(cap, capType, input_properties, outputs)
 
 	resource_dictionary = ResourceDictionary()
 
-	resources = set([str(row['res']) for row in results])
+	resources = set([str(row['res']) for row in results if row['res'] is not None])
 	for resource in resources:
 		caps = set([str(row['cap']) for row in results if (str(row['res']) == resource)])
-		resource_caps = [capability_dictionary.get_capability(cap) for cap in caps]
+		resource_caps = [capability_dictionary.get_provided_capability(cap) for cap in caps]
 		resource_dictionary.add_resource(resource, resource_caps)
 
 	return capability_dictionary, resource_dictionary
@@ -131,16 +142,18 @@ def get_output_influences_of_capability(capability_iri: str) -> List[CapabilityP
 	PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 	PREFIX OM: <http://openmath.org/vocab/math#>
 	PREFIX OM-Relation1: <http://www.openmath.org/cd/relation1#>
-	SELECT ?cap ?input_de ?inputStateClass ?inputExpressionGoal ?inputValue ?output_de ?outputStateClass ?outputValue ?equalConstraint WHERE {
+	SELECT ?cap ?input_de ?inputClass ?inputExpressionGoal ?inputValue ?output_de ?outputClass ?outputValue 
+	?equalConstraint ?inputStateSubclass ?outputStateSubclass WHERE {
 		BIND(<{capability_iri}> AS ?cap)
 		?cap a CaSk:ProvidedCapability;
-			^CSS:requiresCapability ?process.	
+			^CSS:requiresCapability ?process.
 		?process VDI3682:hasInput ?input.
-		?input a ?inputStateClass. 
-		?inputStateClass rdfs:subClassOf* VDI3682:State.
+		?input a ?inputClass.
+		?inputClass rdfs:subClassOf* ?inputStateSubclass.
+		?inputStateSubclass rdfs:subClassOf VDI3682:State.
 		?input VDI3682:isCharacterizedBy ?input_id.
 		?input_de DINEN61360:has_Instance_Description ?input_id;
-			DINEN61360:has_Type_Description ?td.
+				DINEN61360:has_Type_Description ?td.
 		?input_id a ?dataType.
 		?dataType rdfs:subClassOf DINEN61360:Simple_Data_Type.
 		OPTIONAL {
@@ -149,13 +162,13 @@ def get_output_influences_of_capability(capability_iri: str) -> List[CapabilityP
 		OPTIONAL {
 			?input_id DINEN61360:Value ?inputValue.
 		}
-		
 		?process VDI3682:hasOutput ?output.
-		?output a ?outputStateClass. 
-		?outputStateClass rdfs:subClassOf* VDI3682:State.
+		?output a ?outputClass.
+		?outputClass rdfs:subClassOf* ?outputStateSubclass.
+		?outputStateSubclass rdfs:subClassOf VDI3682:State.
 		?output VDI3682:isCharacterizedBy ?output_id.
 		?output_de DINEN61360:has_Instance_Description ?output_id;
-			DINEN61360:has_Type_Description ?td.
+				DINEN61360:has_Type_Description ?td.
 		?output_id a ?dataType.
 		OPTIONAL {
 			?output_id DINEN61360:Value ?outputValue.
@@ -163,8 +176,8 @@ def get_output_influences_of_capability(capability_iri: str) -> List[CapabilityP
 		OPTIONAL {
 			?capability CSS:isRestrictedBy ?equalConstraint.
 			?equalConstraint OM:arguments/rdf:rest/rdf:first|OM:arguments/rdf:first ?input_id;
-				OM:arguments/rdf:rest/rdf:first|OM:arguments/rdf:first ?output_id;
-									OM:operator OM-Relation1:eq.
+																		OM:arguments/rdf:rest/rdf:first|OM:arguments/rdf:first ?output_id;
+																													OM:operator OM-Relation1:eq.
 		}
 	} """
 	query_string = query_string.replace('{capability_iri}', capability_iri)
@@ -180,7 +193,7 @@ def get_output_influences_of_capability(capability_iri: str) -> List[CapabilityP
 		if(not row.get('equalConstraint') and not row.get('outputValue')):
 			continue
 		if(row.get('equalConstraint')):
-			if(not row.get('inputStateClass').eq(row.get('outputStateClass'))):
+			if(not row.get('inputStateSubclass').eq(row.get('outputStateSubclass'))):
 				# equalConstraint but with different product type / information in output it is a property change
 				effect = PropertyChange.ChangeByExpression
 			elif(row.get('inputExpressionGoal')):
