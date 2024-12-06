@@ -43,7 +43,9 @@ def get_variable_constraints(happenings: int, event_bound: int) -> List:
 		for capability in all_capabilities:
 			for property in all_properties:
 				if capability.has_effect_on_property(property) or has_effect_on_related_prop_in_same_cap(property, capability):
+					# If there is an influence, we add the cap and continue to the next
 					all_capabilities_with_numeric_influence.append(capability)
+					break	
 
 
 		for happening in range(happenings):
