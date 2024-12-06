@@ -15,20 +15,6 @@ CAP = Variable("cap")
 FPB_SUBTYPE = Variable("fpbSubType")
 FPB_TYPE = Variable("fpbType")
 
-# class PropertyPair:
-# 	# Create a new pair with sorted properties so that we can more easily compare later
-# 	def __init__(self, property_a: Property, property_b: Property) -> None:
-# 		self.property_a, self.property_b = sorted([property_a, property_b])
-
-# 	def __repr__(self):
-# 		return f"({self.property_a}, {self.property_b})"
-
-# 	def __eq__(self, other):
-# 		return self.property_a == other.property_a and self.property_b == other.property_b
-
-# 	def __hash__(self):
-# 		return hash((self.property_a, self.property_b))
-
 
 # Private class that should not be imported. Instead only module functions are availalble outside this module
 class _PropertyPairCache:
@@ -130,7 +116,9 @@ class _PropertyPairCache:
 		PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
 		PREFIX OM: <http://openmath.org/vocab/math#>
 		PREFIX DINEN61360: <http://www.w3id.org/hsu-aut/DINEN61360#>
-		select ?de_a ?de_b where { 
+		PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
+		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+		select DISTINCT ?de_a ?de_b ?inout_a ?inout_b ?fpbSubType_a ?fpbSubType_b where { 
 			?constraint a CSS:CapabilityConstraint;
 					OM:operator <http://www.openmath.org/cd/relation1#eq>;
 					OM:arguments (?ID_a ?ID_b) .
@@ -139,6 +127,15 @@ class _PropertyPairCache:
 			# Must have the same TD
 			?de_a DINEN61360:has_Type_Description ?td.
 			?de_b DINEN61360:has_Type_Description ?td.
+			# Must both be attached to products, no information or energy
+			?inout_a DINEN61360:has_Data_Element ?de_a.
+			?inout_b DINEN61360:has_Data_Element ?de_b.
+			?inout_a a ?fpbSubType_a.
+			?inout_b a ?fpbSubType_b.
+			# Get the super class that is one of the subclasses of VDI3682:State
+			BIND(VDI3682:Product AS ?fpbType).
+			?fpbSubType_a rdfs:subClassOf* ?fpbType.
+    		?fpbSubType_b rdfs:subClassOf* ?fpbType.
 			# TODO: Properly filter out constants
 			FILTER(!CONTAINS(STR(?de_a), "Module_StationID"))
 			FILTER(!CONTAINS(STR(?de_b), "Module_StationID"))
