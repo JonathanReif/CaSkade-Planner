@@ -52,6 +52,7 @@ def init_smt():
 		
 		related_properties = get_related_properties(str(init_property_iri))
 		for related_property in related_properties:
+			if (related_property.relation_type == "Output" or all(instance.expr_goal == 'Actual_Value' for instance in related_property.instances)): continue
 			try: 
 				related_property_z3_var = property_dictionary.get_provided_property_occurrence(str(related_property.iri), 0, 0).z3_variable
 				relation_constraint = (related_property_z3_var == init_property_z3_var)
