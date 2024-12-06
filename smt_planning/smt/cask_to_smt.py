@@ -9,7 +9,7 @@ from smt_planning.dicts.PropertyDictionary import Property
 from z3 import Solver, Optimize, unsat, Bool, Real, RealSort, IntSort, BoolSort, Z3_OP_IMPLIES
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.openmath.parse_openmath import QueryCache
-from smt_planning.smt.property_links import get_related_properties, set_required_capability
+from smt_planning.smt.property_links import get_related_properties, set_required_capability, reset_property_pairs
 from smt_planning.ontology_handling.capability_and_property_query import get_all_properties, get_provided_capabilities
 from smt_planning.ontology_handling.init_query import get_init
 from smt_planning.ontology_handling.capability_constraints_query import get_capability_constraints
@@ -52,6 +52,7 @@ class CaskadePlanner:
 		start_time = time.time()
 		state_handler = StateHandler()
 		state_handler.set_query_handler(self.query_handler)
+		reset_property_pairs()
 
 		# Set required cap to property link finding. TODO: Could be better moved to state handler
 		set_required_capability(self.required_capability_iri)
@@ -264,12 +265,12 @@ class CaskadePlanner:
 				
 				# If a single one of the properties related to goal is bound, we can skip it. Else, bind
 				# any(find_variable_in_expression(child, variable) for child in expression.children())
-				if any(is_variable_asserted(solver, property_dictionary.get_property_occurence(goal_prop.iri, 0, 0).z3_variable) for goal_prop in properties_related_to_goal): continue
+				# if any(is_variable_asserted(solver, property_dictionary.get_property_occurence(goal_prop.iri, 0, 0).z3_variable) for goal_prop in properties_related_to_goal): continue
 
 				for goal_related_prop in properties_related_to_goal:
 					var = property_dictionary.get_property_occurence(goal_related_prop.iri, 0, 0).z3_variable
 					# TODO:checking for assertions is very expensive (recursive check in every loop). We should store all asserted vars to make checking faster
-					# if is_variable_asserted(solver, var): continue
+					if is_variable_asserted(solver, var): continue
 					
 					if var.sort() == BoolSort(): 
 						goal_binding_assertion = var == False

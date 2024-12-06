@@ -1,4 +1,4 @@
-from typing import List, Mapping, Dict
+from typing import List, Mapping, Dict, Set
 
 from rdflib import Graph, Variable
 from rdflib.term import Identifier 
@@ -15,32 +15,32 @@ CAP = Variable("cap")
 FPB_SUBTYPE = Variable("fpbSubType")
 FPB_TYPE = Variable("fpbType")
 
-class PropertyPair:
-	# Create a new pair with sorted properties so that we can more easily compare later
-	def __init__(self, property_a: Property, property_b: Property) -> None:
-		self.property_a, self.property_b = sorted([property_a, property_b])
+# class PropertyPair:
+# 	# Create a new pair with sorted properties so that we can more easily compare later
+# 	def __init__(self, property_a: Property, property_b: Property) -> None:
+# 		self.property_a, self.property_b = sorted([property_a, property_b])
 
-	def __repr__(self):
-		return f"({self.property_a}, {self.property_b})"
+# 	def __repr__(self):
+# 		return f"({self.property_a}, {self.property_b})"
 
-	def __eq__(self, other):
-		return self.property_a == other.property_a and self.property_b == other.property_b
+# 	def __eq__(self, other):
+# 		return self.property_a == other.property_a and self.property_b == other.property_b
 
-	def __hash__(self):
-		return hash((self.property_a, self.property_b))
+# 	def __hash__(self):
+# 		return hash((self.property_a, self.property_b))
 
 
 # Private class that should not be imported. Instead only module functions are availalble outside this module
 class _PropertyPairCache:
-	property_pairs: List[PropertyPair] | None = list()
+	property_pairs: Dict[str, Set[Property]] = dict()
 	required_capability_iri = None
 
 	def get_property_pairs(self):
 		if self.required_capability_iri is None:
 			raise Exception("Required capability IRI is not set. Make sure to set it first as it is required for queries")
 		
-		if not self.property_pairs:
-			self.property_pairs = self.find_property_pairs()			
+		if len(self.property_pairs.keys()) == 0:
+			self.find_property_pairs()			
 
 		return self.property_pairs
 
@@ -52,7 +52,7 @@ class _PropertyPairCache:
 		result_related_properties: List[Property] = []
 
 		# Find all related partners of the given property
-		related_properties = self.get_partners(property_iri, self.get_property_pairs())
+		related_properties = self.get_property_pairs().get(property_iri, set())
 		
 		# Make sure only provided ones are returned
 		for related_property in related_properties:
@@ -66,24 +66,18 @@ class _PropertyPairCache:
 		return result_related_properties
 
 	# Returns all partners of a property from a list of property pairs
-	def get_partners(self, property_iri: str, property_pairs: List[PropertyPair]) -> List[Property]:
-		# Gets partnerA if partnerB is given and partnerB if partnerA is given
-		related_properties = []
-		for property_pair in property_pairs:
-			if (str(property_iri) ==  str(property_pair.property_a.iri)):
-				related_properties.append(property_pair.property_b)
-			if (str(property_iri) ==  str(property_pair.property_b.iri)):
-				related_properties.append(property_pair.property_a)
+	# def get_partners(self, property_iri: str, property_pairs: List[PropertyPair]) -> List[Property]:
+	# 	# Gets partnerA if partnerB is given and partnerB if partnerA is given
+	# 	related_properties = []
+	# 	for property_pair in property_pairs:
+	# 		if (str(property_iri) ==  str(property_pair.property_a.iri)):
+	# 			related_properties.append(property_pair.property_b)
+	# 		if (str(property_iri) ==  str(property_pair.property_b.iri)):
+	# 			related_properties.append(property_pair.property_a)
 			
-		return related_properties
+	# 	return related_properties
 
-	def is_existing(self, pair: PropertyPair, related_property_pairs: List[PropertyPair]) -> bool:
-		return (pair in related_property_pairs)
-
-	def is_self_pair(self, pair: PropertyPair) -> bool:
-		return str(pair.property_a.iri) == str(pair.property_b.iri)
-
-	def find_property_pairs(self) -> List[PropertyPair]: 
+	def find_property_pairs(self) -> None: 
 		if self.required_capability_iri is None:
 			raise Exception("Required capability IRI is not set. Make sure to set it first as it is required for queries")
 		
@@ -119,18 +113,16 @@ class _PropertyPairCache:
 		# Requirement for a related property:
 		# Must belong to different capability, must have same type description and either both properties dont have a product subtype or both have the same subtype
 		property_dictionary = StateHandler().get_property_dictionary()
-		property_pairs: List[PropertyPair] = []
+		
 		for binding in result.bindings:
 			related_bindings = list(filter(lambda x: self.is_related_property_binding(binding, x), result.bindings))
 			for related_binding in related_bindings:
 				property_a = property_dictionary.get_property(str(binding.get(DE)))
 				property_b = property_dictionary.get_property(str(related_binding.get(DE)))
-				pair = PropertyPair(property_a, property_b)
-				existing_pair = self.is_existing(pair, property_pairs)
-				self_pair = self.is_self_pair(pair)
-				if not existing_pair and not self_pair:
-					property_pairs.append(pair)
-
+				if not property_a.__eq__(property_b): 
+					self.property_pairs.setdefault(property_a.iri, set()).add(property_b)
+					self.property_pairs.setdefault(property_b.iri, set()).add(property_a)
+				
 
 		# Part 2: There can also be explicit relations. As soon as an equal constraint is defined, the properties set to be equal must also be considered 
 		# to be related for all other constraints to properly work
@@ -161,73 +153,108 @@ class _PropertyPairCache:
 		for binding in result.bindings:
 			property_a = property_dictionary.get_property(str(binding.get(DE_A)))
 			property_b = property_dictionary.get_property(str(binding.get(DE_B)))
-			pair = PropertyPair(property_a, property_b)
-			existing_pair = self.is_existing(pair, property_pairs)
-			self_pair = self.is_self_pair(pair)
-			if not existing_pair and not self_pair:
-				property_pairs.append(pair)
+			if not property_a.__eq__(property_b): 
+					self.property_pairs.setdefault(property_a.iri, set()).add(property_b)
+					self.property_pairs.setdefault(property_b.iri, set()).add(property_a)
 
-			# We also need to take into account all pairs that already existed for A and B
-			partners_of_a = self.get_partners(str(binding.get(DE_A)), property_pairs)
+			# We also need to take into account all pairs that already existed for A and B. Provide an empty set as default if key doesn't exist
+			partners_of_a = self.property_pairs.get(property_a.iri, set())
 			for partner_of_a in partners_of_a:
 				is_required_prop = (partner_of_a.iri in property_dictionary.required_properties.keys())
 				if is_required_prop:
 					continue
-				pair = PropertyPair(partner_of_a, property_b)
-				existing_pair = self.is_existing(pair, property_pairs)
-				self_pair = self.is_self_pair(pair)
-				different_caps = set(pair.property_a.capability_iris).isdisjoint(property_b.capability_iris)
-				if not existing_pair and not self_pair and different_caps:
-					property_pairs.append(pair)
+				different_caps = set(property_a.capability_iris).isdisjoint(property_b.capability_iris)
+				if not partner_of_a.__eq__(property_b) and different_caps:
+					self.property_pairs.setdefault(partner_of_a.iri, set()).add(property_b)
+					self.property_pairs.setdefault(property_b.iri, set()).add(partner_of_a)
 			
-			partners_of_b = self.get_partners(str(binding.get(DE_B)), property_pairs)
+			partners_of_b = self.property_pairs.get(property_b.iri, set())
 			for partner_of_b in partners_of_b:
 				is_required_prop = (partner_of_b.iri in property_dictionary.required_properties.keys())
 				if is_required_prop:
 					continue
-				pair = PropertyPair(partner_of_b, property_a)
-				existing_pair = self.is_existing(pair, property_pairs)
-				self_pair = self.is_self_pair(pair)
-				different_caps = set(pair.property_a.capability_iris).isdisjoint(property_b.capability_iris)
-				if not existing_pair and not self_pair and different_caps:
-					property_pairs.append(pair)
+				different_caps = set(property_a.capability_iris).isdisjoint(property_b.capability_iris)
+				if not partner_of_b.__eq__(property_a) and different_caps:
+					self.property_pairs.setdefault(partner_of_b.iri, set()).add(property_a)
+					self.property_pairs.setdefault(property_a.iri, set()).add(partner_of_b)
 
-		# Resolve transitive relations: If Prop A and B are pairs and B and C are pairs, then A and C must also be pairs
-		new_pairs_added = True
+		# Resolve transitive relations. Add all related props C of a property B to property A if A is related to B
+		self.expand_transitive_relations()
+		# while new_pairs_added:
+		# 	new_pairs_added = False
+		# 	expanded_data = {key: set(values) for key, values in self.property_pairs.items()}
+		# 	for key, set_values in expanded_data.items():
+		# 		for set_value in set_values:
+		# 			other_properties = expanded_data[set_value.iri]
+		# 			other_properties_without_key = other_properties - {property_dictionary.get_property(key)}
+		# 			expanded_data[key].update(other_properties_without_key)
 
-		while new_pairs_added:
-			new_pairs_added = False
-			current_pairs = property_pairs  # Copy the set to allow for iteration
+		
+		
+		# # Resolve transitive relations: If Prop A and B are pairs and B and C are pairs, then A and C must also be pairs
+		# new_pairs_added = True
 
-			for pair1 in current_pairs:
-				for pair2 in current_pairs:
-					prop_1_a_is_required_prop = (pair1.property_a.iri in property_dictionary.required_properties.keys())
-					prop_1_b_is_required_prop = (pair1.property_b.iri in property_dictionary.required_properties.keys())
-					prop_2_a_is_required_prop = (pair2.property_a.iri in property_dictionary.required_properties.keys())
-					prop_2_b_is_required_prop = (pair2.property_b.iri in property_dictionary.required_properties.keys())
-					if prop_1_a_is_required_prop or prop_1_b_is_required_prop or prop_2_a_is_required_prop or prop_2_b_is_required_prop:
-						continue
+		# while new_pairs_added:
+		# 	new_pairs_added = False
+		# 	current_pairs = property_pairs  # Copy the set to allow for iteration
 
-					# Check if pairs are transitively connected. Note that connecting elements can be first or second element, hence the need for this weird comparison
-					if pair1.property_b == pair2.property_a:
-						new_pair = PropertyPair(pair1.property_a, pair2.property_b)
-					elif pair1.property_b == pair2.property_b:
-						new_pair = PropertyPair(pair1.property_a, pair2.property_a)
-					elif pair1.property_a == pair2.property_a:
-						new_pair = PropertyPair(pair1.property_b, pair2.property_b)
-					elif pair1.property_a == pair2.property_b:
-						new_pair = PropertyPair(pair1.property_b, pair2.property_a)
-					else:
-						continue  # Keine transitive Verbindung gefunden, nächstes Paar
+		# 	for pair1 in current_pairs:
+		# 		for pair2 in current_pairs:
+		# 			prop_1_a_is_required_prop = (pair1.property_a.iri in property_dictionary.required_properties.keys())
+		# 			prop_1_b_is_required_prop = (pair1.property_b.iri in property_dictionary.required_properties.keys())
+		# 			prop_2_a_is_required_prop = (pair2.property_a.iri in property_dictionary.required_properties.keys())
+		# 			prop_2_b_is_required_prop = (pair2.property_b.iri in property_dictionary.required_properties.keys())
+		# 			if prop_1_a_is_required_prop or prop_1_b_is_required_prop or prop_2_a_is_required_prop or prop_2_b_is_required_prop:
+		# 				continue
 
-					# Nur hinzufügen, wenn das neue Pair noch nicht existiert
-					existing_pair = self.is_existing(new_pair, property_pairs)
-					self_pair = self.is_self_pair(new_pair)
-					if not existing_pair and not self_pair:
-						property_pairs.append(new_pair)
-						new_pairs_added = True
+		# 			# Check if pairs are transitively connected. Note that connecting elements can be first or second element, hence the need for this weird comparison
+		# 			if pair1.property_b == pair2.property_a:
+		# 				new_pair = PropertyPair(pair1.property_a, pair2.property_b)
+		# 			elif pair1.property_b == pair2.property_b:
+		# 				new_pair = PropertyPair(pair1.property_a, pair2.property_a)
+		# 			elif pair1.property_a == pair2.property_a:
+		# 				new_pair = PropertyPair(pair1.property_b, pair2.property_b)
+		# 			elif pair1.property_a == pair2.property_b:
+		# 				new_pair = PropertyPair(pair1.property_b, pair2.property_a)
+		# 			else:
+		# 				continue  # Keine transitive Verbindung gefunden, nächstes Paar
 
-		return property_pairs
+		# 			# Nur hinzufügen, wenn das neue Pair noch nicht existiert
+		# 			existing_pair = self.is_existing(new_pair, property_pairs)
+		# 			self_pair = self.is_self_pair(new_pair)
+		# 			if not existing_pair and not self_pair:
+		# 				property_pairs.append(new_pair)
+		# 				new_pairs_added = True
+
+		# return property_pairs
+
+	def expand_transitive_relations(self):
+		# Hilfsfunktion, um IDs aus einem Set von Items zu extrahieren
+		def get_ids(property_set):
+			return {property.iri for property in property_set}
+		
+		# Hilfsfunktion, um ein Set um neue Items zu erweitern
+		def expand_set(target_key: str, target_set: Set[Property]):
+			to_add = set()
+			for item in target_set:
+				if item.iri in self.property_pairs:  # Falls die ID des Objekts ein Key ist
+					# Alle Objekte hinzufügen, außer das mit target_key als ID
+					to_add.update(obj for obj in self.property_pairs[item.iri] if obj.iri != target_key)
+			return to_add
+		
+		# Iteriere über alle Keys im Dictionary und erweitere deren Sets
+		for key in self.property_pairs:
+			seen_ids = set()  # Vermeidet doppelte Verarbeitung oder Zyklen
+			while True:
+				# Erweitere das aktuelle Set
+				current_set = self.property_pairs[key]
+				new_items = expand_set(key, current_set) - current_set
+				if not new_items:
+					break
+				self.property_pairs[key].update(new_items)
+				seen_ids.update(get_ids(new_items))
+
+
 
 	def is_related_property_binding(self, binding: Mapping[Variable, Identifier], other_binding: Mapping[Variable, Identifier]) -> bool:
 		# Checks whether two properties are related.
@@ -280,15 +307,17 @@ class _PropertyPairCache:
 		return one_is_abstract_product
 
 	def reset(self):
-		self.property_pairs = None
+		self.property_pairs = dict()
 
 
 # Create one module-wide instance
 property_pair_cache = _PropertyPairCache()
-
 
 def set_required_capability(required_capability_iri: str):
 	return property_pair_cache.set_required_capability(required_capability_iri)
 
 def get_related_properties(property_iri: str) -> List[Property]:
 	return property_pair_cache.get_related_properties(property_iri)
+
+def reset_property_pairs() -> None:
+	property_pair_cache.reset()
