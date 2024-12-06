@@ -49,6 +49,7 @@ def goal_smt(happenings: int):
 		# Handle related properties of every init property
 		related_properties = get_related_properties(goal_property_iri)
 		for related_property in related_properties:
+			if (related_property.relation_type == "Input"): continue
 			try:
 				related_property_z3_var = property_dictionary.get_provided_property_occurrence(str(related_property.iri), happenings-1, 1).z3_variable
 				relation_constraint = (related_property_z3_var == goal_property_z3_var)
