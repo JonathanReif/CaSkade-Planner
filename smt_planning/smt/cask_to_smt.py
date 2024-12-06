@@ -270,7 +270,7 @@ class CaskadePlanner:
 				for goal_related_prop in properties_related_to_goal:
 					var = property_dictionary.get_property_occurence(goal_related_prop.iri, 0, 0).z3_variable
 					# TODO:checking for assertions is very expensive (recursive check in every loop). We should store all asserted vars to make checking faster
-					if is_variable_asserted(solver, var): continue
+					if is_variable_asserted(solver, var) or any(is_variable_asserted(solver, property_dictionary.get_property_occurence(related.iri, 0, 0).z3_variable) for related in get_related_properties(goal_related_prop.iri)): continue
 					
 					if var.sort() == BoolSort(): 
 						goal_binding_assertion = var == False
