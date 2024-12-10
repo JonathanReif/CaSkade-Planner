@@ -10,7 +10,6 @@ from smt_planning.smt.capability_links import get_related_capabilities
 def get_variable_constraints(happenings: int, event_bound: int) -> List:
 
 	stateHandler = StateHandler()
-	graph = stateHandler.get_graph()
 	property_dictionary = stateHandler.get_property_dictionary()
 	capability_dictionary = stateHandler.get_capability_dictionary()
 	
