@@ -23,6 +23,7 @@ class StateHandler:
 		self.__graph = graph
 	
 	def get_graph(self) -> Graph:
+		assert self.__graph is not None
 		return self.__graph
 	
 	def set_query_handler(self, query_handler: QueryHandler) -> None:
@@ -35,17 +36,20 @@ class StateHandler:
 		self.__property_dictionary = property_dictionary
 	
 	def get_property_dictionary(self) -> PropertyDictionary:
+		assert self.__property_dictionary is not None
 		return self.__property_dictionary
 	
 	def set_capability_dictionary(self, capability_dictionary: CapabilityDictionary):
 		self.__capability_dictionary = capability_dictionary
 	
 	def get_capability_dictionary(self) -> CapabilityDictionary:
+		assert self.__capability_dictionary is not None
 		return self.__capability_dictionary
 	
 	def set_resource_dictionary(self, resource_dictionary: ResourceDictionary):
 		self.__resource_dictionary = resource_dictionary
 
 	def get_resource_dictionary(self) -> ResourceDictionary:
+		assert self.__resource_dictionary is not None
 		return self.__resource_dictionary
 
