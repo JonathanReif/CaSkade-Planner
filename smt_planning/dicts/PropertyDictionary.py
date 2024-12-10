@@ -1,28 +1,9 @@
 from typing import Dict, Set, List
 from z3 import Real, Bool, Int, AstRef
 from enum import Enum
-
-# data_type is some instance of http://www.w3id.org/hsu-aut/DINEN61360#Simple_Data_Type
-class PropertyOccurrence:
-	def __init__(self, iri: str, data_type: str, happening: int, event: int):
-		self.iri = iri
-		self.happening = happening
-		self.event = event
-		z3_variable_name = iri + "_" + str(happening) + "_" + str(event)
-		match data_type:
-			case "http://www.w3id.org/hsu-aut/DINEN61360#Real":
-				self.z3_variable = Real(z3_variable_name)
-				self.type = "Real"
-			case "http://www.w3id.org/hsu-aut/DINEN61360#Boolean":
-				self.z3_variable = Bool(z3_variable_name)
-				self.type = "Bool"
-			case "http://www.w3id.org/hsu-aut/DINEN61360#Integer":
-				self.z3_variable = Int(z3_variable_name)
-				self.type = "Int"
-			case _  :
-				# Base case if no type given: Create a real
-				self.z3_variable = Real(z3_variable_name)
-				self.type = "Real"
+from smt_planning.types.Property import Property
+from smt_planning.types.PropertyOccurrence import PropertyOccurrence
+from smt_planning.types.InstanceDescription import Precondition, Effect, Init, Goal, FreeVariable
 
 class CapabilityType(Enum):
 	ProvidedCapability = 1
@@ -34,104 +15,15 @@ class ExpressionGoal(Enum):
 	Assurance = 2
 	Actual_Value = 3
 
-'''
-iri is the IRI of the data element
-cap_iri is the IRI of the capability
-expr_goal is the DINEN61360:Expression_Goal of the instance description
-logical_interpretation is the DINEN61360:Logical_Interpretation of the instance description
-value is the DINEN61360:Value of the instance description
-'''
-class InstanceDescription:
-	def __init__(self, iri: str, cap_iri: str, expr_goal: str, logical_interpretation: str, value: str):
-		self.iri = iri
-		self.cap_iri = cap_iri
-		self.expr_goal = expr_goal
-		self.logical_interpretation = logical_interpretation
-		self.value = value
-
-# InstanceDescription of a DataElement with DINEN61360:Expression_Goal "Requirement"
-class Precondition(InstanceDescription):
-	def __init__(self, iri: str, cap_iri: str, logical_interpretation: str, value: str) -> None:
-		super().__init__(iri, cap_iri, "Requirement", logical_interpretation, value)
-
-# InstanceDescription of a DataElement with DINEN61360:Expression_Goal "Assurance"
-class Effect(InstanceDescription):
-	def __init__(self, iri: str, cap_iri: str, logical_interpretation: str, value: str) -> None:
-		super().__init__(iri, cap_iri, "Assurance", logical_interpretation, value)
-
-class Init(InstanceDescription):
-	def __init__(self, iri: str, cap_iri: str, logical_interpretation: str, value: str) -> None:
-		super().__init__(iri, cap_iri, "Actual_Value", logical_interpretation, value)
-
-class Goal(InstanceDescription):
-	def __init__(self, iri: str, cap_iri: str, logical_interpretation: str, value: str) -> None:
-		super().__init__(iri, cap_iri, "Requirement", logical_interpretation, value)
-
-class FreeVariable(InstanceDescription):
-	def __init__(self, iri: str, cap_iri: str, logical_interpretation: str) -> None:
-		super().__init__(iri, cap_iri, "Free_Variable", logical_interpretation, "")
-
-'''
-iri is the IRI of the data element
-data_type is some instance of http://www.w3id.org/hsu-aut/DINEN61360#Simple_Data_Type
-relation_type is the relation type of the property, i.e., "hasInput" or "hasOutput"
-'''
-class Property:
-	def __init__(self, iri: str, data_type: str, relation_type: str, capability_iris: Set[str]):
-		self.iri = iri
-		self.data_type = data_type
-		self.relation_type = relation_type
-		self.capability_iris = capability_iris
-		self.occurrences: Dict[int, Dict[int, PropertyOccurrence]] = {}
-		self.instances: List[InstanceDescription] = []
-
-	def add_occurrence(self, occurrence: PropertyOccurrence):
-		happening = occurrence.happening
-		event = occurrence.event
-		self.occurrences.setdefault(happening, {}).setdefault(event, occurrence)
-
-	def get_all_occurrences(self) -> List[PropertyOccurrence]:
-		# Double list comprehension to flatten the double dict-structure of self.occurrences
-		occurrences = [value for inner_dict in self.occurrences.values() for value in inner_dict.values()]
-		return occurrences
-
-	def get_occurrence_by_z3_variable(self, z3_variable_name: str) -> PropertyOccurrence | None:
-		# Filters occurrences for the given z3_variable. There should only be one result
-		happening_occurrences = [occ for occ in self.occurrences.values()]
-		all_occurrences_2d = [list(occ.values()) for occ in happening_occurrences]
-		all_occurrences: List[PropertyOccurrence] = []
-		[all_occurrences.extend(occ) for occ in all_occurrences_2d]
-		try:
-			occurrence = [occurrence for occurrence in all_occurrences if str(occurrence.z3_variable) == z3_variable_name][0]
-			return occurrence
-		except:
-			return None
-		
-	def add_instance(self, instance: InstanceDescription):
-		self.instances.append(instance)
-	
-
-	def __lt__(self, other):
-		return self.iri < other.iri  # Vergleich anhand des IRI-Strings
-
-	def __repr__(self):
-		return f"Property(iri={self.iri})"
-    
-    # Optional kannst du auch die anderen Methoden implementieren
-	def __eq__(self, other):
-		return self.iri == other.iri
-    
-	def __hash__(self):
-		return hash(self.iri)
-
 class PropertyDictionary:
 	def __init__(self):
 		self.provided_properties: Dict[str, Property] = {}
 		self.required_properties: Dict[str, Property] = {}
-		self.preconditions: Dict[str, List[Precondition]] = {}
-		self.effects: Dict[str, List[Effect]] = {}
-		self.inits: Dict[str, List[Init]] = {}
-		self.goals: Dict[str, List[Goal]] = {}
+		self.preconditions: Dict[str, Set[Precondition]] = {}
+		self.effects: Dict[str, Set[Effect]] = {}
+		self.inits: Dict[str, Set[Init]] = {}
+		self.goals: Dict[str, Set[Goal]] = {}
+		self.free_variables: Dict[str, Set[FreeVariable]] = {}
 
 	def add_provided_property(self, iri: str, data_type: str, relation_type: str, capability_iris: Set[str], expression_goal: str = "", logical_interpretation: str = "", value: str = ""):
 		property = Property(iri, data_type, relation_type, capability_iris)
@@ -213,47 +105,45 @@ class PropertyDictionary:
 		
 		raise KeyError(f"There is not a single property occurrence for the z3_variable {z3_variable}")
 	
-	@staticmethod
-	def create_instance_description(iri: str, cap_iri: str, cap_type: CapabilityType, expr_goal: str, logical_interpretation: str, value: str):
+	def add_instance_description(self, data_element_iri: str, cap_iri: str, cap_type: CapabilityType, expr_goal: str, logical_interpretation: str, value: str):
 		if expr_goal == "None":
-			return FreeVariable(iri, cap_iri, logical_interpretation)
+			instance = FreeVariable(data_element_iri, cap_iri, logical_interpretation)
+			self.free_variables.setdefault(data_element_iri, set()).add(instance)
+		
 		elif expr_goal == "Requirement" and value != "None":
 			if cap_type == CapabilityType.RequiredCapability:
-				return Goal(iri, cap_iri, logical_interpretation, value)
-			return Precondition(iri, cap_iri, logical_interpretation, value)
+				instance = Goal(data_element_iri, cap_iri, logical_interpretation, value)
+				self.goals.setdefault(data_element_iri, set()).add(instance)
+			else:
+				instance = Precondition(data_element_iri, cap_iri, logical_interpretation, value)
+				self.preconditions.setdefault(data_element_iri, set()).add(instance)
+		
 		elif expr_goal == "Assurance":
-			return Effect(iri, cap_iri, logical_interpretation, value)
+			instance = Effect(data_element_iri, cap_iri, logical_interpretation, value)
+			self.effects.setdefault(data_element_iri, set()).add(instance)
+		
 		elif expr_goal == "Actual_Value" and value != "None":
-			return Init(iri, cap_iri, logical_interpretation, value)
-		# Everything else is handled as a capability constraint
+			instance = Init(data_element_iri, cap_iri, logical_interpretation, value)
+			self.inits.setdefault(data_element_iri, set()).add(instance)
 
-	def add_instance_description(self, data_element_iri: str, cap_iri: str, cap_type: CapabilityType, expr_goal: str, logical_interpretation: str, value: str):
-		instance_description = self.create_instance_description(data_element_iri, cap_iri, cap_type, expr_goal, logical_interpretation, value)
-		if instance_description is None:
+		else:
 			return
-		if isinstance(instance_description, Precondition):
-			self.preconditions.setdefault(data_element_iri, []).append(instance_description)
-		elif isinstance(instance_description, Effect):
-			self.effects.setdefault(data_element_iri, []).append(instance_description)
-		elif isinstance(instance_description, Init):
-			self.inits.setdefault(data_element_iri, []).append(instance_description)
-		elif isinstance(instance_description, Goal):
-			self.goals.setdefault(data_element_iri, []).append(instance_description)
-		self.get_property(data_element_iri).add_instance(instance_description)
+		
+		self.get_property(data_element_iri).add_instance(instance)
 
-    # TODO after combining query of precondition and property move this function to add provided property 
-	# def add_precondition_property(self, iri: str, cap_iri: str, logical_interpretation: str, value: str):    
-	# 	precondition = Precondition(iri, cap_iri, logical_interpretation, value)
-	# 	self.preconditions.setdefault(iri, precondition)
+	# TODO: This is pretty hacky to add inits afterwards. Should be better integrated into the architecture
+	def add_init(self, data_element_iri: str, cap_iri: str, logical_interpretation: str, value: str):
+		init = Init(data_element_iri, cap_iri, logical_interpretation, value)
+		self.inits.setdefault(data_element_iri, set()).add(init)
 
-	def get_preconditions(self) -> Dict[str, List[Precondition]]:
+	def get_preconditions(self) -> Dict[str, Set[Precondition]]:
 		return self.preconditions
 	
-	def get_effects(self) -> Dict[str, List[Effect]]:
+	def get_effects(self) -> Dict[str, Set[Effect]]:
 		return self.effects
 	
-	def get_inits(self) -> Dict[str, List[Init]]:
+	def get_inits(self) -> Dict[str, Set[Init]]:
 		return self.inits
 	
-	def get_goals(self) -> Dict[str, List[Goal]]:
+	def get_goals(self) -> Dict[str, Set[Goal]]:
 		return self.goals
