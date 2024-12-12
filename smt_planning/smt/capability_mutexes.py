@@ -1,6 +1,6 @@
 from z3 import Not, Or
 import itertools
-from typing import Set, List
+from typing import Set, Tuple
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.dicts.PropertyDictionary import Property
 from smt_planning.dicts.CapabilityDictionary import CapabilityPropertyInfluence
@@ -12,6 +12,7 @@ def get_capability_mutexes(happenings: int):
 
 	constraints = []
 
+	# Assumption: Make all caps of one resource mutex, i.e. multiple caps of one resource cannot be used at a time
 	for res in resource_dictionary.resources.values(): 
 		combinations = list(itertools.combinations(res.capabilities, 2))
 
@@ -20,46 +21,25 @@ def get_capability_mutexes(happenings: int):
 				constraint = Or(Not(combination[0].occurrences[happening].z3_variable), Not(combination[1].occurrences[happening].z3_variable))
 				constraints.append(constraint)
 				
-
 	
-	capability_mutex_tuples: Set[CapabilityTuple] = set()
+	capability_mutex_tuples: Set[Tuple[str, str]] = set()
+	property_dictionary = StateHandler().get_property_dictionary()
 	capability_dictionary = StateHandler().get_capability_dictionary()
-	capabilities  = capability_dictionary.provided_capabilities.values()
-	for cap in capabilities:
-		cap_input_properties = cap.input_properties
-		cap_input_and_related: List[Property] = [*cap_input_properties]
-		[cap_input_and_related.extend(get_related_properties(property.iri)) for property in cap_input_properties]
 
-		other_capabilities = [capability for capability in capabilities if capability.iri != cap.iri]
-		other_capabilities_outputs: List[CapabilityPropertyInfluence] = []
-		[other_capabilities_outputs.extend(other_cap.output_properties) for other_cap in other_capabilities]
-		
-		# For each cap input: Check if its part of another output
-		for input in cap_input_and_related:
-			output_in_inputs = next((output for output in other_capabilities_outputs if output.property.iri == input.iri), None)
-			if output_in_inputs:
-				capability_a_iri = next(iter(output_in_inputs.property.capability_iris))
-				capability_b_iri = cap.iri
-				# Check cap a is provided. Cap b is always as its from the array of provided caps
-				cap_a_is_provided = next((cap for cap in capabilities if capability_a_iri == cap.iri), None)
-				if not (cap_a_is_provided):
-					continue
-
-				# Filter out same caps
-				if capability_a_iri == capability_b_iri:
-					continue
-
-				# Add to mutexes (duplicates are automatically handled as it's a set)
-				capability_mutex_tuples.add(CapabilityTuple(capability_a_iri, capability_b_iri))
-
-	# Hard-coded: Add Transport<>RawCylinderSupply
-	capability_mutex_tuples.add(CapabilityTuple('http://www.hsu-hh.de/aut/ontologies/lab/MPS500/Transport#Transport', 'http://www.hsu-hh.de/aut/ontologies/lab/MPS500/RawCylinderSupplyModule#SupplyRawCylinder'))
-
-	# Go over all tuples and create a mutex for every happening
+	# For every provided prop, get related props. Then get all the caps and make them mutex.
+	# Reasoning: A cap changing a property and another one changing a related one must me mutex
+	provided_props = property_dictionary.provided_properties.values()
+	for prop in provided_props:
+		related_props = get_related_properties(prop.iri)
+		prop_and_related = [prop, *related_props]
+		capabilities: Set[str] = set.union(*[p.capability_iris for p in prop_and_related])
+		current_prop_capability_mutex_tuples = set(itertools.combinations(capabilities, 2))
+		capability_mutex_tuples.update(current_prop_capability_mutex_tuples)
+	
 	for cap_tuple in capability_mutex_tuples:
 		for happening in range(happenings):
-			cap_a = capability_dictionary.get_capability_occurrence(cap_tuple.capability_a, happening)
-			cap_b = capability_dictionary.get_capability_occurrence(cap_tuple.capability_b, happening)
+			cap_a = capability_dictionary.get_capability_occurrence(cap_tuple[0], happening)
+			cap_b = capability_dictionary.get_capability_occurrence(cap_tuple[1], happening)
 			constraint = Or(Not(cap_a.z3_variable), Not(cap_b.z3_variable))
 			constraints.append(constraint)
 
