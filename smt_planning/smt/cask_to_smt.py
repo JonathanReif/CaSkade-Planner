@@ -10,6 +10,7 @@ from z3 import Solver, Optimize, unsat, Bool, Real, RealSort, IntSort, BoolSort,
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.openmath.parse_openmath import QueryCache
 from smt_planning.smt.property_links import get_related_properties, set_required_capability, reset_property_pairs
+from smt_planning.ontology_handling.related_inits import find_all_related_inits
 from smt_planning.ontology_handling.capability_and_property_query import get_all_properties, get_provided_capabilities
 from smt_planning.ontology_handling.init_query import get_init
 from smt_planning.ontology_handling.capability_constraints_query import get_capability_constraints
@@ -69,7 +70,7 @@ class CaskadePlanner:
 		# Get all properties connected to provided capabilities as inputs or outputs as well as all instance descriptions 
 		property_dictionary = get_all_properties(self.required_capability_iri)
 		state_handler.set_property_dictionary(property_dictionary)
-		# PropertyPairCache.get_property_pairs(self.required_capability_iri)
+		find_all_related_inits()	# after all properties were assigned, add the related ones to the inits
 
 		# Get provided capabilities and their influence on output objects as well as resources that provide capabilities
 		cap_and_res_dictionary = get_provided_capabilities(self.required_capability_iri)
@@ -83,9 +84,13 @@ class CaskadePlanner:
 		get_capability_constraints()
 		
 		# Get all inits and goals of planning problem based on the instance descriptions
-		# get_init()
+		get_init()
+		
+		time_before_loop = time.time()
+		print(f"Time for setup: {time_before_loop - start_time}")
 
 		while (happenings < max_happenings and solver_result == unsat):
+			time_loop_start = time.time()
 			# SMT Solver
 			solver = Solver()
 			solver.set(unsat_core=True)
@@ -98,8 +103,14 @@ class CaskadePlanner:
 			# Get all properties connected to provided capabilities as inputs or outputs
 			create_property_dictionary_with_occurrences(happenings, event_bound)
 
+			time_after_prop_dict = time.time()
+			print(f"Time for PropertyDictionary: {time_after_prop_dict - time_loop_start}")
+
 			# Get provided capabilities and transform to boolean SMT variables
 			create_capability_dictionary_with_occurrences(happenings)
+
+			time_after_cap_dict = time.time()
+			print(f"Time for CapabilityDictionary: {time_after_cap_dict - time_after_prop_dict}")
 
 			# ------------------------------Ressource IDs---------------------------------------------------
 			self.add_comment(solver, "Start of resource ids")
@@ -121,6 +132,9 @@ class CaskadePlanner:
 				self.assertion_dictionary[assertion_name] = bool_constraint
 				solver.assert_and_track(bool_constraint, assertion_name)
 
+			time_after_constraint_prop = time.time()
+			print(f"Time for constraint proposition: {time_after_constraint_prop - time_after_cap_dict}")
+
 			# ---------------------Constraint Real Variable (H5) --> real properties-----------------------------
 			self.add_comment(solver, "Start of constraints real variables")
 			variable_constraints = get_variable_constraints(happenings, event_bound)
@@ -130,6 +144,9 @@ class CaskadePlanner:
 				assertion_name = f'varConstraint_{variable_constraint_counter}_{happenings}'
 				self.assertion_dictionary[assertion_name] = variable_constraint
 				solver.assert_and_track(variable_constraint, assertion_name)
+
+			time_after_var_constraints = time.time()
+			print(f"Time for var constraints: {time_after_var_constraints - time_after_constraint_prop}")
 
 			# ----------------- Capability Precondition ------------------------------------------------------
 			self.add_comment(solver, "Start of preconditions")
@@ -141,6 +158,9 @@ class CaskadePlanner:
 				self.assertion_dictionary[assertion_name] = precondition
 				solver.assert_and_track(precondition, assertion_name)
 
+			time_after_preconds = time.time()
+			print(f"Time for preconditions: {time_after_preconds - time_after_constraint_prop}")
+
 			# --------------------------------------- Capability Effect ---------------------------------------
 			self.add_comment(solver, "Start of effects")
 			effects = capability_effects_smt(happenings, event_bound)
@@ -151,6 +171,9 @@ class CaskadePlanner:
 				self.assertion_dictionary[assertion_name] = effect
 				solver.assert_and_track(effect, assertion_name)
 
+			time_after_effects = time.time()
+			print(f"Time for effects: {time_after_effects - time_after_preconds}")
+
 			# ---------------- Constraints Capability mutexes (H14) -----------------------------------------
 			self.add_comment(solver, "Start of capability mutexes")
 			capability_mutexes = get_capability_mutexes(happenings)
@@ -160,6 +183,9 @@ class CaskadePlanner:
 				assertion_name = f'capMutex_{capability_mutex_counter}_{happenings}'
 				self.assertion_dictionary[assertion_name] = capability_mutex
 				solver.assert_and_track(capability_mutex, assertion_name)
+			
+			time_after_mutexes = time.time()
+			print(f"Time for mutexes: {time_after_mutexes - time_after_effects}")
 
 			# ---------------- Init  --------------------------------------------------------
 			self.add_comment(solver, "Start of init")
@@ -171,6 +197,9 @@ class CaskadePlanner:
 				self.assertion_dictionary[assertion_name] = init
 				solver.assert_and_track(init, assertion_name)
 
+			time_after_inits = time.time()
+			print(f"Time for inits: {time_after_inits - time_after_mutexes}")
+
 			# ---------------------- Goal ------------------------------------------------- 
 			self.add_comment(solver, "Start of goal")
 			goal_constraints = goal_smt(happenings)
@@ -181,6 +210,9 @@ class CaskadePlanner:
 				self.assertion_dictionary[assertion_name] = goal
 				solver.assert_and_track(goal, assertion_name)
 
+			time_after_goals = time.time()
+			print(f"Time for goals: {time_after_goals - time_after_mutexes}")
+
 			# ------------------- Proposition support (P5 + P6) ----------------------------
 			self.add_comment(solver, "Start of proposition support")
 			proposition_supports = getPropositionSupports(happenings, event_bound)
@@ -190,6 +222,9 @@ class CaskadePlanner:
 				assertion_name = f'support_{suppport_counter}_{happenings}'
 				self.assertion_dictionary[assertion_name] = support
 				solver.assert_and_track(support, assertion_name)
+			
+			time_after_prop_support = time.time()
+			print(f"Time for prop support: {time_after_prop_support - time_after_goals}")
 
 			# ----------------- Continuous change on real variables (P11) ------------------
 			self.add_comment(solver, "Start of real variable continuous change")
@@ -201,6 +236,8 @@ class CaskadePlanner:
 				self.assertion_dictionary[assertion_name] = real_variable_cont_change
 				solver.assert_and_track(real_variable_cont_change, assertion_name)
 
+			time_after_realVarContChange = time.time()
+			print(f"Time for real var conti change: {time_after_realVarContChange - time_after_prop_support}")
 			# ----------------- Cross-connection of related properties (new) -----------------
 			# self.add_comment(solver, "Start of related properties")
 			# property_cross_relations = get_property_cross_relations(happenings, event_bound)
@@ -240,6 +277,11 @@ class CaskadePlanner:
 				self.assertion_dictionary[assertion_name] = capability_constraint_assertion
 				solver.assert_and_track(capability_constraint_assertion, assertion_name)
 
+			time_after_cap_constraints = time.time()
+			print(f"Time for cap constraints: {time_after_cap_constraints - time_after_realVarContChange}")
+
+
+			self.add_comment(solver, "Start of constants")
 			constant_expressions = fix_constants(property_dictionary, capability_dictionary, happenings, event_bound)
 			constant_counter = 0
 			for constant_expression in constant_expressions:
@@ -248,6 +290,8 @@ class CaskadePlanner:
 				self.assertion_dictionary[assertion_name] = constant_expression
 				solver.assert_and_track(constant_expression, assertion_name)
 				
+			time_after_constants = time.time()
+			print(f"Time for constants: {time_after_constants - time_after_cap_constraints}")
 			# Optimize by minimizing number of used capabilities to prevent unnecessary use of capabilities
 			#constraints = solver.assertions()
 			# opt = Optimize()
@@ -266,11 +310,14 @@ class CaskadePlanner:
 				# If a single one of the properties related to goal is bound, we can skip it. Else, bind
 				# any(find_variable_in_expression(child, variable) for child in expression.children())
 				# if any(is_variable_asserted(solver, property_dictionary.get_property_occurence(goal_prop.iri, 0, 0).z3_variable) for goal_prop in properties_related_to_goal): continue
-
+				if any(prop.iri in property_dictionary.inits.keys() for prop in properties_related_to_goal): continue
 				for goal_related_prop in properties_related_to_goal:
 					var = property_dictionary.get_property_occurence(goal_related_prop.iri, 0, 0).z3_variable
 					# TODO:checking for assertions is very expensive (recursive check in every loop). We should store all asserted vars to make checking faster
-					if is_variable_asserted(solver, var) or any(is_variable_asserted(solver, property_dictionary.get_property_occurence(related.iri, 0, 0).z3_variable) for related in get_related_properties(goal_related_prop.iri)): continue
+					# if is_variable_asserted(solver, var) or any(is_variable_asserted(solver, property_dictionary.get_property_occurence(related.iri, 0, 0).z3_variable) for related in get_related_properties(goal_related_prop.iri)): continue
+					# related_props = get_related_properties(goal_related_prop)
+					# if goal_related_prop.iri in property_dictionary.inits.keys(): continue
+					# if is_variable_asserted(solver, var): continue
 					
 					if var.sort() == BoolSort(): 
 						goal_binding_assertion = var == False
@@ -283,8 +330,12 @@ class CaskadePlanner:
 					self.assertion_dictionary[assertion_name] = goal_binding_assertion
 					solver.assert_and_track(goal_binding_assertion, assertion_name)
 
+			time_after_binding_floating_values = time.time()
+			print(f"Time for binding free values: {time_after_binding_floating_values - time_after_constants}")
+
 			end_time = time.time()
-			print(f"Time for generating SMT: {end_time - start_time}")	
+			print(f"Time for generating SMT overall: {end_time - start_time}")	
+			print(f"Time for generating this happening: {end_time - time_loop_start}")	
 
 			# Check satisfiability and get the model
 			solver_result = solver.check()
