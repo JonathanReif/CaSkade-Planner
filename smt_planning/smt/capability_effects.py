@@ -9,7 +9,7 @@ def capability_effects_smt(happenings: int, event_bound: int) -> List[BoolRef]:
 	capability_dictionary = StateHandler().get_capability_dictionary()
 	effects_smt = []
 	for happening in range(happenings):
-		for property_iri, effect_list in property_dictionary.get_effects().items():
+		for property_iri, effect_list in property_dictionary.effects.items():
 			for effect in effect_list:
 				#property_iri = effect.iri
 				value = effect.value

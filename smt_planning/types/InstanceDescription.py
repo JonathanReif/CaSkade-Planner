@@ -42,6 +42,10 @@ class Init(InstanceDescription):
 	def __init__(self, iri: str, cap_iri: str, logical_interpretation: str, value: str) -> None:
 		super().__init__(iri, cap_iri, "Actual_Value", logical_interpretation, value)
 
+class ResourceConfiguration(InstanceDescription):
+	def __init__(self, iri: str, cap_iri: str, logical_interpretation: str, value: str) -> None:
+		super().__init__(iri, cap_iri, "Actual_Value", logical_interpretation, value)
+
 class Goal(InstanceDescription):
 	def __init__(self, iri: str, cap_iri: str, logical_interpretation: str, value: str) -> None:
 		super().__init__(iri, cap_iri, "Requirement", logical_interpretation, value)

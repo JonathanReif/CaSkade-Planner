@@ -6,7 +6,7 @@ from smt_planning.smt.property_links import get_related_properties
 def goal_smt(happenings: int):
 	property_dictionary = StateHandler().get_property_dictionary()
 	goals = []
-	for goal_property_iri, goal_value_expressions in property_dictionary.get_goals().items():
+	for goal_property_iri, goal_value_expressions in property_dictionary.goals.items():
 		# Every goal may consist of multiple value expressions (e.g., goal > 5 , goal <= 10). Create assertions for every goal expression
 		for goal_value_expression in goal_value_expressions:
 			goal_property_z3_var = property_dictionary.get_required_property_occurrence(goal_property_iri).z3_variable					

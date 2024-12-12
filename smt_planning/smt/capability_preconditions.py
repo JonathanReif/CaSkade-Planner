@@ -8,7 +8,7 @@ def capability_preconditions_smt(happenings: int, event_bound: int) -> List[Bool
 	capability_dictionary = StateHandler().get_capability_dictionary()
 	preconditions_smt = []
 	for happening in range(happenings):
-		for property_iri, precondition_list in property_dictionary.get_preconditions().items():
+		for property_iri, precondition_list in property_dictionary.preconditions.items():
 			for precondition in precondition_list:
 				currentCap = capability_dictionary.get_capability_occurrence(precondition.cap_iri, happening).z3_variable
 				currentProp = property_dictionary.get_provided_property_occurrence(property_iri, happening, 0).z3_variable																							

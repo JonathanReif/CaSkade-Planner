@@ -3,7 +3,7 @@ from z3 import Real, Bool, Int, AstRef
 from enum import Enum
 from smt_planning.types.Property import Property
 from smt_planning.types.PropertyOccurrence import PropertyOccurrence
-from smt_planning.types.InstanceDescription import Precondition, Effect, Init, Goal, FreeVariable
+from smt_planning.types.InstanceDescription import Precondition, Effect, Init, ResourceConfiguration, Goal, FreeVariable
 
 class CapabilityType(Enum):
 	ProvidedCapability = 1
@@ -22,6 +22,7 @@ class PropertyDictionary:
 		self.preconditions: Dict[str, Set[Precondition]] = {}
 		self.effects: Dict[str, Set[Effect]] = {}
 		self.inits: Dict[str, Set[Init]] = {}
+		self.resource_configurations: Dict[str, Set[ResourceConfiguration]] = {}
 		self.goals: Dict[str, Set[Goal]] = {}
 		self.free_variables: Dict[str, Set[FreeVariable]] = {}
 
@@ -123,8 +124,12 @@ class PropertyDictionary:
 			self.effects.setdefault(data_element_iri, set()).add(instance)
 		
 		elif expr_goal == "Actual_Value" and value != "None":
-			instance = Init(data_element_iri, cap_iri, logical_interpretation, value)
-			self.inits.setdefault(data_element_iri, set()).add(instance)
+			if cap_type == CapabilityType.RequiredCapability:
+				instance = Init(data_element_iri, cap_iri, logical_interpretation, value)
+				self.inits.setdefault(data_element_iri, set()).add(instance)
+			else:
+				instance = ResourceConfiguration(data_element_iri, cap_iri, logical_interpretation, value)
+				self.resource_configurations.setdefault(data_element_iri, set()).add(instance)
 
 		else:
 			return
@@ -135,15 +140,3 @@ class PropertyDictionary:
 	def add_init(self, data_element_iri: str, cap_iri: str, logical_interpretation: str, value: str):
 		init = Init(data_element_iri, cap_iri, logical_interpretation, value)
 		self.inits.setdefault(data_element_iri, set()).add(init)
-
-	def get_preconditions(self) -> Dict[str, Set[Precondition]]:
-		return self.preconditions
-	
-	def get_effects(self) -> Dict[str, Set[Effect]]:
-		return self.effects
-	
-	def get_inits(self) -> Dict[str, Set[Init]]:
-		return self.inits
-	
-	def get_goals(self) -> Dict[str, Set[Goal]]:
-		return self.goals
