@@ -6,6 +6,7 @@ from z3 import BoolRef
 
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.dicts.PropertyDictionary import Property
+from smt_planning.types.InstanceDescription import ResourceConfiguration
 
 
 # Define some variables to get values from SPARQL results
@@ -51,23 +52,28 @@ class _PropertyPairCache:
 
 		return result_related_properties
 
-	# Returns all partners of a property from a list of property pairs
-	# def get_partners(self, property_iri: str, property_pairs: List[PropertyPair]) -> List[Property]:
-	# 	# Gets partnerA if partnerB is given and partnerB if partnerA is given
-	# 	related_properties = []
-	# 	for property_pair in property_pairs:
-	# 		if (str(property_iri) ==  str(property_pair.property_a.iri)):
-	# 			related_properties.append(property_pair.property_b)
-	# 		if (str(property_iri) ==  str(property_pair.property_b.iri)):
-	# 			related_properties.append(property_pair.property_a)
-			
-	# 	return related_properties
 
 	def find_property_pairs(self) -> None: 
-		if self.required_capability_iri is None:
-			raise Exception("Required capability IRI is not set. Make sure to set it first as it is required for queries")
+		assert self.required_capability_iri, "Required capability IRI is not set. Make sure to set it first as it is required for queries"
 		
-		# Part 1: Queries the graph and finds all implicitly related property pairs
+		# Part 1: Queries the graph and finds all implicitly related property pairs across multiple caps
+		self.find_pairs_across_caps()
+		
+		# Part 2: There can also be explicit relations. As soon as an equal constraint within a cap is defined, 
+		# the properties set to be equal must also be considered to be related for all other constraints to properly work
+		self.find_pairs_in_caps()
+
+		# Resolve transitive relations. Add all related props C of a property B to property A if A is related to B
+		self.expand_transitive_relations()
+
+
+	def find_pairs_across_caps(self):
+		'''
+		Finds related properties that are defined by having the same type description and being attached to the same type of product. 
+		Only finds related properties in different capabilities
+		'''
+		assert self.required_capability_iri
+		
 		query_string = """
 		PREFIX DINEN61360: <http://www.w3id.org/hsu-aut/DINEN61360#>
 		PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
@@ -105,13 +111,15 @@ class _PropertyPairCache:
 			for related_binding in related_bindings:
 				property_a = property_dictionary.get_property(str(binding.get(DE)))
 				property_b = property_dictionary.get_property(str(related_binding.get(DE)))
-				if not property_a.__eq__(property_b): 
+				property_a_is_resource_config = len(property_a.instances) > 0 and all(isinstance(instance, ResourceConfiguration) for instance in property_a.instances)
+				property_b_is_resource_config = len(property_b.instances) > 0 and all(isinstance(instance, ResourceConfiguration) for instance in property_b.instances)
+				if not property_a.__eq__(property_b) and not (property_a_is_resource_config or property_b_is_resource_config): 
+				# if not property_a.__eq__(property_b):
 					self.property_pairs.setdefault(property_a.iri, set()).add(property_b)
 					self.property_pairs.setdefault(property_b.iri, set()).add(property_a)
-				
 
-		# Part 2: There can also be explicit relations. As soon as an equal constraint is defined, the properties set to be equal must also be considered 
-		# to be related for all other constraints to properly work
+
+	def find_pairs_in_caps(self):
 		query_string = """
 		PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
 		PREFIX OM: <http://openmath.org/vocab/math#>
@@ -144,13 +152,17 @@ class _PropertyPairCache:
 		}
 		"""
 		query_handler = StateHandler().get_query_handler()
+		property_dictionary = StateHandler().get_property_dictionary()
 		result = query_handler.query(query_string)
 		DE_A = Variable("de_a")
 		DE_B = Variable("de_b")
 		for binding in result.bindings:
 			property_a = property_dictionary.get_property(str(binding.get(DE_A)))
 			property_b = property_dictionary.get_property(str(binding.get(DE_B)))
-			if not property_a.__eq__(property_b): 
+			property_a_is_resource_config = len(property_a.instances) > 0 and all(isinstance(instance, ResourceConfiguration) for instance in property_a.instances)
+			property_b_is_resource_config = len(property_b.instances) > 0 and all(isinstance(instance, ResourceConfiguration) for instance in property_b.instances)
+			if not property_a.__eq__(property_b) and not (property_a_is_resource_config or property_b_is_resource_config): 
+			# if not property_a.__eq__(property_b):
 					self.property_pairs.setdefault(property_a.iri, set()).add(property_b)
 					self.property_pairs.setdefault(property_b.iri, set()).add(property_a)
 
@@ -175,55 +187,6 @@ class _PropertyPairCache:
 					self.property_pairs.setdefault(partner_of_b.iri, set()).add(property_a)
 					self.property_pairs.setdefault(property_a.iri, set()).add(partner_of_b)
 
-		# Resolve transitive relations. Add all related props C of a property B to property A if A is related to B
-		self.expand_transitive_relations()
-		# while new_pairs_added:
-		# 	new_pairs_added = False
-		# 	expanded_data = {key: set(values) for key, values in self.property_pairs.items()}
-		# 	for key, set_values in expanded_data.items():
-		# 		for set_value in set_values:
-		# 			other_properties = expanded_data[set_value.iri]
-		# 			other_properties_without_key = other_properties - {property_dictionary.get_property(key)}
-		# 			expanded_data[key].update(other_properties_without_key)
-
-		
-		
-		# # Resolve transitive relations: If Prop A and B are pairs and B and C are pairs, then A and C must also be pairs
-		# new_pairs_added = True
-
-		# while new_pairs_added:
-		# 	new_pairs_added = False
-		# 	current_pairs = property_pairs  # Copy the set to allow for iteration
-
-		# 	for pair1 in current_pairs:
-		# 		for pair2 in current_pairs:
-		# 			prop_1_a_is_required_prop = (pair1.property_a.iri in property_dictionary.required_properties.keys())
-		# 			prop_1_b_is_required_prop = (pair1.property_b.iri in property_dictionary.required_properties.keys())
-		# 			prop_2_a_is_required_prop = (pair2.property_a.iri in property_dictionary.required_properties.keys())
-		# 			prop_2_b_is_required_prop = (pair2.property_b.iri in property_dictionary.required_properties.keys())
-		# 			if prop_1_a_is_required_prop or prop_1_b_is_required_prop or prop_2_a_is_required_prop or prop_2_b_is_required_prop:
-		# 				continue
-
-		# 			# Check if pairs are transitively connected. Note that connecting elements can be first or second element, hence the need for this weird comparison
-		# 			if pair1.property_b == pair2.property_a:
-		# 				new_pair = PropertyPair(pair1.property_a, pair2.property_b)
-		# 			elif pair1.property_b == pair2.property_b:
-		# 				new_pair = PropertyPair(pair1.property_a, pair2.property_a)
-		# 			elif pair1.property_a == pair2.property_a:
-		# 				new_pair = PropertyPair(pair1.property_b, pair2.property_b)
-		# 			elif pair1.property_a == pair2.property_b:
-		# 				new_pair = PropertyPair(pair1.property_b, pair2.property_a)
-		# 			else:
-		# 				continue  # Keine transitive Verbindung gefunden, nächstes Paar
-
-		# 			# Nur hinzufügen, wenn das neue Pair noch nicht existiert
-		# 			existing_pair = self.is_existing(new_pair, property_pairs)
-		# 			self_pair = self.is_self_pair(new_pair)
-		# 			if not existing_pair and not self_pair:
-		# 				property_pairs.append(new_pair)
-		# 				new_pairs_added = True
-
-		# return property_pairs
 
 	def expand_transitive_relations(self):
 		# Hilfsfunktion, um IDs aus einem Set von Items zu extrahieren
