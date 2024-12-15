@@ -6,7 +6,7 @@ from typing import List
 from smt_planning.ontology_handling.query_handlers import FileQueryHandler, SparqlEndpointQueryHandler
 from smt_planning.planning_result import PlanningResultType, PlanningResult
 from smt_planning.dicts.PropertyDictionary import Property
-from z3 import Solver, Optimize, unsat, Bool, Real, RealSort, IntSort, BoolSort, Z3_OP_IMPLIES
+from z3 import Solver, Optimize, unsat, Bool, Z3_OP_IMPLIES
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.openmath.parse_openmath import QueryCache
 from smt_planning.smt.property_links import get_related_properties, set_required_capability, reset_property_pairs
@@ -26,6 +26,7 @@ from smt_planning.smt.goal import goal_smt
 from smt_planning.smt.real_variable_contin_change import get_real_variable_continuous_changes
 from smt_planning.smt.capability_mutexes import get_capability_mutexes
 from smt_planning.smt.fix_constants import fix_constants
+from smt_planning.smt.bind_floating_vars import bind_floating_variables
 
 class CaskadePlanner:
 
@@ -238,15 +239,6 @@ class CaskadePlanner:
 
 			time_after_realVarContChange = time.time()
 			print(f"Time for real var conti change: {time_after_realVarContChange - time_after_prop_support}")
-			# ----------------- Cross-connection of related properties (new) -----------------
-			# self.add_comment(solver, "Start of related properties")
-			# property_cross_relations = get_property_cross_relations(happenings, event_bound)
-			# cross_relation_counter = 0
-			# for cross_relation in property_cross_relations:
-			# 	cross_relation_counter += 1
-			# 	assertion_name = f'crossRelation_{cross_relation_counter}_{happenings}'
-			# 	self.assertion_dictionary[assertion_name] = cross_relation
-			# 	solver.assert_and_track(cross_relation, assertion_name)
 
 
 			# Capability constraints are expressions in smt2 form that cannot be added programmatically, because we only have the whole expression in string form 
@@ -292,6 +284,21 @@ class CaskadePlanner:
 				
 			time_after_constants = time.time()
 			print(f"Time for constants: {time_after_constants - time_after_cap_constraints}")
+			
+
+			self.add_comment(solver, "Start of floating variable bindings")
+			binding_expressions = bind_floating_variables()
+			binding_counter = 0
+			for binding_expression in binding_expressions:
+				binding_counter += 1
+				assertion_name = f'binding_{binding_counter}'
+				self.assertion_dictionary[assertion_name] = binding_expression
+				solver.assert_and_track(binding_expression, assertion_name)
+					
+			time_after_binding_floating_values = time.time()
+			print(f"Time for binding free values: {time_after_binding_floating_values - time_after_constants}")
+
+			
 			# Optimize by minimizing number of used capabilities to prevent unnecessary use of capabilities
 			#constraints = solver.assertions()
 			# opt = Optimize()
@@ -299,39 +306,6 @@ class CaskadePlanner:
 
 			#capabilities = [occurrence.z3_variable for capability in capability_dictionary.capabilities.values() for occurrence in capability.occurrences.values()]
 			# opt.minimize(Sum(capabilities))
-
-			# Important. All the related props of output values at 0_0 need to be bound. Otherwise if they are floating, the goal at happening_1 value can be taken for 0_0. 
-			# This in turn leads to no capabilities getting invoked
-			for goal in property_dictionary.goals:
-				# add all goals themselves as we need to look into them as well. NO, DONT
-				# properties_related_to_goal.append(property_dictionary.get_property(goal))
-				properties_related_to_goal = get_related_properties(goal)
-				
-				# If a single one of the properties related to goal is bound, we can skip it. Else, bind
-				# any(find_variable_in_expression(child, variable) for child in expression.children())
-				# if any(is_variable_asserted(solver, property_dictionary.get_property_occurence(goal_prop.iri, 0, 0).z3_variable) for goal_prop in properties_related_to_goal): continue
-				if any(prop.iri in property_dictionary.inits.keys() for prop in properties_related_to_goal): continue
-				for goal_related_prop in properties_related_to_goal:
-					var = property_dictionary.get_property_occurence(goal_related_prop.iri, 0, 0).z3_variable
-					# TODO:checking for assertions is very expensive (recursive check in every loop). We should store all asserted vars to make checking faster
-					# if is_variable_asserted(solver, var) or any(is_variable_asserted(solver, property_dictionary.get_property_occurence(related.iri, 0, 0).z3_variable) for related in get_related_properties(goal_related_prop.iri)): continue
-					# related_props = get_related_properties(goal_related_prop)
-					# if goal_related_prop.iri in property_dictionary.inits.keys(): continue
-					# if is_variable_asserted(solver, var): continue
-					
-					if var.sort() == BoolSort(): 
-						goal_binding_assertion = var == False
-					if var.sort() == IntSort(): 
-						goal_binding_assertion = var == 0	# Maybe use better default?
-					if var.sort() == RealSort(): 
-						goal_binding_assertion = var == 0	# Maybe use better default?
-					
-					assertion_name = f"bind_{var}_{happenings}"
-					self.assertion_dictionary[assertion_name] = goal_binding_assertion
-					solver.assert_and_track(goal_binding_assertion, assertion_name)
-
-			time_after_binding_floating_values = time.time()
-			print(f"Time for binding free values: {time_after_binding_floating_values - time_after_constants}")
 
 			end_time = time.time()
 			print(f"Time for generating SMT overall: {end_time - start_time}")	
