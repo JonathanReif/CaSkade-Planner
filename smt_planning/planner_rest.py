@@ -19,7 +19,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowed_file(filename: str) -> bool:
 	return '.' in filename and \
-			filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+		filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 def setup_planner_with_file(files: ImmutableMultiDict[str, FileStorage], required_capability_iri: str) -> CaskadePlanner | tuple[Response, int]:

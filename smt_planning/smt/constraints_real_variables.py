@@ -16,11 +16,6 @@ def get_variable_constraints(happenings: int, event_bound: int) -> List:
 	constraints = []
 	properties = property_dictionary.provided_properties.values()
 	for original_property in properties:
-		# TODO: At some point, this was added. No clue why and both seem to cause some issues with MPS
-		# if (original_property.relation_type == "Input") and (original_property.iri.find("StationID") == -1):
-		# 	continue
-		# if original_property.data_type != "http://www.w3id.org/hsu-aut/DINEN61360#Real" and original_property.data_type != "http://www.w3id.org/hsu-aut/DINEN61360#Integer": 
-		# 	continue
 		if original_property.data_type != "http://www.w3id.org/hsu-aut/DINEN61360#Real" and original_property.data_type != "http://www.w3id.org/hsu-aut/DINEN61360#Integer": continue
 		
 		# Get all capabilities directly or indirectly influencing current property
