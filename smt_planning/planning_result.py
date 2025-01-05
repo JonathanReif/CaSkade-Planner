@@ -172,7 +172,7 @@ class PlanningResult:
 		property_appearance_store: Dict[int, List[PropertyAppearance]] = {} 	# store is a dict with happenings as a key
 		for variable in model:
 			variable_value = model[variable]
-			# Filter out all comments
+			# Filter out all comments (do nothing with them)
 			if (str(variable).startswith("##") and str(variable).endswith("##")):
 				continue
 			try:
