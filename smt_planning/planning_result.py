@@ -189,7 +189,8 @@ class PlanningResult:
 					property_appearance = PropertyAppearance(property, event, variable_value) # type: ignore
 					property_appearance_store.setdefault(happening, []).append(property_appearance)
 			except KeyError:
-				print(f"Could not find a property or capability for variable {variable} in the model.")
+				pass
+				# print(f"Could not find a property or capability for variable {variable} in the model.")
 
 		# By this point, all capabilities should have been added. If there are none, that means that a trivial plan was found
 		# In such cases, we simply return an empty plan

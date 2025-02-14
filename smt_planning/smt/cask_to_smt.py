@@ -314,6 +314,7 @@ class CaskadePlanner:
 			# Check satisfiability and get the model
 			solver_result = solver.check()
 			end_time_solver = time.time()
+			print(f"Number of Assertions: {len(solver.assertions())}")
 			print(f"Time for solving SMT: {end_time_solver - end_time}")
 
 			if solver_result == unsat:
