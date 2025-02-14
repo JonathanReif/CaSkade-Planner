@@ -81,6 +81,7 @@ class _PropertyPairCache:
 		PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
 		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 		SELECT DISTINCT ?cap ?inOut ?de ?td ?fpbType ?fpbSubType WHERE {
+			BIND(VDI3682:Product AS ?fpbType).
 			?cap a ?capType;
 				^CSS:requiresCapability ?process.
 			values ?capType { CaSk:ProvidedCapability CaSk:RequiredCapability }.
@@ -94,7 +95,6 @@ class _PropertyPairCache:
 			# Get the most specific type (the one that the inOut was declared with)
 			?inOut a ?fpbSubType.
 			# Get the super class that is one of the subclasses of VDI3682:State
-			BIND(VDI3682:Product AS ?fpbType).
 			?fpbSubType rdfs:subClassOf* ?fpbType.
 		}
 		"""
@@ -127,6 +127,7 @@ class _PropertyPairCache:
 		PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
 		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 		select DISTINCT ?de_a ?de_b ?inout_a ?inout_b ?fpbSubType_a ?fpbSubType_b where { 
+			BIND(VDI3682:Product AS ?fpbType).
 			?constraint a CSS:CapabilityConstraint;
 					OM:operator <http://www.openmath.org/cd/relation1#eq>;
 					OM:arguments (?ID_a ?ID_b) .
@@ -140,8 +141,7 @@ class _PropertyPairCache:
 			?inout_b DINEN61360:has_Data_Element ?de_b.
 			?inout_a a ?fpbSubType_a.
 			?inout_b a ?fpbSubType_b.
-			# Get the super class that is one of the subclasses of VDI3682:State
-			BIND(VDI3682:Product AS ?fpbType).
+			# Get the super class that is one of the subclasses of VDI3682:State			
 			?fpbSubType_a rdfs:subClassOf* ?fpbType.
     		?fpbSubType_b rdfs:subClassOf* ?fpbType.
 			# TODO: Properly filter out constants

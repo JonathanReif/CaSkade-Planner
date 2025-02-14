@@ -81,7 +81,6 @@ class CaskadePlanner:
 		state_handler.set_resource_dictionary(resource_dictionary)
 
 		# Capability Constraints to store
-		# // TODO: Do we really need this?
 		get_capability_constraints()
 		
 		# Get all inits and goals of planning problem based on the instance descriptions
