@@ -1,8 +1,8 @@
 from rdflib import Variable
 from rdflib.term import Identifier
 from typing import List, Dict, Mapping, Callable, MutableSequence
-from rdflib import URIRef
 from collections import defaultdict
+from smt_planning.dicts.name_util import convert_iri_to_z3_variable
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.openmath.math_symbol_information import MathSymbolInformation
 from smt_planning.openmath.operator_dictionary import OperatorDictionary
@@ -78,9 +78,11 @@ def create_expression(operator:MathSymbolInformation, argumentExpression: list[s
 			try:
 				relation_type = property_dictionary.get_property_relation_type(elem)
 				if relation_type == "Input":
-					padded_expression.append(f"|{elem}_{happening}_0|")
+					z3_variable_name = convert_iri_to_z3_variable(elem, happening, 0)
 				else:
-					padded_expression.append(f"|{elem}_{happening}_1|")
+					z3_variable_name = convert_iri_to_z3_variable(elem, happening, 1)
+				
+				padded_expression.append(f"|{z3_variable_name}|")
 			except:
 				# If finding the property fails, just insert the element. This is a bit hacky. 
 				# Would probably be better to pass an object with type info in the argumentlist so that we can check for the type (om:variable vs om:literal) here

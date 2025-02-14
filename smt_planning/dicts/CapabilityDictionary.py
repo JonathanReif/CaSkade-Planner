@@ -2,6 +2,7 @@ from typing import Dict, List, Set
 from z3 import Bool, Int, AstRef
 from smt_planning.dicts.PropertyDictionary import Property
 from enum import Enum
+from smt_planning.dicts.name_util import convert_iri_to_z3_variable, convert_z3_variable_to_iri
 
 class PropertyChange(Enum):
 	NoChange = 1
@@ -19,7 +20,8 @@ class CapabilityOccurrence:
 	def __init__(self, iri: str, happening: int):
 		self.iri = iri
 		self.happening = happening
-		z3_variable_name = iri + "_" + str(happening)
+		self.event = 0	# Definition: All capability occurrences happen at event 0
+		z3_variable_name = convert_iri_to_z3_variable(iri, happening, self.event)
 		self.z3_variable = Bool(z3_variable_name)
 
 '''
@@ -137,13 +139,14 @@ class CapabilityDictionary:
 	
 	def get_capability_from_z3_variable(self, z3_variable: AstRef) -> CapabilityOccurrence:
 		capabilities = {**self.provided_capabilities, **self.required_capabilities}
-		for capability in capabilities.values():
-			capability_occurrence = capability.get_occurrence_by_z3_variable(str(z3_variable))
-			if capability_occurrence is not None:
-				return capability_occurrence
-			
-		raise KeyError(f"There is not a single capability occurrence for the z3_variable {z3_variable}")
-	
+		z3_var_components = convert_z3_variable_to_iri(str(z3_variable))
+		capability = capabilities.get(z3_var_components.iri)
+		if capability is None:
+			raise KeyError(f"There is no capability for the z3_variable {z3_variable}")
+
+		capability_occurrence = capability.occurrences[z3_var_components.happening]
+		return capability_occurrence
+
 	def add_capability_constraint(self, cap: str, constraintIri: str, input: bool = False) -> None:
 		if input: 
 			self.input_capability_constraints.append(ConstraintInfo(cap, constraintIri))

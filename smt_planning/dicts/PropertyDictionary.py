@@ -2,8 +2,10 @@ from typing import Dict, Set, List
 from z3 import Real, Bool, Int, AstRef
 from enum import Enum
 from smt_planning.types.Property import Property
+from smt_planning.dicts.name_util import convert_z3_variable_to_iri
 from smt_planning.types.PropertyOccurrence import PropertyOccurrence
 from smt_planning.types.InstanceDescription import Precondition, Effect, Init, ResourceConfiguration, Goal, FreeVariable
+
 
 class CapabilityType(Enum):
 	ProvidedCapability = 1
@@ -99,12 +101,13 @@ class PropertyDictionary:
 	
 	def get_property_from_z3_variable(self, z3_variable: AstRef) -> PropertyOccurrence:
 		all_properties = {**self.required_properties, **self.provided_properties}
-		for property in all_properties.values():
-			property_occurrence = property.get_occurrence_by_z3_variable(str(z3_variable))
-			if property_occurrence is not None:
-				return property_occurrence
-		
-		raise KeyError(f"There is not a single property occurrence for the z3_variable {z3_variable}")
+		z3_var_components = convert_z3_variable_to_iri(str(z3_variable))
+		prop = all_properties.get(z3_var_components.iri)
+		if prop is None:
+			raise KeyError(f"There is not a single property occurrence for the z3_variable {z3_variable}")
+
+		property_occurrence = prop.occurrences[z3_var_components.happening][z3_var_components.event]
+		return property_occurrence
 	
 	def add_instance_description(self, data_element_iri: str, cap_iri: str, cap_type: CapabilityType, expr_goal: str, logical_interpretation: str, value: str):
 		if expr_goal == "None":
