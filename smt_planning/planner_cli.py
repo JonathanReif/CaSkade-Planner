@@ -16,6 +16,9 @@ def plan(
 	ontology_file: str = typer.Argument(
 		help="Path to your ontology that is used for generating the planning problem",
 	),
+    required_capability_iri: str = typer.Argument(
+        help="The required capability IRI that the plan should fulfill",
+    ),
     max_happenings: int = typer.Option(
         20,
 		"--max-happenings",
@@ -41,7 +44,7 @@ def plan(
 		help="Path to where the plan file will be stored after solving and transformation",
 	),
 ) -> None:
-	planner = CaskadePlanner()
+	planner = CaskadePlanner(required_capability_iri)
 	planner.with_file_query_handler(ontology_file)
 	planner.cask_to_smt(max_happenings, problem_file, model_file, plan_file)
 
