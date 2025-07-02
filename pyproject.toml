@@ -11,7 +11,7 @@ caskade-planner-cli = "smt_planning.planner_cli:run"
 caskade-planner-api = "smt_planning.planner_rest:run"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 rdflib = "^7.0.0"
 z3-solver = "^4.12.2.0"
 flask = "^3.0.0"
