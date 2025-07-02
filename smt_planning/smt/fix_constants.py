@@ -4,7 +4,7 @@ from smt_planning.dicts.PropertyDictionary import PropertyDictionary, Property
 from smt_planning.dicts.CapabilityDictionary import CapabilityDictionary
 
 def fix_constants(property_dictionary: PropertyDictionary, capability_dictionary: CapabilityDictionary, happenings: int, event_bound: int):
-	# TODO: Add a real logic to find constants. For now hard coded
+	# TODO: Add a real logic to find constants. For now hard coded. Rule for constants: properties that are not written by caps
 	constants : List[Property]  = [prop for prop in property_dictionary.provided_properties.values() if "Module_StationID" in prop.iri]
 	constant_expressions : List[BoolRef | ArithRef | bool] = []
 	for constant in constants:

@@ -8,7 +8,7 @@ def bind_floating_variables():
 	property_dictionary = StateHandler().get_property_dictionary()
 	goal_binding_assertions = []
 	for goal in property_dictionary.goals:
-		# add all goals themselves as we need to look into them as well. NO, DONT
+		# add all goals themselves as we need to look into them as well.
 		properties_related_to_goal = get_related_properties(goal)
 		
 		# If a single one of the properties related to goal is bound as an init, we can skip it. Else, bind
@@ -25,7 +25,6 @@ def bind_floating_variables():
 				goal_binding_assertion = var == 0
 			else: 
 				print(f'The type {var.sort()} is not yet supported')
-			#  TODO: Handle other types. Right now we don't have any, but this is
 
 			goal_binding_assertions.append(goal_binding_assertion)
 
