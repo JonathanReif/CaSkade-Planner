@@ -63,7 +63,7 @@ Options:
 
 **Example:**
 ```bash
-poetry run caskade-planner-cli plan-from-endpoint localhost:7200/repositories/test-repo http://example.org/capabilities#RequiredCapability1
+poetry run caskade-planner-cli plan-from-endpoint http://localhost:7200/repositories/test-repo http://example.org/capabilities#RequiredCapability1
 ```
 
 The `plan-from-endpoint` command outputs the result as JSON to stdout, making it easy to integrate with other tools.
@@ -121,12 +121,10 @@ You can run any CLI command described in the [CLI section](#cli) using Docker:
 
 ```bash
 # Run plan-from-file command
-docker run -it --rm -v $(pwd):/data caskade-planner \
-  caskade-planner-cli plan-from-file /data/my-ontology.ttl http://example.org/capabilities#RequiredCapability1
+docker run -it --rm -v $(pwd):/data caskade-planner caskade-planner-cli plan-from-file /data/my-ontology.ttl http://example.org/capabilities#RequiredCapability1
 
 # Run plan-from-endpoint command (use host.docker.internal to access localhost from container)
-docker run -it --rm caskade-planner \
-  caskade-planner-cli plan-from-endpoint host.docker.internal:7200/repositories/test-repo http://example.org/capabilities#RequiredCapability1
+docker run -it --rm caskade-planner caskade-planner-cli plan-from-endpoint http://host.docker.internal:7200/repositories/test-repo http://example.org/capabilities#RequiredCapability1
 ```
 
 Note: 
