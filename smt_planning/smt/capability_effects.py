@@ -21,6 +21,7 @@ def capability_effects_smt(happenings: int, event_bound: int) -> List[BoolRef]:
 					effect_smt = generate_effect_constraint(current_capability, effect_property, prop_type, effect.logical_interpretation, value)	
 					effects_smt.append(effect_smt)
 				else: 
+					# Case 2: Dynamic, formula effect
 					# TODO: Formula effects are currently handled in capability_constraints. Would be better in effects.py, but we need the data we have here...
 					pass
 				related_properties = get_related_properties(property_iri)
