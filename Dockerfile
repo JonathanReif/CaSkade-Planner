@@ -27,8 +27,8 @@ COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # Create user for security
-RUN addgroup --gid 1001 --system appgroup && \
-    adduser --no-create-home --shell /bin/false --disabled-password --uid 1001 --system --group appuser
+RUN groupadd --gid 1001 --system appgroup && \
+    useradd --no-create-home --shell /bin/false --uid 1001 --system --gid appgroup appuser
 
 # Create data directory
 RUN mkdir -p /data && \
