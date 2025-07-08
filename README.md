@@ -107,48 +107,112 @@ Both CLI and REST API return results in JSON format:
 }
 ```
 
+## Docker
 
-### Docker
-Alternatively, you can use Docker to run CaSkade-Planner without installing Python or Poetry locally.
+CaSkade-Planner is available as a Docker image on Docker Hub at `aljoshakoecher/caskade-planner`. The image supports multiple modes of operation through a flexible entrypoint system.
 
-Build the Docker image:
+### Quick Start
+
+#### Pull the latest image:
 ```bash
-docker build -t caskade-planner .
+docker pull aljoshakoecher/caskade-planner:latest
 ```
 
-#### Running CLI commands in Docker
-You can run any CLI command described in the [CLI section](#cli) using Docker:
-
+#### Run REST API:
 ```bash
-# Run plan-from-file command
-docker run -it --rm -v "$(pwd):/data" caskade-planner caskade-planner-cli plan-from-file /data/my-ontology.ttl http://example.org/capabilities#RequiredCapability1
-
-# Run plan-from-endpoint command (use host.docker.internal to access localhost from container)
-docker run -it --rm caskade-planner caskade-planner-cli plan-from-endpoint http://host.docker.internal:7200/repositories/test-repo http://example.org/capabilities#RequiredCapability1
+docker run -p 5000:5000 aljoshakoecher/caskade-planner:latest rest
 ```
 
-Note: 
-- Mount your local directory with `-v "$(pwd):/data"` to access local ontology files
-- Use `host.docker.internal` instead of `localhost` to access services on your host machine
-
-#### Running REST API in Docker
-To run the REST API server:
-
+#### Run CLI commands:
 ```bash
-docker run -it --rm -p 5000:5000 caskade-planner caskade-planner-api
+# Plan from file
+docker run -it --rm -v "$(pwd):/data" \
+  aljoshakoecher/caskade-planner:latest \
+  plan-from-file /data/my-ontology.ttl http://example.org/capabilities#RequiredCapability1
+
+# Plan from endpoint
+docker run -it --rm \
+  aljoshakoecher/caskade-planner:latest \
+  plan-from-endpoint http://host.docker.internal:7200/repositories/test-repo http://example.org/capabilities#RequiredCapability1
 ```
 
-The API will be accessible at `http://localhost:5000`. You can then use it as described in the [REST-API section](#rest-api).
+### Available Commands
 
-#### Interactive mode
-For debugging or running multiple commands:
+The Docker image supports the following commands through its entrypoint:
+
+#### `rest` - Start REST API Server
+```bash
+docker run -p 5000:5000 aljoshakoecher/caskade-planner:latest rest
+```
+Starts the REST API server on port 5000. The API will be accessible at `http://localhost:5000`.
+
+#### `plan-from-file` - Direct File Planning
+```bash
+docker run -it --rm -v "$(pwd):/data" \
+  aljoshakoecher/caskade-planner:latest \
+  plan-from-file /data/ontology.ttl http://capability.iri [OPTIONS]
+```
+
+Available options:
+- `--max-happenings INTEGER` (default: 20)
+- `--problem-file TEXT`
+- `--model-file TEXT`
+- `--plan-file TEXT`
+
+#### `plan-from-endpoint` - Direct Endpoint Planning
+```bash
+docker run -it --rm \
+  aljoshakoecher/caskade-planner:latest \
+  plan-from-endpoint http://endpoint-url http://capability.iri [OPTIONS]
+```
+
+#### `cli` - Full CLI Access
+```bash
+docker run -it --rm -v "$(pwd):/data" \
+  aljoshakoecher/caskade-planner:latest \
+  cli plan-from-file /data/ontology.ttl http://capability.iri
+```
+
+#### `bash` - Interactive Shell
+```bash
+docker run -it --rm -v "$(pwd):/data" \
+  aljoshakoecher/caskade-planner:latest bash
+```
+
+### Legacy Commands (Still Supported)
+
+For backward compatibility, the original commands still work:
 
 ```bash
-docker run -it --rm -v "$(pwd):/data" caskade-planner
-# Now you're inside the container and can run commands:
-poetry run caskade-planner-cli --help
-poetry run caskade-planner-api
+# Original CLI usage
+docker run -it --rm -v "$(pwd):/data" \
+  aljoshakoecher/caskade-planner:latest \
+  caskade-planner-cli plan-from-file /data/my-ontology.ttl http://example.org/capabilities#RequiredCapability1
 ```
+
+### Docker Compose Integration
+
+For integration into larger systems, you can use Docker Compose:
+
+```yaml
+version: '3.8'
+services:
+  caskade-planner:
+    image: aljoshakoecher/caskade-planner:latest
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/data
+    # Default command starts REST API
+    # Override with: command: ["plan-from-file", "/data/ontology.ttl", "http://cap.iri"]
+```
+
+### Notes
+
+- **File Access**: Mount your local directory with `-v "$(pwd):/data"` to access local ontology files from within the container
+- **Network Access**: Use `host.docker.internal` instead of `localhost` to access services on your host machine from within the container
+- **Data Persistence**: Results can be saved to mounted volumes using the file output options
+- **Health Checks**: The REST API includes a health check endpoint at `/ping` for monitoring
 
 ### Python Integration
 

@@ -22,8 +22,26 @@ COPY README.md ./
 RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi
 
-# Expose port 5000 for REST API (only used when running the API)
+# Copy and setup entrypoint
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Create user for security
+RUN addgroup --gid 1001 --system appgroup && \
+    adduser --no-create-home --shell /bin/false --disabled-password --uid 1001 --system --group appuser
+
+# Create data directory
+RUN mkdir -p /data && \
+    chown -R appuser:appgroup /app /data
+
+USER appuser
+
+# Expose port 5000 for REST API
 EXPOSE 5000
 
-# Set the default command to bash so users can run commands interactively
-CMD ["/bin/bash"]
+# Health check for REST API
+HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:5000/ping || exit 1
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["rest"]
