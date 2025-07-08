@@ -13,7 +13,6 @@ def get_real_variable_continuous_changes(happenings: int, event_bound: int) -> L
 	for happening in range(happenings)[1:]:
 		for property in properties:
 			if property.data_type == "http://www.w3id.org/hsu-aut/DINEN61360#Real" or property.data_type == "http://www.w3id.org/hsu-aut/DINEN61360#Integer":
-				free_variable = False
 				free_variables = [instance for instance in property.instances if isinstance(instance, FreeVariable)]
 
 				# If there is a free variable in the list of instances, we don't create a continuation. 

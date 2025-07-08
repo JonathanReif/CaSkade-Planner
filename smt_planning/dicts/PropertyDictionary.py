@@ -110,10 +110,20 @@ class PropertyDictionary:
 		return property_occurrence
 	
 	def add_instance_description(self, data_element_iri: str, cap_iri: str, cap_type: CapabilityType, expr_goal: str, logical_interpretation: str, value: str):
-		if expr_goal == "None":
+		# Every instance description with expression goal "Variable" is a free variable, whose value will be determined during planning.
+		# As the value is determined by the planner, there must not be a value in the ontology.
+		if expr_goal == "Variable":
+			if value != "None":
+				raise ValueError(f"The instance description of {data_element_iri} with the expression goal 'Variabe' has the value {value}. A Variable must not have a value.")
 			instance = FreeVariable(data_element_iri, cap_iri, logical_interpretation)
 			self.free_variables.setdefault(data_element_iri, set()).add(instance)
 		
+		# Every instance description with expression goal "Assurance" is an effect. It may or may not have a value (fixed effect vs. variable effects depending on formulas)
+		elif expr_goal == "Assurance":
+			instance = Effect(data_element_iri, cap_iri, logical_interpretation, value)
+			self.effects.setdefault(data_element_iri, set()).add(instance)
+
+		# Instance descriptions with expression goal "Requirement" can either be goals (requirements of the required cap) or preconditions of the provided cap
 		elif expr_goal == "Requirement" and value != "None":
 			if cap_type == CapabilityType.RequiredCapability:
 				instance = Goal(data_element_iri, cap_iri, logical_interpretation, value)
@@ -121,11 +131,8 @@ class PropertyDictionary:
 			else:
 				instance = Precondition(data_element_iri, cap_iri, logical_interpretation, value)
 				self.preconditions.setdefault(data_element_iri, set()).add(instance)
-		
-		elif expr_goal == "Assurance":
-			instance = Effect(data_element_iri, cap_iri, logical_interpretation, value)
-			self.effects.setdefault(data_element_iri, set()).add(instance)
-		
+			
+		# Instance descriptions with expression goal "Actual_Value" can either be inits (actual_values of the required cap) or resource configurations of the provided cap
 		elif expr_goal == "Actual_Value" and value != "None":
 			if cap_type == CapabilityType.RequiredCapability:
 				instance = Init(data_element_iri, cap_iri, logical_interpretation, value)
@@ -135,6 +142,7 @@ class PropertyDictionary:
 				self.resource_configurations.setdefault(data_element_iri, set()).add(instance)
 
 		else:
+			print(f"For the data element '{data_element_iri}' with the following instance information, no property was defined. Exp. Goal: {expr_goal}, Log. Int.: {logical_interpretation}, value: {value}")
 			return
 		
 		self.get_property(data_element_iri).add_instance(instance)

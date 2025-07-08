@@ -70,7 +70,8 @@ class _PropertyPairCache:
 	def find_pairs_across_caps(self):
 		'''
 		Finds related properties that are defined by having the same type description and being attached to the same type of product. 
-		Only finds related properties in different capabilities
+		Only finds related properties in different capabilities. Variables cannot be taken into consideration. Otherwise the variables 
+		(i.e., values to be calculated during planning) would not be calculated but instead directly related.
 		'''
 		assert self.required_capability_iri
 		
@@ -81,7 +82,9 @@ class _PropertyPairCache:
 		PREFIX CSS: <http://www.w3id.org/hsu-aut/css#>
 		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 		SELECT DISTINCT ?cap ?inOut ?de ?td ?fpbType ?fpbSubType WHERE {
-			BIND(VDI3682:Product AS ?fpbType).
+			VALUES ?fpbType {
+				VDI3682:Product VDI3682:Information VDI3682:Energy
+			}.
 			?cap a ?capType;
 				^CSS:requiresCapability ?process.
 			values ?capType { CaSk:ProvidedCapability CaSk:RequiredCapability }.
@@ -91,6 +94,12 @@ class _PropertyPairCache:
 			?de a DINEN61360:Data_Element.
 			?de DINEN61360:has_Type_Description ?td;
 				DINEN61360:has_Instance_Description ?id.
+			?id DINEN61360:Expression_Goal ?eg.
+			# Filter out variables
+			FILTER NOT EXISTS {
+				?de DINEN61360:has_Instance_Description ?idVar .
+				?idVar DINEN61360:Expression_Goal "Variable" .
+			}
 			?inOut DINEN61360:has_Data_Element ?de.
 			# Get the most specific type (the one that the inOut was declared with)
 			?inOut a ?fpbSubType.
@@ -126,13 +135,20 @@ class _PropertyPairCache:
 		PREFIX DINEN61360: <http://www.w3id.org/hsu-aut/DINEN61360#>
 		PREFIX VDI3682: <http://www.w3id.org/hsu-aut/VDI3682#>
 		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-		select DISTINCT ?de_a ?de_b ?inout_a ?inout_b ?fpbSubType_a ?fpbSubType_b where { 
-			BIND(VDI3682:Product AS ?fpbType).
-			?constraint a CSS:CapabilityConstraint;
+		SELECT DISTINCT ?de_a ?de_b ?inout_a ?inout_b ?fpbSubType_a ?fpbSubType_b where { 
+			VALUES ?fpbType {
+				VDI3682:Product VDI3682:Information VDI3682:Energy
+			}.
+			?constraint a CSS:PropertyConstraint;
 					OM:operator <http://www.openmath.org/cd/relation1#eq>;
 					OM:arguments (?ID_a ?ID_b) .
 			?de_a DINEN61360:has_Instance_Description ?ID_a.
 			?de_b DINEN61360:has_Instance_Description ?ID_b.
+			# Must not be variables
+			?ID_a DINEN61360:Expression_Goal ?EG_a.
+			?ID_b DINEN61360:Expression_Goal ?EG_b.
+			FILTER(?EG_a != "Variable")
+			FILTER(?EG_b != "Variable")
 			# Must have the same TD
 			?de_a DINEN61360:has_Type_Description ?td.
 			?de_b DINEN61360:has_Type_Description ?td.
@@ -143,7 +159,8 @@ class _PropertyPairCache:
 			?inout_b a ?fpbSubType_b.
 			# Get the super class that is one of the subclasses of VDI3682:State			
 			?fpbSubType_a rdfs:subClassOf* ?fpbType.
-    		?fpbSubType_b rdfs:subClassOf* ?fpbType.
+			?fpbSubType_b rdfs:subClassOf* ?fpbType.
+
 			# TODO: Properly filter out constants
 			FILTER(!CONTAINS(STR(?de_a), "Module_StationID"))
 			FILTER(!CONTAINS(STR(?de_b), "Module_StationID"))
@@ -233,7 +250,7 @@ class _PropertyPairCache:
 		subtype_match = self.subtype_matches(binding, other_binding)
 
 		# c2) Or one of both is a VDI3682:Product. We assume that abstract products take all properties
-		one_is_abstract = self.one_is_abstract_product(binding, other_binding)
+		one_is_abstract = self.one_is_abstract_state(binding, other_binding)
 
 		return (different_cap or (same_cap and no_relation_in_same_cap)) and same_type and (subtype_match or one_is_abstract)
 		# return different_cap and same_type and (subtype_match or one_is_abstract)
@@ -259,10 +276,14 @@ class _PropertyPairCache:
 		# Checks whether the product subtype of two result bindings is identical
 		return (str(binding.get(FPB_SUBTYPE)) == str(other_binding.get(FPB_SUBTYPE)))
 
-	def one_is_abstract_product(self, binding: Mapping[Variable, Identifier], other_binding: Mapping[Variable, Identifier]) -> bool:
-		# One is only an abstract product (no subtype) if the subtype is defined as product
-		a_is_abstract_product = str(binding.get(FPB_SUBTYPE)) == 'http://www.w3id.org/hsu-aut/VDI3682#Product'
-		b_is_abstract_product = str(other_binding.get(FPB_SUBTYPE))== 'http://www.w3id.org/hsu-aut/VDI3682#Product'
+	def one_is_abstract_state(self, binding: Mapping[Variable, Identifier], other_binding: Mapping[Variable, Identifier]) -> bool:
+		# One is only an abstract VDI 3682 state class (no subtype) if the subtype is defined as product
+		a_subtype = str(binding.get(FPB_SUBTYPE))
+		a_is_abstract_product = (a_subtype in ('http://www.w3id.org/hsu-aut/VDI3682#Product', 'http://www.w3id.org/hsu-aut/VDI3682#Information', 'http://www.w3id.org/hsu-aut/VDI3682#Energy'))
+	
+		b_subtype = str(other_binding.get(FPB_SUBTYPE))
+		b_is_abstract_product = (b_subtype in ('http://www.w3id.org/hsu-aut/VDI3682#Product', 'http://www.w3id.org/hsu-aut/VDI3682#Information', 'http://www.w3id.org/hsu-aut/VDI3682#Energy'))
+		
 		one_is_abstract_product = a_is_abstract_product or b_is_abstract_product
 		return one_is_abstract_product
 

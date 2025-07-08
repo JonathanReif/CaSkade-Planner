@@ -32,8 +32,8 @@ def get_all_properties(required_cap_iri: str) -> PropertyDictionary:
 		{
 			# this part gets all properties that are directly connected to a process / capability
 			?cap a ?capType;
-			^CSS:requiresCapability ?process.
-			?process ?relation ?inout.
+				^CSS:requiresCapability ?process.
+				?process ?relation ?inout.
 			FILTER(?capType = CaSk:ProvidedCapability || ?cap = <{required_cap_iri}>)
 		}
 		
@@ -196,10 +196,10 @@ def get_output_influences_of_capability(capability_iri: str) -> List[CapabilityP
 			if(not row.get('inputStateSubclass').eq(row.get('outputStateSubclass'))):
 				# equalConstraint but with different product type / information in output it is a property change
 				effect = PropertyChange.ChangeByExpression
-			elif(row.get('inputExpressionGoal')):
+			elif(str(row.get('inputExpressionGoal')) == 'Requirement' or str(row.get('inputExpressionGoal')) == 'Actual_Value'):
 				# Case of requirements or actual values. In this case, prop has a constant value and output is set to equal
 				effect = PropertyChange.NoChange
-			else:
+			elif(str(row.get('inputExpressionGoal')) == 'Variable'):
 				# Case of no expression goal, i.e., free parameter. In this case, prop is changed to the free parameter
 				effect = PropertyChange.ChangeByExpression
 		else:
