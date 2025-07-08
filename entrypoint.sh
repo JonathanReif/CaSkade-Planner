@@ -6,25 +6,25 @@ echo "Caskade Planner starting..."
 case "$1" in
     "rest")
         echo "Starting REST API on port 5000..."
-        exec python -m smt_planning.api
+        exec python smt_planning/planner_rest.py
         ;;
     "cli")
         echo "Starting CLI mode..."
         shift  # Remove 'cli' from arguments
-        exec caskade-planner-cli "$@"
+        exec python smt_planning/planner_cli.py "$@"
         ;;
     "plan-from-file")
         echo "Planning from file: ${@:2}"
-        exec caskade-planner-cli plan-from-file "${@:2}"
+        exec python smt_planning/planner_cli.py plan-from-file "${@:2}"
         ;;
     "plan-from-endpoint")
         echo "Planning from endpoint: ${@:2}"
-        exec caskade-planner-cli plan-from-endpoint "${@:2}"
+        exec python smt_planning/planner_cli.py plan-from-endpoint "${@:2}"
         ;;
     "caskade-planner-cli")
         echo "Direct CLI access..."
         shift  # Remove 'caskade-planner-cli'
-        exec caskade-planner-cli "$@"
+        exec python smt_planning/planner_cli.py "$@"
         ;;
     "bash")
         echo "Starting interactive bash..."
