@@ -16,6 +16,7 @@ ENV PATH="/root/.local/bin:$PATH"
 # Copy project files
 COPY pyproject.toml poetry.lock ./
 COPY smt_planning ./smt_planning
+COPY README.md ./
 
 # Install dependencies
 RUN poetry config virtualenvs.create false \

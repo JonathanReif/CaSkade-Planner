@@ -63,7 +63,7 @@ Options:
 
 **Example:**
 ```bash
-poetry run caskade-planner-cli plan-from-endpoint localhost:7200/repositories/test-repo http://example.org/capabilities#RequiredCapability1
+poetry run caskade-planner-cli plan-from-endpoint http://localhost:7200/repositories/test-repo http://example.org/capabilities#RequiredCapability1
 ```
 
 The `plan-from-endpoint` command outputs the result as JSON to stdout, making it easy to integrate with other tools.
@@ -121,16 +121,14 @@ You can run any CLI command described in the [CLI section](#cli) using Docker:
 
 ```bash
 # Run plan-from-file command
-docker run -it --rm -v $(pwd):/data caskade-planner \
-  caskade-planner-cli plan-from-file /data/my-ontology.ttl http://example.org/capabilities#RequiredCapability1
+docker run -it --rm -v "$(pwd):/data" caskade-planner caskade-planner-cli plan-from-file /data/my-ontology.ttl http://example.org/capabilities#RequiredCapability1
 
 # Run plan-from-endpoint command (use host.docker.internal to access localhost from container)
-docker run -it --rm caskade-planner \
-  caskade-planner-cli plan-from-endpoint host.docker.internal:7200/repositories/test-repo http://example.org/capabilities#RequiredCapability1
+docker run -it --rm caskade-planner caskade-planner-cli plan-from-endpoint http://host.docker.internal:7200/repositories/test-repo http://example.org/capabilities#RequiredCapability1
 ```
 
 Note: 
-- Mount your local directory with `-v $(pwd):/data` to access local ontology files
+- Mount your local directory with `-v "$(pwd):/data"` to access local ontology files
 - Use `host.docker.internal` instead of `localhost` to access services on your host machine
 
 #### Running REST API in Docker
@@ -146,7 +144,7 @@ The API will be accessible at `http://localhost:5000`. You can then use it as de
 For debugging or running multiple commands:
 
 ```bash
-docker run -it --rm -v $(pwd):/data caskade-planner
+docker run -it --rm -v "$(pwd):/data" caskade-planner
 # Now you're inside the container and can run commands:
 poetry run caskade-planner-cli --help
 poetry run caskade-planner-api
