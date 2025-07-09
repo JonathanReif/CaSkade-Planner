@@ -36,7 +36,6 @@ jobs:
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=tag,enable=true,prefix=v,strip-prefix
             type=semver,pattern={{version}},prefix=v,strip-prefix
             type=semver,pattern={{major}}.{{minor}},prefix=v,strip-prefix
             type=semver,pattern={{major}},prefix=v,strip-prefix
