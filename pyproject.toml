@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "caskade-planner"
-version = "1.0.1"
+version = "1.0.3"
 description = "An automated process planning approach based on a capability ontology and Satisfiability Modulo Theories"
 authors = ["Luis Miguel Vieira da Silva <miguel.vieira@hsu-hh.de>", "Aljosha Koecher <aljosha.koecher@hsu-hh.de>"]
 readme = "README.md"
