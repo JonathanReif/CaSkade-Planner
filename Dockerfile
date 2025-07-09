@@ -22,6 +22,9 @@ COPY README.md ./
 RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi
 
+# Install gunicorn for production REST server
+RUN pip install gunicorn
+
 # Copy and setup entrypoint
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
@@ -43,5 +46,8 @@ EXPOSE 5000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
   CMD curl -f http://localhost:5000/ping || exit 1
 
+# Set entrypoint
 ENTRYPOINT ["/entrypoint.sh"]
+
+# Default command
 CMD ["rest"]

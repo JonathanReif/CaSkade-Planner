@@ -6,8 +6,8 @@ echo "Caskade Planner starting..."
 case "$1" in
     "rest")
         echo "Starting REST API on port 5000..."
-        exec python smt_planning/planner_rest.py
-        ;;
+		exec gunicorn -w 2 -b 0.0.0.0:5000 smt_planning.planner_rest:app
+		;;
     "cli")
         echo "Starting CLI mode..."
         shift  # Remove 'cli' from arguments
