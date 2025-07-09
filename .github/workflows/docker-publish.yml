@@ -36,12 +36,11 @@ jobs:
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=tag
-            type=semver,pattern={{version}},prefix=v
-            type=semver,pattern={{major}}.{{minor}},prefix=v
-            type=semver,pattern={{major}},prefix=v
+            type=ref,event=tag,enable=true,prefix=v,strip-prefix
+            type=semver,pattern={{version}},prefix=v,strip-prefix
+            type=semver,pattern={{major}}.{{minor}},prefix=v,strip-prefix
+            type=semver,pattern={{major}},prefix=v,strip-prefix
             type=raw,value=latest
-          version_prefix: v
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
