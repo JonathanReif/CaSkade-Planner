@@ -13,7 +13,7 @@
 @base <http://www.hsu-hh.de/aut/ontologies/riva#> .
 
 <http://www.hsu-hh.de/aut/ontologies/riva/rover-two-caps#> rdf:type owl:Ontology ;
-                                            owl:imports <http://www.w3id.org/hsu-aut/cask/3.0.0> .
+                                            owl:imports <http://www.w3id.org/hsu-aut/cask/3.0.1> .
 
 #################################################################
 #    Individuals
@@ -269,6 +269,7 @@ Rover:Rover7_capDriveTo19_RequiredInflong_longitude70_ID rdf:type owl:NamedIndiv
 Rover:Rover7_capDriveTo19_Constraint_latitude71 rdf:type owl:NamedIndividual ,
                                                             openmath:Application ,
                                                             CSS:PropertyConstraint ;
+                                                    openmath:operator <http://www.openmath.org/cd/relation1#eq> ;
                                                     openmath:arguments Rover:Rover7_capDriveTo19_Constraint_latitude71_ArgList ;
                                                     CSS:references Rover:Rover7_capDriveTo19_AssuranceInflat_latitude71_ID ,
                                                                     Rover:Rover7_capDriveTo19_RequiredInflat_latitude71_ID .
@@ -284,6 +285,7 @@ Rover:Rover7_capDriveTo19_Constraint_latitude71_ArgList rdf:type owl:NamedIndivi
 Rover:Rover7_capDriveTo19_Constraint_longitude70 rdf:type owl:NamedIndividual ,
                                                             openmath:Application ,
                                                             CSS:PropertyConstraint ;
+                                                    openmath:operator <http://www.openmath.org/cd/relation1#eq> ;
                                                     openmath:arguments Rover:Rover7_capDriveTo19_Constraint_longitude70_ArgList ;
                                                     CSS:references Rover:Rover7_capDriveTo19_AssuranceInflong_longitude70_ID ,
                                                                     Rover:Rover7_capDriveTo19_RequiredInflong_longitude70_ID .
@@ -301,8 +303,8 @@ Rover:Rover7_capGrab34 rdf:type owl:NamedIndividual ,
                                     VDI3682:ProcessOperator ;
                         VDI3682:hasInput Rover:Rover7_capGrab34_RequiredProdItem ;
                         VDI3682:hasOutput Rover:Rover7_capGrab34_AssuranceProdItem ;
-                        CSS:isRestrictedBy Rover:Rover7_capGrab34_Constraint_latituDE ,
-                                            Rover:Rover7_capGrab34_Constraint_longituDE ;
+                        CSS:isRestrictedBy Rover:Rover7_capGrab34_Constraint_latitude ,
+                                            Rover:Rover7_capGrab34_Constraint_longitude ;
                         CSS:requiresCapability Rover:Rover7_capGrab34 .
 
 
@@ -411,9 +413,10 @@ Rover:Rover7_capGrab34_RequiredProdItem_Required_longitude_ID rdf:type owl:Named
 
 
 ###  http://www.hsu-hh.de/aut/ontologies/riva/rover-two-caps#Rover7_capGrab34_Constraint_latitude
-Rover:Rover7_capGrab34_Constraint_latituDE rdf:type owl:NamedIndividual ,
+Rover:Rover7_capGrab34_Constraint_latitude rdf:type owl:NamedIndividual ,
                                                         openmath:Application ,
                                                         CSS:PropertyConstraint ;
+                                                        openmath:operator <http://www.openmath.org/cd/relation1#eq> ;
                                                         openmath:arguments Rover:Rover7_capGrab34_Constraint_latitude_ArgList ;
                                                         CSS:references Rover:Rover7_latitude_ID ,
                                                                         Rover:Rover7_capGrab34_RequiredProdItem_Required_latitude_ID .
@@ -426,9 +429,10 @@ Rover:Rover7_capGrab34_Constraint_latitude_ArgList rdf:type owl:NamedIndividual 
 
 
 ###  http://www.hsu-hh.de/aut/ontologies/riva/rover-two-caps#Rover7_capGrab34_Constraint_longitude
-Rover:Rover7_capGrab34_Constraint_longituDE rdf:type owl:NamedIndividual ,
+Rover:Rover7_capGrab34_Constraint_longitude rdf:type owl:NamedIndividual ,
                                                         openmath:Application ,
                                                         CSS:PropertyConstraint ;
+                                                        openmath:operator <http://www.openmath.org/cd/relation1#eq> ;
                                                         openmath:arguments Rover:Rover7_capGrab34_Constraint_longitude_ArgList ;
                                                         CSS:references Rover:Rover7_longitude_ID ,
                                                                         Rover:Rover7_capGrab34_RequiredProdItem_Required_longitude_ID .
