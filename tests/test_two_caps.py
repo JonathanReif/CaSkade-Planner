@@ -9,21 +9,21 @@ This ontology file contains two capabilities (driveTo and grab) of a Rover that 
 class TestTwoCaps:
 	
 	def test_create_and_solve(self):
-		ontology_file = os.getcwd() + "\\tests\\ex_two_caps.ttl"
+		ontology_file = os.path.join(os.getcwd(), "tests", "ex_two_caps.ttl")
 		max_happenings = 2
-		planner: CaskadePlanner = CaskadePlanner("http://www.hsu-hh.de/aut/RIVA/Logistic#Required-cap-Transport") 
+		planner: CaskadePlanner = CaskadePlanner("http://www.hsu-hh.de/aut/ontologies/riva/rover-two-caps#RequiredCap") 
 		planner.with_file_query_handler(ontology_file)
 		result = planner.cask_to_smt(max_happenings, "./problem.smt", "smt_solution.json", "plan.json")
 		expected_plan = result.plan
 		assert (result.result_type is PlanningResultType.SAT) and (expected_plan is not None)
 		assert expected_plan.plan_length == 2, "Plan length should be 2"
 		
-		assert expected_plan.plan_steps[0].capability_appearances[0].capability_iri == "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-driveTo19", "First capability should be driveTo19"
-		assert expected_plan.plan_steps[1].capability_appearances[0].capability_iri == "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34", "Second capability should be grab34"
-		
-		property_longitude = "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/longitude_de"
+		assert expected_plan.plan_steps[0].capability_appearances[0].capability_iri == "http://www.hsu-hh.de/aut/ontologies/riva/rover-two-caps#Rover7_capDriveTo19", "First capability should be driveTo19"
+		assert expected_plan.plan_steps[1].capability_appearances[0].capability_iri == "http://www.hsu-hh.de/aut/ontologies/riva/rover-two-caps#Rover7_capGrab34", "Second capability should be grab34"
+
+		property_longitude = "http://www.hsu-hh.de/aut/ontologies/riva/rover-two-caps#Rover7_longitude_DE"
 		property_longitude_output = False
-		property_latitude = "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/latitude_de"
+		property_latitude = "http://www.hsu-hh.de/aut/ontologies/riva/rover-two-caps#Rover7_latitude_DE"
 		property_latitude_output = False
 
 		for property in expected_plan.plan_steps[0].capability_appearances[0].outputs:
@@ -37,7 +37,7 @@ class TestTwoCaps:
 		assert property_longitude_output == True, "Longitude of rover should be output"
 		assert property_latitude_output == True, "Latitude of rover should be output"
 
-		property_grabbed = "http://www.hsu-hh.de/aut/RIVA/Logistic#Rover7/cap-grab34/AssuranceProdItem/grabbed162_de"
+		property_grabbed = "http://www.hsu-hh.de/aut/ontologies/riva/rover-two-caps#Rover7_capGrab34_AssuranceProdItem_grabbed162_DE"
 		property_grabbed_output = False
 
 		for property in expected_plan.plan_steps[1].capability_appearances[0].outputs:
