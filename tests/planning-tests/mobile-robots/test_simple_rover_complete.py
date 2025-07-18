@@ -3,13 +3,13 @@ from smt_planning.smt.cask_to_smt import CaskadePlanner
 from smt_planning.planning_result import PlanningResultType
 
 """
-This test checks if the planner can create a plan for the riva_one_rover.ttl ontology file. 
+This test checks if the planner can create a plan for the simple_rover_complete.ttl ontology file. 
 This ontology file contains three capabilities (driveTo, grab and drop) of a Rover that are supposed to be executed in three happenings.
 """
-class TestRivaOneRover:
+class TestSimpleRoverComplete:
 	
 	def test_create_and_solve(self):
-		ontology_file = os.path.join(os.getcwd(), "tests", "riva_one_rover.ttl")
+		ontology_file = os.path.join(os.getcwd(), "tests", "planning-tests", "mobile-robots", "simple_rover_complete.ttl")
 		max_happenings = 3
 		planner: CaskadePlanner = CaskadePlanner("http://www.hsu-hh.de/aut/ontologies/riva/rover-complete#RequiredCap") 
 		planner.with_file_query_handler(ontology_file)
@@ -82,4 +82,4 @@ class TestRivaOneRover:
 		assert property_item_grabbed_output == True, "Grabbed-Property of Item should be output of drop capability"
 
 if __name__ == '__main__':
-	TestRivaOneRover().test_create_and_solve()
+	TestSimpleRoverComplete().test_create_and_solve()

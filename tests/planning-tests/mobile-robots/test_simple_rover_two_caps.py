@@ -3,13 +3,13 @@ from smt_planning.smt.cask_to_smt import CaskadePlanner
 from smt_planning.planning_result import PlanningResultType
 
 """
-This test checks if the planner can create a plan for the ex_two_caps.ttl ontology file. 
+This test checks if the planner can create a plan for the simple_rover_with_two_caps.ttl ontology file. 
 This ontology file contains two capabilities (driveTo and grab) of a Rover that are supposed to be executed in two happenings.
 """
-class TestTwoCaps:
+class TestSimpleRoverTwoCaps:
 	
 	def test_create_and_solve(self):
-		ontology_file = os.path.join(os.getcwd(), "tests", "ex_two_caps.ttl")
+		ontology_file = os.path.join(os.getcwd(), "tests", "planning-tests", "mobile-robots", "simple_rover_with_two_caps.ttl")
 		max_happenings = 2
 		planner: CaskadePlanner = CaskadePlanner("http://www.hsu-hh.de/aut/ontologies/riva/rover-two-caps#RequiredCap") 
 		planner.with_file_query_handler(ontology_file)
@@ -48,4 +48,4 @@ class TestTwoCaps:
 		assert property_grabbed_output == True, "Grabbed-Property of Item should be output"
 
 if __name__ == '__main__':
-	TestTwoCaps().test_create_and_solve()
+	TestSimpleRoverTwoCaps().test_create_and_solve()

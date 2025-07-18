@@ -11,12 +11,13 @@ from smt_planning.smt.property_links import get_related_properties, set_required
 class TestQuerying:
 
 	def test_property_query(self):
-		ontology_file = os.path.join(os.getcwd(), "tests", "riva_one_rover.ttl")
-		required_cap_iri = "http://www.hsu-hh.de/aut/RIVA/Logistic#required-cap-logistics"
+		ontology_file = os.path.join(os.getcwd(), "tests", "planning-tests", "mobile-robots", "simple_rover_complete.ttl")
+		required_cap_iri = "http://www.hsu-hh.de/aut/ontologies/riva/rover-complete#RequiredCap"
 		s = StateHandler()
 		s.set_query_handler(FileQueryHandler(ontology_file))
 		property_dictionary = get_all_properties(required_cap_iri)
 		
-		assert len(property_dictionary.provided_properties) + len(property_dictionary.required_properties) == 26
+		assert len(property_dictionary.provided_properties) + len(property_dictionary.required_properties) == 24
 
-	
+if __name__ == '__main__':
+	TestQuerying().test_property_query()

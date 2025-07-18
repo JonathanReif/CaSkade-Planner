@@ -13,7 +13,8 @@
 @base <http://www.hsu-hh.de/aut/ontologies/riva#> .
 
 <http://www.hsu-hh.de/aut/ontologies/riva/rover-three-caps#> rdf:type owl:Ontology ;
-                                            owl:imports <http://www.w3id.org/hsu-aut/cask/3.0.1> .
+                                            owl:imports <http://www.w3id.org/hsu-aut/cask/3.0.1> ;
+                                            rdfs:comment "This ontology describes a simple rover with three capabilities, one for driving to a location, another for grabbing an item, and a third for transporting the grabbed item to another location." .
 
 #################################################################
 #    Individuals

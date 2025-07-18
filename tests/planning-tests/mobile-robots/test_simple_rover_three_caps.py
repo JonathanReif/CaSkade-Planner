@@ -3,13 +3,13 @@ from smt_planning.smt.cask_to_smt import CaskadePlanner
 from smt_planning.planning_result import PlanningResultType
 
 """
-This test checks if the planner can create a plan for the ex_three_caps.ttl ontology file. 
+This test checks if the planner can create a plan for the simple_rover_with_three_caps.ttl ontology file. 
 This ontology file contains three capabilities (driveTo, grab and transport) of a Rover that are supposed to be executed in three happenings.
 """
-class TestThreeCaps:
+class TestSimpleRoverThreeCaps:
 	
 	def test_create_and_solve(self):
-		ontology_file = os.path.join(os.getcwd(), "tests", "ex_three_caps.ttl")
+		ontology_file = os.path.join(os.getcwd(), "tests", "planning-tests", "mobile-robots", "simple_rover_with_three_caps.ttl")
 		max_happenings = 3
 		planner = CaskadePlanner("http://www.hsu-hh.de/aut/ontologies/riva/rover-three-caps#RequiredCap") 
 		planner.with_file_query_handler(ontology_file)
@@ -75,4 +75,4 @@ class TestThreeCaps:
 		assert property_item_latitude_output == True, "Latitude of item should be output of transport capability"
 
 if __name__ == '__main__':
-	TestThreeCaps().test_create_and_solve()
+	TestSimpleRoverThreeCaps().test_create_and_solve()
