@@ -9,7 +9,7 @@ This ontology file contains three capabilities (driveTo, grab and transport) of 
 class TestSimpleRoverThreeCaps:
 	
 	def test_create_and_solve(self):
-		ontology_file = os.path.join(os.getcwd(), "tests", "planning-tests", "mobile-robots", "simple_rover_with_three_caps.ttl")
+		ontology_file = os.path.join(os.getcwd(), "tests", "planning_tests", "mobile-robots", "simple_rover_with_three_caps.ttl")
 		max_happenings = 3
 		planner = CaskadePlanner("http://www.hsu-hh.de/aut/ontologies/riva/rover-three-caps#RequiredCap") 
 		planner.with_file_query_handler(ontology_file)

@@ -9,7 +9,7 @@ This ontology file contains two capabilities (driveTo and grab) of a Rover that 
 class TestSimpleRoverTwoCaps:
 	
 	def test_create_and_solve(self):
-		ontology_file = os.path.join(os.getcwd(), "tests", "planning-tests", "mobile-robots", "simple_rover_with_two_caps.ttl")
+		ontology_file = os.path.join(os.getcwd(), "tests", "planning_tests", "mobile-robots", "simple_rover_with_two_caps.ttl")
 		max_happenings = 2
 		planner: CaskadePlanner = CaskadePlanner("http://www.hsu-hh.de/aut/ontologies/riva/rover-two-caps#RequiredCap") 
 		planner.with_file_query_handler(ontology_file)

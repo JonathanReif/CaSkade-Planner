@@ -11,7 +11,7 @@ from smt_planning.smt.property_links import get_related_properties, set_required
 class TestQuerying:
 
 	def test_property_query(self):
-		ontology_file = os.path.join(os.getcwd(), "tests", "planning-tests", "mobile-robots", "simple_rover_complete.ttl")
+		ontology_file = os.path.join(os.getcwd(), "tests", "planning_tests", "mobile-robots", "simple_rover_complete.ttl")
 		required_cap_iri = "http://www.hsu-hh.de/aut/ontologies/riva/rover-complete#RequiredCap"
 		s = StateHandler()
 		s.set_query_handler(FileQueryHandler(ontology_file))
