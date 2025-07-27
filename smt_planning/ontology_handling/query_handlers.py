@@ -38,7 +38,7 @@ class FileQueryHandler(QueryHandler):
 		for imported in set(graph.objects(None, OWL.imports)):
 				iri = str(imported)
 				if urlparse(iri).scheme == "":
-						iri = str((base / iri).resolve())
+					iri = str((base / iri).resolve())
 				self._parse_file(graph, iri)
 
 	def query(self, query_string: str) -> Result:
