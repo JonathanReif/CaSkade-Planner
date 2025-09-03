@@ -142,33 +142,54 @@ class Plan:
 class PlanningResultType(Enum):
     SAT = "sat"
     UNSAT = "unsat"
+    MULTIPLE_SAT = "multiple_sat"
 
 
 class PlanningResult:
 	"""
-	A class that defines the overall planning result. Contains a type that is either "sat" or "unsat". If sat, planing_result contains the plan.
+	A class that defines the overall planning result. Contains a type that is either "sat", "unsat", or "multiple_sat". 
+	If sat, planning_result contains a single plan.
+	If multiple_sat, planning_result contains multiple alternative plans.
 	If unsat, plan is empty and unsat cores are returned
 	"""
 
-	def __init__(self, result_type: PlanningResultType, model: Dict[str, bool | float | int] | None, unsat_core: List | None):
+	def __init__(self, result_type: PlanningResultType, model: Dict[str, bool | float | int] | None, unsat_core: List | None, models: List[Dict[str, bool | float | int]] | None = None):
 		self.time_created = datetime.now()
 		self.result_type = result_type
 		if result_type == PlanningResultType.SAT:
 			assert model is not None
 			self.derive_plan_from_model(model)
+			self.plans = None
 			self.unsat_core = None
-		if result_type == PlanningResultType.UNSAT:
+		elif result_type == PlanningResultType.MULTIPLE_SAT:
+			assert models is not None
+			self.derive_plans_from_models(models)
+			self.plan = None  # Keep for backward compatibility
+			self.unsat_core = None
+		elif result_type == PlanningResultType.UNSAT:
 			assert unsat_core is not None
 			self.plan = None
+			self.plans = None
 			self.unsat_core = unsat_core
 
 
 	def derive_plan_from_model(self, model: Dict[str, bool | float | int]):
+		self.plan = self._derive_single_plan_from_model(model)
+
+	def derive_plans_from_models(self, models: List[Dict[str, bool | float | int]]):
+		"""Derive multiple plans from multiple models"""
+		self.plans = []
+		for model in models:
+			plan = self._derive_single_plan_from_model(model)
+			self.plans.append(plan)
+
+	def _derive_single_plan_from_model(self, model: Dict[str, bool | float | int]) -> Plan:
+		"""Helper method to derive a single plan from a model (extracted from derive_plan_from_model)"""
 		property_dictionary = StateHandler().get_property_dictionary()
 		capability_dictionary = StateHandler().get_capability_dictionary()
 
 		# Loop over all the vars and sort everything out (try to find the corresponding property or capability):
-		self.plan = Plan([])
+		plan = Plan([])
 		property_appearance_store: Dict[int, List[PropertyAppearance]] = {} 	# store is a dict with happenings as a key
 		for variable in model:
 			variable_value = model[variable]
@@ -180,7 +201,7 @@ class PlanningResult:
 					capability = capability_dictionary.get_capability_from_z3_variable(variable) # type: ignore
 					if(variable_value == True):
 						capability_appearance = CapabilityAppearance(capability.iri)
-						self.plan.insert_capability_appearance(capability.happening, capability_appearance)
+						plan.insert_capability_appearance(capability.happening, capability_appearance)
 				except:
 					property_occurrence = property_dictionary.get_property_from_z3_variable(variable) # type: ignore
 					property = property_dictionary.get_property(property_occurrence.iri)
@@ -194,31 +215,38 @@ class PlanningResult:
 
 		# By this point, all capabilities should have been added. If there are none, that means that a trivial plan was found
 		# In such cases, we simply return an empty plan
-		if (len(self.plan.plan_steps) == 0): return
+		if (len(plan.plan_steps) == 0): return plan
 
 		for property_appearance_item in property_appearance_store.items():
 			happening = property_appearance_item[0]
 			property_appearances = property_appearance_item[1]
 			for property_appearance in property_appearances:
-				self.plan.add_property_appearance(happening, property_appearance)
+				plan.add_property_appearance(happening, property_appearance)
 
-
-		self.plan.plan_steps = sorted(self.plan.plan_steps, key=lambda x: x.step_number)
-		self.plan.plan_length = len(self.plan.plan_steps)
-
+		plan.plan_steps = sorted(plan.plan_steps, key=lambda x: x.step_number)
+		plan.plan_length = len(plan.plan_steps)
+		
+		return plan
 
 	def to_json(self) -> Dict[str, object]:
-		if self.plan is None:
+		if self.result_type == PlanningResultType.MULTIPLE_SAT:
+			plans_dict = [plan.to_json() for plan in self.plans] if self.plans else []
+			unsat_core_json = {}
+			plan_dict = {}  # Keep for backward compatibility
+		elif self.plan is None:
 			plan_dict = {}
+			plans_dict = []
 			unsat_core_json = self.unsat_core
 		else:
 			plan_dict = self.plan.to_json()
+			plans_dict = []
 			unsat_core_json = {}
 
 		dict = {
 			"timeCreated": str(self.time_created),
 			"resultType": str(self.result_type),
 			"unsatCore": unsat_core_json,
-			"plan": plan_dict
+			"plan": plan_dict,
+			"plans": plans_dict  # New field for multiple plans
 		}
 		return dict

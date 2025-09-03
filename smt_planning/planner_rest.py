@@ -74,11 +74,12 @@ def generate_and_solve_plan():
 		planner.with_endpoint_query_handler(endpoint_url)
 
 	max_happenings = data.get('maxHappenings')
+	find_all_solutions = data.get('findAllSolutions', False)
 	
 	# In case None gets passed as a max_happening, set back to default value of 5
 	if max_happenings == None:
 		max_happenings = 5
-	result = planner.cask_to_smt(max_happenings)
+	result = planner.cask_to_smt(max_happenings, None, None, None, find_all_solutions)
 	if result == None:
 		return jsonify({'error': 'No plan found'}), 204
 	return jsonify(result.to_json())

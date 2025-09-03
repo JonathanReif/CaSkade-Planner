@@ -16,7 +16,6 @@ def plan_from_file(
 		help="Path to your ontology that is used for generating the planning problem",
 	),
 	required_capability_iri: str = typer.Argument(
-		None,
 		help="IRI of the required capability to plan for.",
 	),
 	max_happenings: int = typer.Option(
@@ -43,10 +42,16 @@ def plan_from_file(
 		"-plan",
 		help="Path to where the plan file will be stored after solving and transformation (default: None)",
 	),
+	find_all_solutions: bool = typer.Option(
+		False,
+		"--find-all-solutions",
+		"-all",
+		help="Find all possible solutions instead of just one (default: False)",
+	),
 ) -> None:
 	planner = CaskadePlanner(required_capability_iri)
 	planner.with_file_query_handler(ontology_file)
-	result = planner.cask_to_smt(max_happenings, problem_file, model_file, plan_file)
+	result = planner.cask_to_smt(max_happenings, problem_file, model_file, plan_file, find_all_solutions)
 	result_json = result.to_json()
 	print(result_json)
 
@@ -83,10 +88,16 @@ def plan_from_endpoint(
 		"-plan",
 		help="Path to where the plan file will be stored after solving and transformation (default: None)",
 	),
+	find_all_solutions: bool = typer.Option(
+		False,
+		"--find-all-solutions",
+		"-all",
+		help="Find all possible solutions instead of just one (default: False)",
+	),
 ) -> None:
 	planner = CaskadePlanner(required_capability_iri)
 	planner.with_endpoint_query_handler(endpoint_url)
-	result = planner.cask_to_smt(max_happenings, problem_file, model_file, plan_file)
+	result = planner.cask_to_smt(max_happenings, problem_file, model_file, plan_file, find_all_solutions)
 	result_json = result.to_json()
 	print(result_json)
 

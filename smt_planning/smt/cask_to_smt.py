@@ -6,7 +6,7 @@ from typing import List
 from smt_planning.ontology_handling.query_handlers import FileQueryHandler, SparqlEndpointQueryHandler
 from smt_planning.planning_result import PlanningResultType, PlanningResult
 from smt_planning.dicts.PropertyDictionary import Property
-from z3 import Solver, Optimize, unsat, Bool, Z3_OP_IMPLIES
+from z3 import Solver, Optimize, unsat, sat, Bool, Z3_OP_IMPLIES, Or, Not, And
 from smt_planning.smt.StateHandler import StateHandler
 from smt_planning.openmath.parse_openmath import QueryCache
 from smt_planning.smt.property_links import get_related_properties, set_required_capability, reset_property_pairs
@@ -49,7 +49,43 @@ class CaskadePlanner:
 		comment = Bool(f"## {comment_text} ##")
 		solver.add(comment)
 
-	def cask_to_smt(self, max_happenings: int = 5, problem_location = None, model_location = None, plan_location = None) -> PlanningResult:
+	def _extract_model_dict(self, model):
+		"""Extract model dictionary from Z3 model"""
+		replaced_model = {}
+		for model_declaration in model.decls():
+			declaration_name = model_declaration.name()
+			if declaration_name in self.assertion_dictionary:
+				continue
+			else:
+				value = model[model_declaration]
+				# Convert Z3 boolean values to Python booleans
+				if str(model_declaration.range()) == "Bool":
+					replaced_model[declaration_name] = bool(value)
+				else:
+					replaced_model[declaration_name] = value
+		return replaced_model
+
+	def _save_optional_outputs(self, result, solver, model, problem_location, model_location, plan_location):
+		"""Save optional output files"""
+		if problem_location:
+			# if problem_location is passed, store problem
+			with open(problem_location, 'w') as file:
+				file.write(solver.to_smt2())
+
+		if model_location and model:
+			# if model_location is passed, store model untransformed
+			model_dict = {}
+			for var in model:
+				model_dict[str(var)] = str(model[var])
+			with open(model_location, 'w') as file:
+				json.dump(model_dict, file, indent=4)
+
+		if plan_location:
+			# if plan_location is passed, store model after transformation to better JSON
+			with open(plan_location, 'w') as json_file:
+				json.dump(result, json_file, default=lambda o: o.to_json(), indent=4)
+
+	def cask_to_smt(self, max_happenings: int = 5, problem_location = None, model_location = None, plan_location = None, find_all_solutions: bool = False) -> PlanningResult:
 		print("Started planning. This may take a while...")
 		start_time = time.time()
 		state_handler = StateHandler()
@@ -243,6 +279,11 @@ class CaskadePlanner:
 			# Capability constraints are expressions in smt2 form that cannot be added programmatically, because we only have the whole expression in string form 
 			# after parsing it from OpenMath RDF. Hence, we must read it as string into a temp solver and then add all assertions into our main solver
 			self.add_comment(solver, "Start of capability constraints")
+
+			if problem_location:
+				with open(problem_location, 'w', encoding='utf-8') as file:
+					file.write(solver.to_smt2())
+
 			temp_solver = Solver()
 			# Add property z3 variables (they are needed for constraints in the next step)
 			temp_solver_string = "\n".join(
@@ -319,40 +360,84 @@ class CaskadePlanner:
 			if solver_result == unsat:
 				print(f"No solution with {happenings} happening(s) found.")
 			else:
-				model = solver.model()
-				replaced_model = {}
-				for model_declaration in model.decls():
-					declaration_name = model_declaration.name()
-					if declaration_name in self.assertion_dictionary:
-						continue
-						# replaced_model[self.assertion_dictionary[declaration_name]] = model[model_declaration]
+				if not find_all_solutions:
+					# Original behavior: return first solution found
+					model = solver.model()
+					replaced_model = self._extract_model_dict(model)
+					
+					# Create the result
+					result = PlanningResult(PlanningResultType.SAT, replaced_model, None)
+					self._save_optional_outputs(result, solver, model, problem_location, model_location, plan_location)
+					return result
+				else:
+					# Find all solutions
+					all_models = []
+					solution_count = 0
+					
+					while solver_result == sat:
+						solution_count += 1
+						model = solver.model()
+						replaced_model = self._extract_model_dict(model)
+						all_models.append(replaced_model)
+						
+						print(f"Found solution {solution_count}")
+						print(f"Model has {len(replaced_model)} variables")
+						
+						# For debugging, limit to 10 solutions to prevent infinite loops during testing
+						if solution_count >= 10:
+							print("Reached debug limit of 10 solutions - stopping search")
+							break
+						
+						# Create a constraint that excludes this solution
+						capability_dictionary = state_handler.get_capability_dictionary()
+						
+						# Collect all TRUE capabilities from this solution
+						true_capabilities = []
+						all_capabilities = {**capability_dictionary.provided_capabilities, **capability_dictionary.required_capabilities}
+						
+						for capability in all_capabilities.values():
+							for occurrence in capability.occurrences.values():
+								# Check the capability variable directly in the Z3 model, not in the replaced dict
+								try:
+									z3_value = model.eval(occurrence.z3_variable)
+									is_true = bool(z3_value)
+									
+									if is_true:
+										true_capabilities.append(occurrence.z3_variable)
+								except Exception as e:
+									continue
+						
+						print(f"Found {len(true_capabilities)} true capabilities in solution")
+						if true_capabilities:
+							capability_names = [str(cap).replace('http://example.org/ontologies/', '') for cap in true_capabilities]
+							print(f"  Capabilities: {capability_names}")
+						
+						
+						if true_capabilities:
+							# Exclude this exact combination: NOT (all true capabilities are true)
+							# This means at least one of the currently true capabilities must be false
+							exclusion_constraint = Not(And(*true_capabilities))
+							solver.add(exclusion_constraint)
+							print(f"  Added exclusion constraint to prevent this exact combination")
+						else:
+							print("  No true capabilities found - this might indicate a problem!")
+						
+						# Try to find another solution
+						solver_result = solver.check()
+					
+					if len(all_models) == 1:
+						# Only one solution found, return as single solution
+						result = PlanningResult(PlanningResultType.SAT, all_models[0], None)
+						self._save_optional_outputs(result, solver, None, problem_location, model_location, plan_location)
+						return result
+					elif len(all_models) > 1:
+						# Multiple solutions found
+						result = PlanningResult(PlanningResultType.MULTIPLE_SAT, None, None, all_models)
+						self._save_optional_outputs(result, solver, None, problem_location, model_location, plan_location)
+						return result
 					else:
-						replaced_model[declaration_name] = model[model_declaration]
+						print(f"No solution with {happenings} happening(s) found.")
 				
-				# Create the result
-				result = PlanningResult(PlanningResultType.SAT, replaced_model, None)
-
-				# Optional: store outputs in file
-				if problem_location:
-					# if problem_location is passed, store problem
-					with open(problem_location, 'w') as file:
-						file.write(solver.to_smt2())
-
-				if model_location:
-					# if model_location is passed, store model untransformed
-					model_dict = {}
-					for var in model:
-						model_dict[str(var)] = str(model[var])
-					with open(model_location, 'w') as file:
-						json.dump(model_dict, file, indent=4)
-
-				if plan_location:
-					# if plan_location is passed, store model after transformation to better JSON
-					with open(plan_location, 'w') as json_file:
-						json.dump(result, json_file, default=lambda o: o.to_json(), indent=4)
-
-				
-				return result
 		
 		unsat_core = solver.unsat_core()
 		# Retransform unsat core to insert original properties instead of assertion_name
@@ -373,24 +458,24 @@ class CaskadePlanner:
 
 
 def is_unsat_core(core):
-    s = Solver()
-    for c in core:
-        s.add(c)
-    return s.check() == unsat
+	s = Solver()
+	for c in core:
+		s.add(c)
+	return s.check() == unsat
 
 def find_minimal_unsat_core(core):
-    # Überprüfen, ob der initiale Core unsatisfiable ist
-    if not is_unsat_core(core):
-        return core
-    
-    # Versuche, eine minimale unsatisfiable Menge zu finden
-    for i in range(len(core)):
-        reduced_core = core[:i] + core[i+1:]
-        if is_unsat_core(reduced_core):
-            return find_minimal_unsat_core(reduced_core)
-    
-    # Wenn keine Verkleinerung möglich ist, gebe den aktuellen Core zurück
-    return core
+	# Überprüfen, ob der initiale Core unsatisfiable ist
+	if not is_unsat_core(core):
+		return core
+	
+	# Versuche, eine minimale unsatisfiable Menge zu finden
+	for i in range(len(core)):
+		reduced_core = core[:i] + core[i+1:]
+		if is_unsat_core(reduced_core):
+			return find_minimal_unsat_core(reduced_core)
+	
+	# Wenn keine Verkleinerung möglich ist, gebe den aktuellen Core zurück
+	return core
 
 
 # Checks if a variable is already asserted
@@ -404,7 +489,7 @@ def find_variable_in_expression(expression, variable):
 	return any(find_variable_in_expression(child, variable) for child in expression.children())
 
 def is_variable_asserted(solver, variable):
-    for assertion in solver.assertions():
-        if find_variable_in_expression(assertion, variable):
-            return True
-    return False
+	for assertion in solver.assertions():
+		if find_variable_in_expression(assertion, variable):
+			return True
+	return False
